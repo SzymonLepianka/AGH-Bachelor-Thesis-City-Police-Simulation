@@ -1,14 +1,14 @@
 package World;
 
+import CsvExport.ExportToCSV;
 import de.westnordost.osmapi.map.data.LatLon;
 import de.westnordost.osmapi.map.data.OsmLatLon;
 import entities.*;
 import org.jxmapviewer.viewer.GeoPosition;
 import simulation.EventUpdater;
-import CsvExport.ExportToCSV;
+import simulation.EventsDirector;
 import simulation.StatisticsCounter;
 import utils.Haversine;
-import simulation.EventsDirector;
 import utils.Logger;
 
 import java.time.Duration;
@@ -20,12 +20,27 @@ import java.util.stream.Collectors;
 public class World {
 
     private static volatile World instance;
+    private final List<Entity> allEntities = new ArrayList<>();
+    private final WorldConfiguration worldConfig = new WorldConfiguration();
+    // TODO let the user to choose durationOfTheShift
+    private final double durationOfTheShift = 28800;
+    private LocalDateTime startTime;
+    private double timePassedUntilPause = 0;
+    private boolean isSimulationPaused = false;
+    private LatLon position;
+    private Map map;
+    private boolean hasSimulationStarted = false;
+    private int neutralizedPatrolsTotal = 0;
+
+    private World() {
+        this.startTime = LocalDateTime.now();
+    }
 
     public static World getInstance() {
         // Result variable here may seem pointless, but it's needed for DCL (Double-checked locking).
         var result = instance;
         if (instance != null) {
-            return  result;
+            return result;
         }
         synchronized (World.class) {
             if (instance == null) {
@@ -33,29 +48,6 @@ public class World {
             }
             return instance;
         }
-    }
-
-    private final List<Entity> allEntities = new ArrayList<>();
-
-    private LocalDateTime startTime;
-    private double timePassedUntilPause = 0;
-    private boolean isSimulationPaused = false;
-
-    private LatLon position;
-
-    private Map map;
-
-    private final WorldConfiguration worldConfig = new WorldConfiguration();
-
-    private boolean hasSimulationStarted = false;
-
-    // TODO let the user to choose durationOfTheShift
-    private final double durationOfTheShift = 28800;
-
-    private int neutralizedPatrolsTotal = 0;
-
-    private World() {
-        this.startTime = LocalDateTime.now();
     }
 
     public WorldConfiguration getConfig() {
@@ -67,13 +59,13 @@ public class World {
     }
 
     public List<Entity> getEntitiesNear(double x, double y, double range) {
-        synchronized (allEntities){
+        synchronized (allEntities) {
             return this.allEntities.stream().filter(entity -> Haversine.distance(entity.getLatitude(), entity.getLongitude(), x, y) <= range).collect(Collectors.toList());
         }
     }
 
     public void addEntity(Entity entity) {
-        synchronized (allEntities){
+        synchronized (allEntities) {
             allEntities.add(entity);
             Logger.getInstance().logNewMessage("Added new " + entity.toString());
 
@@ -88,7 +80,7 @@ public class World {
     }
 
     public void removeEntity(Entity entity) {
-        synchronized (allEntities){
+        synchronized (allEntities) {
             if (allEntities.remove(entity)) {
                 Logger.getInstance().logNewMessage("Removed " + entity.toString());
 
@@ -108,13 +100,14 @@ public class World {
     }
 
     public List<IEvent> getActiveEvents() {
-        synchronized (allEntities){
-            return allEntities.stream().filter(x -> x instanceof IEvent && ((IEvent) x).isActive()).map(x -> (IEvent)x).collect(Collectors.toList());
+        synchronized (allEntities) {
+            return allEntities.stream().filter(x -> x instanceof IEvent && ((IEvent) x).isActive()).map(x -> (IEvent) x).collect(Collectors.toList());
         }
     }
+
     public List<IEvent> getEvents() {
-        synchronized (allEntities){
-            return allEntities.stream().filter(x -> x instanceof IEvent).map(x -> (IEvent)x).collect(Collectors.toList());
+        synchronized (allEntities) {
+            return allEntities.stream().filter(x -> x instanceof IEvent).map(x -> (IEvent) x).collect(Collectors.toList());
         }
     }
 
@@ -126,7 +119,7 @@ public class World {
         this.neutralizedPatrolsTotal += neutralizedPatrolsTotal;
     }
 
-    public double getDurationOfTheShift(){
+    public double getDurationOfTheShift() {
         return durationOfTheShift;
     }
 
@@ -140,7 +133,7 @@ public class World {
         }
 
         if (isSimulationPaused) {
-            return  timePassedUntilPause;
+            return timePassedUntilPause;
         }
 
         var duration = Duration.between(this.startTime, LocalDateTime.now());
@@ -148,17 +141,9 @@ public class World {
     }
 
     public Map getMap() {
-        synchronized (map){
+        synchronized (map) {
             return map;
         }
-    }
-
-    public boolean hasSimulationDurationElapsed() {
-        return getSimulationTime() > worldConfig.getSimulationDuration();
-    }
-
-    public boolean isSimulationPaused() {
-        return isSimulationPaused;
     }
 
     public void setMap(Map map) {
@@ -173,11 +158,19 @@ public class World {
                 map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLatitude()).max(Double::compare).get(),
                 map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLongitude()).max(Double::compare).get());
 
-        var latitude = (minCoordinates.getLatitude() + maxCoordinates.getLatitude())/2;
-        var longitude = (minCoordinates.getLongitude() + maxCoordinates.getLongitude())/2;
+        var latitude = (minCoordinates.getLatitude() + maxCoordinates.getLatitude()) / 2;
+        var longitude = (minCoordinates.getLongitude() + maxCoordinates.getLongitude()) / 2;
 
         position = new OsmLatLon(latitude, longitude);
         Logger.getInstance().logNewMessage("Map has been set.");
+    }
+
+    public boolean hasSimulationDurationElapsed() {
+        return getSimulationTime() > worldConfig.getSimulationDuration();
+    }
+
+    public boolean isSimulationPaused() {
+        return isSimulationPaused;
     }
 
     public LatLon getPosition() {
@@ -206,10 +199,9 @@ public class World {
         Logger.getInstance().logNewMessage("Simulation has been paused.");
     }
 
-    public  void resumeSimulation() {
+    public void resumeSimulation() {
         startTime = LocalDateTime.now();
         isSimulationPaused = false;
         Logger.getInstance().logNewMessage("Simulation has been resumed.");
     }
-
 }

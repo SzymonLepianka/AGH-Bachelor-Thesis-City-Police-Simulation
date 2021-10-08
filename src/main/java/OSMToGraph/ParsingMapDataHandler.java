@@ -135,8 +135,8 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
         // adds all edges to the graph:
         for (ImportedEdge edge : myEdges) {
 
-            Node nodeS = myNodes.get(edge.sourceNodeID);
-            Node nodeT = myNodes.get(edge.targetNodeID);
+            Node nodeS = myNodes.get(edge.getSourceNodeID());
+            Node nodeT = myNodes.get(edge.getTargetNodeID());
 
             // calculates the distance (edge weight):
             double dist = Haversine.distance(nodeS.getPosition().getLatitude(),
@@ -257,7 +257,6 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
             path.closePath();
             districts.add(new District(r.getId(), r.getTags().get("name"), path));
         }
-//        for (District d: districts) d.getBoundaries().closePath();
         return districts;
     }
 }

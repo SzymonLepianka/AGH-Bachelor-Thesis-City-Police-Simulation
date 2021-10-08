@@ -5,9 +5,9 @@ import org.jgrapht.graph.DefaultEdge;
 // the class of our "personalized" edge
 public class ImportedEdge extends DefaultEdge {
 
-    Long sourceNodeID;
-    Long targetNodeID;
-    double distance;
+    private final Long sourceNodeID;
+    private final Long targetNodeID;
+    private double distance;
 
     public ImportedEdge(Long sourceID, Long targetID) {
         this.sourceNodeID = sourceID;
