@@ -7,25 +7,24 @@ import java.util.HashMap;
 
 public class WorldConfiguration {
 
-    private String cityName;
     private final HashMap<District, Integer> districtsDangerLevels = new HashMap<>();
-    private int numberOfPolicePatrols = 10;
-    private int timeRate = 300;
-    private long simulationDuration = 86400;
-    private boolean drawDistrictsBorders = false;
-    private boolean drawFiringDetails = false;
-
     private final HashMap<District.ThreatLevelEnum, Integer> threatLevelToMaxIncidentsPerHour = new HashMap<>() {{
         this.put(District.ThreatLevelEnum.Safe, 2);
         this.put(District.ThreatLevelEnum.RatherSafe, 4);
         this.put(District.ThreatLevelEnum.NotSafe, 7);
     }};
-
     private final HashMap<District.ThreatLevelEnum, Double> threatLevelToFiringChanceMap = new HashMap<>() {{
         this.put(District.ThreatLevelEnum.Safe, 0.01);
         this.put(District.ThreatLevelEnum.RatherSafe, 0.1);
         this.put(District.ThreatLevelEnum.NotSafe, 0.4);
     }};
+    private String cityName;
+    private int timeRate = 300;
+    private long simulationDuration = 86400;
+    private int numberOfPolicePatrols = 10;
+    private double basicSearchDistance = 1200.0;
+    private boolean drawDistrictsBorders = false;
+    private boolean drawFiringDetails = false;
 
     public String getCityName() {
         return cityName;
@@ -36,12 +35,23 @@ public class WorldConfiguration {
         Logger.getInstance().logNewMessage("City has been set.");
     }
 
+    public int getTimeRate() {
+        return timeRate;
+    }
+
+    public void setTimeRate(int timeRate) {
+        if (timeRate <= 0) {
+            throw new IllegalArgumentException("Time rate must be of positive value.");
+        }
+        this.timeRate = timeRate;
+    }
+
     public long getSimulationDuration() {
         return simulationDuration;
     }
 
-    public HashMap<District, Integer> getDistrictsDangerLevels() {
-        return districtsDangerLevels;
+    public void setSimulationDuration(long simulationDuration) {
+        this.simulationDuration = simulationDuration;
     }
 
     public int getNumberOfPolicePatrols() {
@@ -52,19 +62,16 @@ public class WorldConfiguration {
         this.numberOfPolicePatrols = numberOfPolicePatrols;
     }
 
-    public int getTimeRate() {
-        return timeRate;
+    public double getBasicSearchDistance() {
+        return basicSearchDistance;
     }
 
-    public void setTimeRate(int timeRate) {
-        if (timeRate <= 0 ) {
-            throw new IllegalArgumentException("Time rate must be of positive value.");
-        }
-        this.timeRate = timeRate;
+    public void setBasicSearchDistance(double basicSearchDistance) {
+        this.basicSearchDistance = basicSearchDistance;
     }
 
-    public void setSimulationDuration(long simulationDuration) {
-        this.simulationDuration = simulationDuration;
+    public HashMap<District, Integer> getDistrictsDangerLevels() {
+        return districtsDangerLevels;
     }
 
     public boolean isDrawDistrictsBorders() {

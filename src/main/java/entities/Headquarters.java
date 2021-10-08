@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 
 public class Headquarters extends Entity implements IDrawable {
 
-    //TODO improve value of 'range'
-    private final double range = 1200.0;
+    private final double range;
     private final double durationOfTheShift;
     private List<Patrol> patrols = new ArrayList<>();
     private List<Incident> incidents = new ArrayList<>();
@@ -26,6 +25,7 @@ public class Headquarters extends Entity implements IDrawable {
         super(latitude, longitude);
         this.durationOfTheShift = World.getInstance().getDurationOfTheShift();
         this.endOfCurrentShift = World.getInstance().getSimulationTime() + durationOfTheShift;
+        this.range = World.getInstance().getConfig().getBasicSearchDistance();
     }
 
     @Override

@@ -1,7 +1,5 @@
 package simulation;
 
-import World.World;
-
 public class StatisticsCounter {
 
     private StatisticsCounter() {
@@ -14,7 +12,7 @@ public class StatisticsCounter {
         // Result variable here may seem pointless, but it's needed for DCL (Double-checked locking).
         var result = instance;
         if (instance != null) {
-            return  result;
+            return result;
         }
         synchronized (StatisticsCounter.class) {
             if (instance == null) {

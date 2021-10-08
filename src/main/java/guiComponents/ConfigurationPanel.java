@@ -1,8 +1,7 @@
 package guiComponents;
 
-
 import OSMToGraph.ImportGraphFromRawData;
-import World.*;
+import World.World;
 import entities.District;
 import utils.Logger;
 
@@ -15,19 +14,9 @@ import java.util.HashMap;
 
 public class ConfigurationPanel {
 
-    private JFrame frame = new JFrame("City Police Simulation");
-
-    private JPanel citySelectionPanel;
-    private JPanel districtConfigurationPanel;
-    private JPanel simulationConfigurationPanel;
-    private JPanel buttonsPanel;
-
     private final int textInputColumns = 20;
     // TODO Change into dynamically generated
     private final HashMap<String, String[]> availablePlaces = new HashMap<>();
-
-    private JComboBox<String> countrySelectionComboBox;
-    private JComboBox<String> citySelectionComboBox;
     private final JTextField numberOfCityPatrolsTextField = new JTextField();
     private final JTextField timeRateTextField = new JTextField();
     private final JTextField simulationDurationDaysTextField = new JTextField();
@@ -36,14 +25,20 @@ public class ConfigurationPanel {
     private final JTextField simulationDurationSecondsTextField = new JTextField();
     private final JCheckBox drawDistrictsBoundariesCheckBox = new JCheckBox();
     private final JCheckBox drawFiringDetailsCheckBox = new JCheckBox();
-
     private final JTextField threatLevelMaxIncidentsTextField_SAFE = new JTextField();
     private final JTextField threatLevelMaxIncidentsTextField_RATHERSAFE = new JTextField();
     private final JTextField threatLevelMaxIncidentsTextField_NOTSAFE = new JTextField();
-
     private final JTextField threatLevelFiringChanceTextField_SAFE = new JTextField();
     private final JTextField threatLevelFiringChanceTextField_RATHERSAFE = new JTextField();
     private final JTextField threatLevelFiringChanceTextField_NOTSAFE = new JTextField();
+    private final JTextField basicSearchDistanceTextField = new JTextField();
+    private final JFrame frame = new JFrame("City Police Simulation");
+    private JPanel citySelectionPanel;
+    private JPanel districtConfigurationPanel;
+    private JPanel simulationConfigurationPanel;
+    private JPanel buttonsPanel;
+    private JComboBox<String> countrySelectionComboBox;
+    private JComboBox<String> citySelectionComboBox;
 
     public ConfigurationPanel() {
         availablePlaces.put("Poland", new String[]{"Kraków", "Warszawa", "Rzeszów", "Katowice", "Gdańsk", "Łódź", "Szczecin", "Poznań", "Lublin", "Białystok", "Wrocław"});
@@ -51,8 +46,8 @@ public class ConfigurationPanel {
 
     private void setDurationInputs(long time) {
         var days = time / 86400;
-        var hours = (time % 86400)/3600;
-        var minutes = (time % 3600)/60;
+        var hours = (time % 86400) / 3600;
+        var minutes = (time % 3600) / 60;
         var seconds = time % 60;
 
         simulationDurationDaysTextField.setText(String.valueOf(days));
@@ -66,23 +61,23 @@ public class ConfigurationPanel {
         var hours = simulationDurationHoursTextField.getText().equals("") ? 0 : Long.parseLong(simulationDurationHoursTextField.getText());
         var minutes = simulationDurationMinutesTextField.getText().equals("") ? 0 : Long.parseLong(simulationDurationMinutesTextField.getText());
         var seconds = simulationDurationSecondsTextField.getText().equals("") ? 0 : Long.parseLong(simulationDurationSecondsTextField.getText());
-        return seconds + minutes*60 + hours*3600 + days*86400;
+        return seconds + minutes * 60 + hours * 3600 + days * 86400;
     }
 
     private void setDefaultValues() {
         var worldConfig = World.getInstance().getConfig();
         numberOfCityPatrolsTextField.setText(Integer.toString(worldConfig.getNumberOfPolicePatrols()));
+        basicSearchDistanceTextField.setText(Double.toString(worldConfig.getBasicSearchDistance()));
         timeRateTextField.setText(Integer.toString(worldConfig.getTimeRate()));
         setDurationInputs(worldConfig.getSimulationDuration());
     }
 
     // TODO Add validation for input data
-    public void createWindow(){
-        frame.setSize( 1200, 600);
+    public void createWindow() {
+        frame.setSize(1200, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-
-        frame.setLayout(new GridLayout(1,4));
+        frame.setLayout(new GridLayout(1, 4));
 
         citySelectionPanel = new JPanel();
         frame.add(citySelectionPanel);
@@ -110,7 +105,7 @@ public class ConfigurationPanel {
 
         var districtScrollPane = new JScrollPane(scrollContent);
         districtScrollPane.setPreferredSize(new Dimension(300, 500));
-        districtScrollPane.setBounds(300,0,300,500);
+        districtScrollPane.setBounds(300, 0, 300, 500);
         districtScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         districtScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -143,6 +138,10 @@ public class ConfigurationPanel {
         numberOfCityPatrolsTextField.setColumns(textInputColumns);
         simulationConfigurationPanel.add(numberOfCityPatrolsTextField);
 
+        simulationConfigurationPanel.add(new JLabel("Basic search distance for police support"));
+        basicSearchDistanceTextField.setColumns(textInputColumns);
+        simulationConfigurationPanel.add(basicSearchDistanceTextField);
+
         var drawDistrictsPanel = new JPanel();
         drawDistrictsPanel.add(new JLabel("Draw districts boundaries"));
         drawDistrictsPanel.add(drawDistrictsBoundariesCheckBox);
@@ -153,7 +152,7 @@ public class ConfigurationPanel {
         drawFiringDetailsPanel.add(drawFiringDetailsCheckBox);
         simulationConfigurationPanel.add(drawFiringDetailsPanel);
 
-        var threatLevelToMaxIncidentsConfigurationPanel =  new JPanel();
+        var threatLevelToMaxIncidentsConfigurationPanel = new JPanel();
         threatLevelToMaxIncidentsConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
         threatLevelToMaxIncidentsConfigurationPanel.setLayout(new BoxLayout(threatLevelToMaxIncidentsConfigurationPanel, BoxLayout.Y_AXIS));
         threatLevelToMaxIncidentsConfigurationPanel.add(new JLabel("Set maximum number of incidents per hour"));
@@ -184,7 +183,7 @@ public class ConfigurationPanel {
 
         simulationConfigurationPanel.add(threatLevelToMaxIncidentsConfigurationPanel);
 
-        var threatLevelToFiringChanceConfigurationPanel =  new JPanel();
+        var threatLevelToFiringChanceConfigurationPanel = new JPanel();
         threatLevelToFiringChanceConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
         threatLevelToFiringChanceConfigurationPanel.setLayout(new BoxLayout(threatLevelToFiringChanceConfigurationPanel, BoxLayout.Y_AXIS));
         threatLevelToFiringChanceConfigurationPanel.add(new JLabel("Set chance for firing"));
@@ -245,7 +244,7 @@ public class ConfigurationPanel {
         var cityName = citySelectionComboBox.getSelectedItem().toString();
         World.getInstance().getConfig().setCityName(cityName);
         if (loadMapIntoWorld(cityName)) {
-            var scrollContent = (JPanel) ((JScrollPane)Arrays.stream(districtConfigurationPanel.getComponents()).filter(x -> x instanceof JScrollPane).findFirst().get()).getViewport().getView();
+            var scrollContent = (JPanel) ((JScrollPane) Arrays.stream(districtConfigurationPanel.getComponents()).filter(x -> x instanceof JScrollPane).findFirst().get()).getViewport().getView();
             scrollContent.removeAll();
             for (var district : World.getInstance().getMap().getDistricts()) {
                 scrollContent.add(new DistrictConfigComponent(district));
@@ -264,6 +263,7 @@ public class ConfigurationPanel {
 
         var config = World.getInstance().getConfig();
         config.setNumberOfPolicePatrols(numberOfCityPatrolsTextField.getText().equals("") ? 0 : Integer.parseInt(numberOfCityPatrolsTextField.getText()));
+        config.setBasicSearchDistance(basicSearchDistanceTextField.getText().equals("") ? 0.0 : Double.parseDouble(basicSearchDistanceTextField.getText()));
         config.setTimeRate(timeRateTextField.getText().equals("") ? 0 : Integer.parseInt(timeRateTextField.getText()));
         config.setSimulationDuration(getDurationFromInputs());
         config.setDrawDistrictsBorders(drawDistrictsBoundariesCheckBox.isSelected());
