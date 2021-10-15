@@ -7,7 +7,6 @@ import utils.Logger;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -109,7 +108,7 @@ public class ConfigurationPanel {
         // line separating the components
         var jSeparator = new JSeparator();
         jSeparator.setOrientation(SwingConstants.HORIZONTAL);
-        jSeparator.setPreferredSize(new Dimension(300,20));
+        jSeparator.setPreferredSize(new Dimension(300, 20));
         citySelectionPanel.add(jSeparator);
 
         // drop-down list with country selection
@@ -188,84 +187,68 @@ public class ConfigurationPanel {
         drawFiringDetailsPanel.add(drawFiringDetailsCheckBox);
         simulationConfigurationPanel.add(drawFiringDetailsPanel);
 
+//----------------------------------------------------
+
         var threatLevelToMaxIncidentsConfigurationPanel = new JPanel();
         threatLevelToMaxIncidentsConfigurationPanel.setLayout(new BoxLayout(threatLevelToMaxIncidentsConfigurationPanel, BoxLayout.Y_AXIS));
         threatLevelToMaxIncidentsConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
 
-        JLabel jLabel = new JLabel("Set max. number of incidents per hour:");
-        jLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        threatLevelToMaxIncidentsConfigurationPanel.add(jLabel);
+        JLabel descriptionLabel = new JLabel("Set the maximum number of incidents per");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        threatLevelToMaxIncidentsConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("hour for a given district security level:");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        threatLevelToMaxIncidentsConfigurationPanel.add(descriptionLabel);
 
-//        var panel = new JPanel();
-//        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-//        panel.add(new JLabel(District.ThreatLevelEnum.Safe.toString() + ":    "));
-//        //threatLevelMaxIncidentsTextField_SAFE.setColumns(1);
-//        threatLevelMaxIncidentsTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.Safe)));
-//        panel.add(threatLevelMaxIncidentsTextField_SAFE);
-//        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
-//
-//        panel = new JPanel();
-//        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-//        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe.toString() + ":    "));
-//        //threatLevelMaxIncidentsTextField_RATHERSAFE.setColumns(1);
-//        threatLevelMaxIncidentsTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
-//        panel.add(threatLevelMaxIncidentsTextField_RATHERSAFE);
-//        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
-//
-//        panel = new JPanel();
-//        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-//        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe.toString()+ ":    "));
-//        //threatLevelMaxIncidentsTextField_NOTSAFE.setColumns(1);
-//        threatLevelMaxIncidentsTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.NotSafe)));
-//        panel.add(threatLevelMaxIncidentsTextField_NOTSAFE);
-//        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
         var panel = new JPanel();
-        panel.setLayout(new GridLayout(3,2));
-        panel.add(new JLabel(District.ThreatLevelEnum.Safe + ":    "));
+        panel.setLayout(new GridLayout(3, 2));
+        panel.add(new JLabel(District.ThreatLevelEnum.Safe + ": "));
         threatLevelMaxIncidentsTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.Safe)));
         panel.add(threatLevelMaxIncidentsTextField_SAFE);
-        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ":    "));
+        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ": "));
         threatLevelMaxIncidentsTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
         panel.add(threatLevelMaxIncidentsTextField_RATHERSAFE);
-        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ":    "));
+        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ": "));
         threatLevelMaxIncidentsTextField_NOTSAFE.setColumns(11);
         threatLevelMaxIncidentsTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.NotSafe)));
         panel.add(threatLevelMaxIncidentsTextField_NOTSAFE);
         threatLevelToMaxIncidentsConfigurationPanel.add(panel);
 
-
         simulationConfigurationPanel.add(threatLevelToMaxIncidentsConfigurationPanel);
 
+//----------------------------------------------------
+
         var threatLevelToFiringChanceConfigurationPanel = new JPanel();
-        threatLevelToFiringChanceConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
         threatLevelToFiringChanceConfigurationPanel.setLayout(new BoxLayout(threatLevelToFiringChanceConfigurationPanel, BoxLayout.Y_AXIS));
-        threatLevelToFiringChanceConfigurationPanel.add(new JLabel("Set chance for firing"));
+        threatLevelToFiringChanceConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
+
+        descriptionLabel = new JLabel("Set the chance for the intervention to");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        threatLevelToFiringChanceConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("turn into a firing for the given");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        threatLevelToFiringChanceConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("district security level:");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        threatLevelToFiringChanceConfigurationPanel.add(descriptionLabel);
 
         panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel(District.ThreatLevelEnum.Safe.toString()));
-        threatLevelFiringChanceTextField_SAFE.setColumns(textInputColumns);
+        panel.setLayout(new GridLayout(3, 2));
+        panel.add(new JLabel(District.ThreatLevelEnum.Safe + ": "));
         threatLevelFiringChanceTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.Safe)));
         panel.add(threatLevelFiringChanceTextField_SAFE);
-        threatLevelToFiringChanceConfigurationPanel.add(panel);
-
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe.toString()));
-        threatLevelFiringChanceTextField_RATHERSAFE.setColumns(textInputColumns);
+        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ": "));
         threatLevelFiringChanceTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
         panel.add(threatLevelFiringChanceTextField_RATHERSAFE);
-        threatLevelToFiringChanceConfigurationPanel.add(panel);
-
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe.toString()));
-        threatLevelFiringChanceTextField_NOTSAFE.setColumns(textInputColumns);
+        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ": "));
+        threatLevelFiringChanceTextField_NOTSAFE.setColumns(11);
         threatLevelFiringChanceTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.NotSafe)));
         panel.add(threatLevelFiringChanceTextField_NOTSAFE);
         threatLevelToFiringChanceConfigurationPanel.add(panel);
 
         simulationConfigurationPanel.add(threatLevelToFiringChanceConfigurationPanel);
+
+//----------------------------------------------------
 
         buttonsPanel = new JPanel();
         mainFrame.add(buttonsPanel);
