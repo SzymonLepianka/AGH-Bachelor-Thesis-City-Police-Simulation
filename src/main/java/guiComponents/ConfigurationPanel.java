@@ -8,6 +8,8 @@ import utils.Logger;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -150,30 +152,44 @@ public class ConfigurationPanel {
         mainFrame.add(simulationConfigurationPanel);
 
         simulationConfigurationPanel.add(new JLabel("Simulation Time Rate"));
+        addRestrictionOfEnteringOnlyIntegers(timeRateTextField);
+        timeRateTextField.setInputVerifier(new PositiveIntegerInputVerifier());
         timeRateTextField.setColumns(textInputColumns);
         simulationConfigurationPanel.add(timeRateTextField);
 
         simulationConfigurationPanel.add(new JLabel("Simulation Duration"));
         var simulationDurationPanel = new JPanel();
         simulationDurationPanel.add(new JLabel("Days:"));
+        addRestrictionOfEnteringOnlyIntegers(simulationDurationDaysTextField);
+        simulationDurationDaysTextField.setInputVerifier(new NonNegativeIntegerInputVerifier());
         simulationDurationDaysTextField.setColumns(3);
         simulationDurationPanel.add(simulationDurationDaysTextField);
         simulationDurationPanel.add(new JLabel("H:"));
+        addRestrictionOfEnteringOnlyIntegers(simulationDurationHoursTextField);
+        simulationDurationHoursTextField.setInputVerifier(new NonNegativeIntegerInputVerifier());
         simulationDurationHoursTextField.setColumns(2);
         simulationDurationPanel.add(simulationDurationHoursTextField);
         simulationDurationPanel.add(new JLabel("M:"));
+        addRestrictionOfEnteringOnlyIntegers(simulationDurationMinutesTextField);
+        simulationDurationMinutesTextField.setInputVerifier(new NonNegativeIntegerInputVerifier());
         simulationDurationMinutesTextField.setColumns(2);
         simulationDurationPanel.add(simulationDurationMinutesTextField);
         simulationDurationPanel.add(new JLabel("S:"));
+        addRestrictionOfEnteringOnlyIntegers(simulationDurationSecondsTextField);
+        simulationDurationSecondsTextField.setInputVerifier(new NonNegativeIntegerInputVerifier());
         simulationDurationSecondsTextField.setColumns(2);
         simulationDurationPanel.add(simulationDurationSecondsTextField);
         simulationConfigurationPanel.add(simulationDurationPanel);
 
         simulationConfigurationPanel.add(new JLabel("Number of City Patrols"));
+        addRestrictionOfEnteringOnlyIntegers(numberOfCityPatrolsTextField);
+        numberOfCityPatrolsTextField.setInputVerifier(new PositiveIntegerInputVerifier());
         numberOfCityPatrolsTextField.setColumns(textInputColumns);
         simulationConfigurationPanel.add(numberOfCityPatrolsTextField);
 
-        simulationConfigurationPanel.add(new JLabel("Basic search range for police support"));
+        simulationConfigurationPanel.add(new JLabel("Basic search range for police support [meters]"));
+        addRestrictionOfEnteringOnlyFloats(basicSearchDistanceTextField);
+        basicSearchDistanceTextField.setInputVerifier(new FloatInputVerifier());
         basicSearchDistanceTextField.setColumns(textInputColumns);
         simulationConfigurationPanel.add(basicSearchDistanceTextField);
 
@@ -204,13 +220,19 @@ public class ConfigurationPanel {
         panel.setLayout(new GridLayout(3, 2));
         panel.add(new JLabel(District.ThreatLevelEnum.Safe + ": "));
         threatLevelMaxIncidentsTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.Safe)));
+        addRestrictionOfEnteringOnlyIntegers(threatLevelMaxIncidentsTextField_SAFE);
+        threatLevelMaxIncidentsTextField_SAFE.setInputVerifier(new NonNegativeIntegerInputVerifier());
         panel.add(threatLevelMaxIncidentsTextField_SAFE);
         panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ": "));
         threatLevelMaxIncidentsTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
+        addRestrictionOfEnteringOnlyIntegers(threatLevelMaxIncidentsTextField_RATHERSAFE);
+        threatLevelMaxIncidentsTextField_RATHERSAFE.setInputVerifier(new NonNegativeIntegerInputVerifier());
         panel.add(threatLevelMaxIncidentsTextField_RATHERSAFE);
         panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ": "));
         threatLevelMaxIncidentsTextField_NOTSAFE.setColumns(11);
         threatLevelMaxIncidentsTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.NotSafe)));
+        addRestrictionOfEnteringOnlyIntegers(threatLevelMaxIncidentsTextField_NOTSAFE);
+        threatLevelMaxIncidentsTextField_NOTSAFE.setInputVerifier(new NonNegativeIntegerInputVerifier());
         panel.add(threatLevelMaxIncidentsTextField_NOTSAFE);
         threatLevelToMaxIncidentsConfigurationPanel.add(panel);
 
@@ -236,13 +258,19 @@ public class ConfigurationPanel {
         panel.setLayout(new GridLayout(3, 2));
         panel.add(new JLabel(District.ThreatLevelEnum.Safe + ": "));
         threatLevelFiringChanceTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.Safe)));
+        addRestrictionOfEnteringOnlyFloats(threatLevelFiringChanceTextField_SAFE);
+        threatLevelFiringChanceTextField_SAFE.setInputVerifier(new NonNegativeIntegerInputVerifier());
         panel.add(threatLevelFiringChanceTextField_SAFE);
         panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ": "));
         threatLevelFiringChanceTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
+        addRestrictionOfEnteringOnlyFloats(threatLevelFiringChanceTextField_RATHERSAFE);
+        threatLevelFiringChanceTextField_RATHERSAFE.setInputVerifier(new NonNegativeIntegerInputVerifier());
         panel.add(threatLevelFiringChanceTextField_RATHERSAFE);
         panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ": "));
         threatLevelFiringChanceTextField_NOTSAFE.setColumns(11);
         threatLevelFiringChanceTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.NotSafe)));
+        addRestrictionOfEnteringOnlyFloats(threatLevelFiringChanceTextField_NOTSAFE);
+        threatLevelFiringChanceTextField_NOTSAFE.setInputVerifier(new NonNegativeIntegerInputVerifier());
         panel.add(threatLevelFiringChanceTextField_NOTSAFE);
         threatLevelToFiringChanceConfigurationPanel.add(panel);
 
@@ -265,6 +293,34 @@ public class ConfigurationPanel {
 
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.setVisible(true);
+    }
+
+    private void addRestrictionOfEnteringOnlyIntegers(JTextField textField) {
+        textField.addKeyListener(new KeyAdapter() {
+            // only numbers can be entered
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    textField.setEditable(true);
+                } else {
+                    textField.setEditable(false);
+                }
+            }
+        });
+    }
+
+    private void addRestrictionOfEnteringOnlyFloats(JTextField textField) {
+        textField.addKeyListener(new KeyAdapter() {
+            // only numbers can be entered
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyChar() == '.' || e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    textField.setEditable(true);
+                } else {
+                    textField.setEditable(false);
+                }
+            }
+        });
     }
 
     private void setComponentEnabledRecursively(JComponent section, boolean isEnabled) {
@@ -298,26 +354,42 @@ public class ConfigurationPanel {
         mapPanel.createMapWindow();
 
         var config = World.getInstance().getConfig();
-        config.setNumberOfPolicePatrols(numberOfCityPatrolsTextField.getText().equals("") ? 0 : Integer.parseInt(numberOfCityPatrolsTextField.getText()));
-        config.setBasicSearchDistance(basicSearchDistanceTextField.getText().equals("") ? 0.0 : Double.parseDouble(basicSearchDistanceTextField.getText()));
-        config.setTimeRate(timeRateTextField.getText().equals("") ? 0 : Integer.parseInt(timeRateTextField.getText()));
+        config.setNumberOfPolicePatrols(numberOfCityPatrolsTextField.getText().equals("") ? 1 : convertInputToInteger(numberOfCityPatrolsTextField, 1));
+        config.setBasicSearchDistance(basicSearchDistanceTextField.getText().equals("") ? 1.0 : convertInputToDouble(basicSearchDistanceTextField, 1.0));
+        config.setTimeRate(timeRateTextField.getText().equals("") ? 1 : convertInputToInteger(timeRateTextField, 1));
         config.setSimulationDuration(getDurationFromInputs());
         config.setDrawDistrictsBorders(drawDistrictsBoundariesCheckBox.isSelected());
         config.setDrawFiringDetails(drawFiringDetailsCheckBox.isSelected());
 
-        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelMaxIncidentsTextField_SAFE.getText().equals("") ? 0 : Integer.parseInt(threatLevelMaxIncidentsTextField_SAFE.getText()));
-        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelMaxIncidentsTextField_RATHERSAFE.getText().equals("") ? 0 : Integer.parseInt(threatLevelMaxIncidentsTextField_RATHERSAFE.getText()));
-        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.NotSafe, threatLevelMaxIncidentsTextField_NOTSAFE.getText().equals("") ? 0 : Integer.parseInt(threatLevelMaxIncidentsTextField_NOTSAFE.getText()));
+        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelMaxIncidentsTextField_SAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_SAFE, 0));
+        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelMaxIncidentsTextField_RATHERSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_RATHERSAFE, 0));
+        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.NotSafe, threatLevelMaxIncidentsTextField_NOTSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_NOTSAFE, 0));
 
-        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelFiringChanceTextField_SAFE.getText().equals("") ? 0 : Double.parseDouble(threatLevelFiringChanceTextField_SAFE.getText()));
-        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelFiringChanceTextField_RATHERSAFE.getText().equals("") ? 0 : Double.parseDouble(threatLevelFiringChanceTextField_RATHERSAFE.getText()));
-        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.NotSafe, threatLevelFiringChanceTextField_NOTSAFE.getText().equals("") ? 0 : Double.parseDouble(threatLevelFiringChanceTextField_NOTSAFE.getText()));
+        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelFiringChanceTextField_SAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_SAFE, 0.0));
+        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelFiringChanceTextField_RATHERSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_RATHERSAFE, 0.0));
+        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.NotSafe, threatLevelFiringChanceTextField_NOTSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_NOTSAFE, 0.0));
 
         Logger.getInstance().logNewMessage("World config has been set.");
 
         mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
 
         mapPanel.selectHQLocation();
+    }
+
+    private Double convertInputToDouble(JTextField textField, Double basicValue) {
+        try {
+            return Double.parseDouble(textField.getText());
+        } catch (Exception e) {
+            return basicValue;
+        }
+    }
+
+    private Integer convertInputToInteger(JTextField textField, Integer basicValue) {
+        try {
+            return Integer.parseInt(textField.getText());
+        } catch (Exception e) {
+            return basicValue;
+        }
     }
 
     private boolean loadMapIntoWorld(String cityName) {
@@ -330,5 +402,53 @@ public class ConfigurationPanel {
             return false;
         }
         return true;
+    }
+
+    public static class PositiveIntegerInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var value = Integer.parseInt(((JTextField) input).getText());
+                if (value <= 0) {
+                    ((JTextField) input).setText("1");
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1");
+                return false;
+            }
+        }
+    }
+
+    public static class NonNegativeIntegerInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var value = Integer.parseInt(((JTextField) input).getText());
+                if (value < 0) {
+                    ((JTextField) input).setText("1");
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1");
+                return false;
+            }
+        }
+    }
+
+    public static class FloatInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var value = Double.parseDouble(((JTextField) input).getText());
+                if (value <= 0.0) {
+                    ((JTextField) input).setText("1.0");
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1.0");
+                return false;
+            }
+        }
     }
 }
