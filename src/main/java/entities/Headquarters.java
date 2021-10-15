@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class Headquarters extends Entity implements IDrawable {
 
-    private final double range;
+    private final double searchRange;
     private final double durationOfTheShift;
     private List<Patrol> patrols = new ArrayList<>();
     private List<Incident> incidents = new ArrayList<>();
@@ -25,7 +25,7 @@ public class Headquarters extends Entity implements IDrawable {
         super(latitude, longitude);
         this.durationOfTheShift = World.getInstance().getDurationOfTheShift();
         this.endOfCurrentShift = World.getInstance().getSimulationTime() + durationOfTheShift;
-        this.range = World.getInstance().getConfig().getBasicSearchDistance();
+        this.searchRange = World.getInstance().getConfig().getBasicSearchDistance();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Headquarters extends Entity implements IDrawable {
             }
             if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
                 for (int i = 1; i < 4; i++) {
-                    List<Patrol> foundPatrols = World.getInstance().getEntitiesNear(firing, range * i)
+                    List<Patrol> foundPatrols = World.getInstance().getEntitiesNear(firing, searchRange * i)
                             .stream()
                             .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.PATROLLING)
                             .map(x -> (Patrol) x)
@@ -72,7 +72,7 @@ public class Headquarters extends Entity implements IDrawable {
                     }
                 }
                 if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
-                    List<Patrol> foundTransferringToInterventionPatrols = World.getInstance().getEntitiesNear(firing, range * 2)
+                    List<Patrol> foundTransferringToInterventionPatrols = World.getInstance().getEntitiesNear(firing, searchRange * 2)
                             .stream()
                             .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.TRANSFER_TO_INTERVENTION)
                             .map(x -> (Patrol) x)
@@ -87,7 +87,7 @@ public class Headquarters extends Entity implements IDrawable {
                 Patrol availablePatrol;
                 int i = 0;
                 while (true) {
-                    availablePatrol = World.getInstance().getEntitiesNear(intervention, range * i)
+                    availablePatrol = World.getInstance().getEntitiesNear(intervention, searchRange * i)
                             .stream()
                             .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.PATROLLING)
                             .map(x -> (Patrol) x).findFirst()

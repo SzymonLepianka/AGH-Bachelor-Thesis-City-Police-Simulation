@@ -15,18 +15,6 @@ import java.util.List;
 
 public class District implements IDrawable {
 
-    public enum ThreatLevelEnum {
-        Safe(1),
-        RatherSafe(2),
-        NotSafe(3);
-
-        public final int value;
-
-        private ThreatLevelEnum(int value) {
-            this.value = value;
-        }
-    }
-
     private final Long id;
     private final String name;
     private final Path2D boundaries;
@@ -95,5 +83,17 @@ public class District implements IDrawable {
             last = current;
         }
         g.setStroke(oldStroke);
+    }
+
+    public enum ThreatLevelEnum {
+        Safe(1),
+        RatherSafe(2),
+        NotSafe(3);
+
+        public final int value;
+
+        ThreatLevelEnum(int value) {
+            this.value = value;
+        }
     }
 }

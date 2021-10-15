@@ -32,5 +32,4 @@ public class DelayedActionWithTargetSimulationTime extends Thread {
         }
         function.apply();
     }
-
 }

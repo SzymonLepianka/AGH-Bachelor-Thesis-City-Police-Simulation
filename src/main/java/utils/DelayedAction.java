@@ -31,5 +31,4 @@ public class DelayedAction extends Thread {
         }
         function.apply();
     }
-
 }

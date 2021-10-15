@@ -7,6 +7,7 @@ import utils.Logger;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class ConfigurationPanel {
     private final JTextField threatLevelFiringChanceTextField_RATHERSAFE = new JTextField();
     private final JTextField threatLevelFiringChanceTextField_NOTSAFE = new JTextField();
     private final JTextField basicSearchDistanceTextField = new JTextField();
-    private final JFrame frame = new JFrame("City Police Simulation");
+    private final JFrame mainFrame = new JFrame("City Police Simulation");
     private JPanel citySelectionPanel;
     private JPanel districtConfigurationPanel;
     private JPanel simulationConfigurationPanel;
@@ -74,31 +75,65 @@ public class ConfigurationPanel {
 
     // TODO Add validation for input data
     public void createWindow() {
-        frame.setSize(1200, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.setLayout(new GridLayout(1, 4));
+        mainFrame.setSize(1200, 600);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setResizable(false);
+        mainFrame.setLayout(new GridLayout(1, 4));
 
         citySelectionPanel = new JPanel();
-        frame.add(citySelectionPanel);
+        mainFrame.add(citySelectionPanel);
 
+        // simulation title
+        var titlePane = new JTextPane();
+        titlePane.setText("City Police\nSimulation");
+        titlePane.setEditable(false);
+        titlePane.setOpaque(false);
+        titlePane.setFont(titlePane.getFont().deriveFont(30f));
+        citySelectionPanel.add(titlePane);
+
+        // simulation description
+        var descriptionPane = new JTextPane();
+        descriptionPane.setText("""
+                The purpose of the application is to \s
+                simulate the work of police units\s
+                in any chosen city. It is possible\s
+                to select additional simulation\s
+                parameters to bring the logic and\s
+                operation of the police in each city\s
+                as close as possible.""");
+        descriptionPane.setEditable(false);
+        descriptionPane.setOpaque(false);
+        descriptionPane.setFont(descriptionPane.getFont().deriveFont(14f));
+        citySelectionPanel.add(descriptionPane);
+
+        // line separating the components
+        var jSeparator = new JSeparator();
+        jSeparator.setOrientation(SwingConstants.HORIZONTAL);
+        jSeparator.setPreferredSize(new Dimension(300,20));
+        citySelectionPanel.add(jSeparator);
+
+        // drop-down list with country selection
         countrySelectionComboBox = new JComboBox<>(availablePlaces.keySet().toArray(new String[0]));
         countrySelectionComboBox.addActionListener(e -> {
             var selectedItem = countrySelectionComboBox.getSelectedItem().toString();
             var newModel = new DefaultComboBoxModel<>(availablePlaces.get(selectedItem));
             citySelectionComboBox.setModel(newModel);
         });
+
+        //drop-down list with city selection
         citySelectionPanel.add(countrySelectionComboBox);
         citySelectionComboBox = new JComboBox<>(availablePlaces.get(availablePlaces.keySet().stream().findFirst().get()));
         citySelectionPanel.add(citySelectionComboBox);
-        var citySelectionButton = new Button("Select");
 
+        // city select button
+        var citySelectionButton = new Button("Select");
         citySelectionButton.addActionListener(e -> citySelectionButtonClicked());
 
         citySelectionPanel.add(citySelectionButton);
 
+//----------------------------------------------------
         districtConfigurationPanel = new JPanel();
-        frame.add(districtConfigurationPanel);
+        mainFrame.add(districtConfigurationPanel);
 
         var scrollContent = new JPanel();
         scrollContent.setLayout(new BoxLayout(scrollContent, BoxLayout.Y_AXIS));
@@ -111,8 +146,9 @@ public class ConfigurationPanel {
 
         districtConfigurationPanel.add(districtScrollPane);
 
+//----------------------------------------------------
         simulationConfigurationPanel = new JPanel();
-        frame.add(simulationConfigurationPanel);
+        mainFrame.add(simulationConfigurationPanel);
 
         simulationConfigurationPanel.add(new JLabel("Simulation Time Rate"));
         timeRateTextField.setColumns(textInputColumns);
@@ -138,7 +174,7 @@ public class ConfigurationPanel {
         numberOfCityPatrolsTextField.setColumns(textInputColumns);
         simulationConfigurationPanel.add(numberOfCityPatrolsTextField);
 
-        simulationConfigurationPanel.add(new JLabel("Basic search distance for police support"));
+        simulationConfigurationPanel.add(new JLabel("Basic search range for police support"));
         basicSearchDistanceTextField.setColumns(textInputColumns);
         simulationConfigurationPanel.add(basicSearchDistanceTextField);
 
@@ -153,33 +189,50 @@ public class ConfigurationPanel {
         simulationConfigurationPanel.add(drawFiringDetailsPanel);
 
         var threatLevelToMaxIncidentsConfigurationPanel = new JPanel();
-        threatLevelToMaxIncidentsConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
         threatLevelToMaxIncidentsConfigurationPanel.setLayout(new BoxLayout(threatLevelToMaxIncidentsConfigurationPanel, BoxLayout.Y_AXIS));
-        threatLevelToMaxIncidentsConfigurationPanel.add(new JLabel("Set maximum number of incidents per hour"));
+        threatLevelToMaxIncidentsConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
 
+        JLabel jLabel = new JLabel("Set max. number of incidents per hour:");
+        jLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        threatLevelToMaxIncidentsConfigurationPanel.add(jLabel);
+
+//        var panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+//        panel.add(new JLabel(District.ThreatLevelEnum.Safe.toString() + ":    "));
+//        //threatLevelMaxIncidentsTextField_SAFE.setColumns(1);
+//        threatLevelMaxIncidentsTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.Safe)));
+//        panel.add(threatLevelMaxIncidentsTextField_SAFE);
+//        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
+//
+//        panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+//        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe.toString() + ":    "));
+//        //threatLevelMaxIncidentsTextField_RATHERSAFE.setColumns(1);
+//        threatLevelMaxIncidentsTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
+//        panel.add(threatLevelMaxIncidentsTextField_RATHERSAFE);
+//        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
+//
+//        panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+//        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe.toString()+ ":    "));
+//        //threatLevelMaxIncidentsTextField_NOTSAFE.setColumns(1);
+//        threatLevelMaxIncidentsTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.NotSafe)));
+//        panel.add(threatLevelMaxIncidentsTextField_NOTSAFE);
+//        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
         var panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel(District.ThreatLevelEnum.Safe.toString()));
-        threatLevelMaxIncidentsTextField_SAFE.setColumns(textInputColumns);
+        panel.setLayout(new GridLayout(3,2));
+        panel.add(new JLabel(District.ThreatLevelEnum.Safe + ":    "));
         threatLevelMaxIncidentsTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.Safe)));
         panel.add(threatLevelMaxIncidentsTextField_SAFE);
-        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
-
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe.toString()));
-        threatLevelMaxIncidentsTextField_RATHERSAFE.setColumns(textInputColumns);
+        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ":    "));
         threatLevelMaxIncidentsTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
         panel.add(threatLevelMaxIncidentsTextField_RATHERSAFE);
-        threatLevelToMaxIncidentsConfigurationPanel.add(panel);
-
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe.toString()));
-        threatLevelMaxIncidentsTextField_NOTSAFE.setColumns(textInputColumns);
+        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ":    "));
+        threatLevelMaxIncidentsTextField_NOTSAFE.setColumns(11);
         threatLevelMaxIncidentsTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.NotSafe)));
         panel.add(threatLevelMaxIncidentsTextField_NOTSAFE);
         threatLevelToMaxIncidentsConfigurationPanel.add(panel);
+
 
         simulationConfigurationPanel.add(threatLevelToMaxIncidentsConfigurationPanel);
 
@@ -215,7 +268,7 @@ public class ConfigurationPanel {
         simulationConfigurationPanel.add(threatLevelToFiringChanceConfigurationPanel);
 
         buttonsPanel = new JPanel();
-        frame.add(buttonsPanel);
+        mainFrame.add(buttonsPanel);
         var runSimulationButton = new Button("Run the simulation!");
         runSimulationButton.addActionListener(e -> runSimulationButtonClicked());
         buttonsPanel.add(runSimulationButton);
@@ -227,8 +280,8 @@ public class ConfigurationPanel {
 
         setDefaultValues();
 
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
+        mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mainFrame.setVisible(true);
     }
 
     private void setComponentEnabledRecursively(JComponent section, boolean isEnabled) {
@@ -279,7 +332,7 @@ public class ConfigurationPanel {
 
         Logger.getInstance().logNewMessage("World config has been set.");
 
-        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+        mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
 
         mapPanel.selectHQLocation();
     }

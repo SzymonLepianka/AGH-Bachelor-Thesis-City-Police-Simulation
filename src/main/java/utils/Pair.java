@@ -10,7 +10,6 @@ public class Pair<T, K> {
         this.item2 = item2;
     }
 
-
     public T getItem1() {
         return item1;
     }
