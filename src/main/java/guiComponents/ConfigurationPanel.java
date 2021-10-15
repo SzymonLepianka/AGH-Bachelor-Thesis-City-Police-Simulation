@@ -34,6 +34,10 @@ public class ConfigurationPanel {
     private final JTextField threatLevelFiringChanceTextField_RATHERSAFE = new JTextField();
     private final JTextField threatLevelFiringChanceTextField_NOTSAFE = new JTextField();
     private final JTextField basicSearchDistanceTextField = new JTextField();
+    private final JTextField minimumInterventionDurationTextField = new JTextField();
+    private final JTextField maximumInterventionDurationTextField = new JTextField();
+    private final JTextField minimumFiringStrength = new JTextField();
+    private final JTextField maximumFiringStrength = new JTextField();
     private final JFrame mainFrame = new JFrame("City Police Simulation");
     private JPanel citySelectionPanel;
     private JPanel districtConfigurationPanel;
@@ -280,6 +284,82 @@ public class ConfigurationPanel {
 
         buttonsPanel = new JPanel();
         mainFrame.add(buttonsPanel);
+
+//----------------------------------------------------
+
+        var interventionDurationConfigurationPanel = new JPanel();
+        interventionDurationConfigurationPanel.setLayout(new BoxLayout(interventionDurationConfigurationPanel, BoxLayout.Y_AXIS));
+        interventionDurationConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
+
+        descriptionLabel = new JLabel("Set the time range for the duration");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        interventionDurationConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("of the intervention [minutes]:");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        interventionDurationConfigurationPanel.add(descriptionLabel);
+
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 1));
+        panel.add(new JLabel("MIN: "));
+        minimumInterventionDurationTextField.setText(String.valueOf(World.getInstance().getConfig().getMinimumInterventionDuration()));
+        addRestrictionOfEnteringOnlyIntegers(minimumInterventionDurationTextField);
+        minimumInterventionDurationTextField.setInputVerifier(new MinDurationInputVerifier());
+        panel.add(minimumInterventionDurationTextField);
+        panel.add(new JLabel("MAX: "));
+        maximumInterventionDurationTextField.setText(String.valueOf(World.getInstance().getConfig().getMaximumInterventionDuration()));
+        addRestrictionOfEnteringOnlyIntegers(maximumInterventionDurationTextField);
+        maximumInterventionDurationTextField.setColumns(11);
+        maximumInterventionDurationTextField.setInputVerifier(new MaxDurationInputVerifier());
+        panel.add(maximumInterventionDurationTextField);
+
+        interventionDurationConfigurationPanel.add(panel);
+
+        buttonsPanel.add(interventionDurationConfigurationPanel);
+
+//----------------------------------------------------
+
+        var firingStrengthConfigurationPanel = new JPanel();
+        firingStrengthConfigurationPanel.setLayout(new BoxLayout(firingStrengthConfigurationPanel, BoxLayout.Y_AXIS));
+        firingStrengthConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
+
+        descriptionLabel = new JLabel("Set the firing strength");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        firingStrengthConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("firing strengthfiring strength:");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        firingStrengthConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("firing strengthfiring strength:");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        firingStrengthConfigurationPanel.add(descriptionLabel);
+
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 1));
+        panel.add(new JLabel("MIN: "));
+        minimumFiringStrength.setText(String.valueOf(World.getInstance().getConfig().getMinimumFiringStrength()));
+        addRestrictionOfEnteringOnlyIntegers(minimumFiringStrength);
+        minimumFiringStrength.setInputVerifier(new MinStrengthInputVerifier());
+        panel.add(minimumFiringStrength);
+        panel.add(new JLabel("MAX: "));
+        maximumFiringStrength.setText(String.valueOf(World.getInstance().getConfig().getMaximumFiringStrength()));
+        addRestrictionOfEnteringOnlyIntegers(maximumFiringStrength);
+        maximumFiringStrength.setColumns(11);
+        maximumFiringStrength.setInputVerifier(new MaxStrengthInputVerifier());
+        panel.add(maximumFiringStrength);
+
+        firingStrengthConfigurationPanel.add(panel);
+
+        buttonsPanel.add(firingStrengthConfigurationPanel);
+
+//----------------------------------------------------
+
+        // line separating the components
+        jSeparator = new JSeparator();
+        jSeparator.setOrientation(SwingConstants.HORIZONTAL);
+        jSeparator.setPreferredSize(new Dimension(300, 20));
+        buttonsPanel.add(jSeparator);
+
+//----------------------------------------------------
+
         var runSimulationButton = new Button("Run the simulation!");
         runSimulationButton.addActionListener(e -> runSimulationButtonClicked());
         buttonsPanel.add(runSimulationButton);
@@ -369,6 +449,11 @@ public class ConfigurationPanel {
         config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelFiringChanceTextField_RATHERSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_RATHERSAFE, 0.0));
         config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.NotSafe, threatLevelFiringChanceTextField_NOTSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_NOTSAFE, 0.0));
 
+        config.setMinimumInterventionDuration(minimumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(minimumInterventionDurationTextField, Integer.parseInt(maximumInterventionDurationTextField.getText()) - 1));
+        config.setMaximumInterventionDuration(maximumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(maximumInterventionDurationTextField, Integer.parseInt(minimumInterventionDurationTextField.getText()) + 1));
+        config.setMinimumFiringStrength(minimumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(minimumFiringStrength, Integer.parseInt(maximumFiringStrength.getText()) - 1));
+        config.setMinimumFiringStrength(maximumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(maximumFiringStrength, Integer.parseInt(minimumFiringStrength.getText()) + 1));
+
         Logger.getInstance().logNewMessage("World config has been set.");
 
         mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
@@ -447,6 +532,75 @@ public class ConfigurationPanel {
                 return true;
             } catch (NumberFormatException e) {
                 ((JTextField) input).setText("1.0");
+                return false;
+            }
+        }
+    }
+
+    public class MinDurationInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var minDurValue = Integer.parseInt(((JTextField) input).getText());
+                var maxDurValue = Integer.parseInt(maximumInterventionDurationTextField.getText());
+
+                if (minDurValue >= maxDurValue) {
+                    ((JTextField) input).setText(String.valueOf(maxDurValue - 1));
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1");
+                return false;
+            }
+        }
+    }
+
+    public class MaxDurationInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var maxDurValue = Integer.parseInt(((JTextField) input).getText());
+                var minDurValue = Integer.parseInt(minimumInterventionDurationTextField.getText());
+                if (maxDurValue <= minDurValue) {
+                    ((JTextField) input).setText(String.valueOf(minDurValue + 1));
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1");
+                return false;
+            }
+        }
+    }
+
+    public class MinStrengthInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var minStrengthValue = Integer.parseInt(((JTextField) input).getText());
+                var maxStrengthValue = Integer.parseInt(maximumFiringStrength.getText());
+                if (minStrengthValue >= maxStrengthValue) {
+                    ((JTextField) input).setText(String.valueOf(maxStrengthValue - 1));
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1");
+                return false;
+            }
+        }
+    }
+
+    public class MaxStrengthInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var maxStrengthValue = Integer.parseInt(((JTextField) input).getText());
+                var minStrengthValue = Integer.parseInt(minimumFiringStrength.getText());
+                if (maxStrengthValue <= minStrengthValue) {
+                    ((JTextField) input).setText(String.valueOf(minStrengthValue + 1));
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1");
                 return false;
             }
         }

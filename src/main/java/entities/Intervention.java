@@ -3,6 +3,7 @@ package entities;
 import World.World;
 import entities.factories.IncidentFactory;
 import org.jxmapviewer.JXMapViewer;
+import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.*;
 
@@ -53,8 +54,7 @@ public class Intervention extends Incident implements IDrawable {
                 this.patrolSolving.getAction().setTarget(firing);
                 World.getInstance().removeEntity(this);
                 World.getInstance().addEntity(firing);
-            }
-            else if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().startTime + this.getDuration() < World.getInstance().getSimulationTime()) {
+            } else if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().startTime + this.getDuration() < World.getInstance().getSimulationTime()) {
                 setActive(false);
                 World.getInstance().removeEntity(this);
             }
@@ -64,17 +64,21 @@ public class Intervention extends Incident implements IDrawable {
     @Override
     public void drawSelf(Graphics2D g, JXMapViewer mapViewer) {
         super.drawSelf(g, mapViewer);
-        /*var oldColor = g.getColor();
-
-        g.setColor(Color.ORANGE);
-
-        final var size = 10;
         var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
+        if (World.getInstance().isSimulationPaused()) {
+            g.drawString(String.format("Duration:" + duration), (int) point.getX() + 5, (int) point.getY());
+            g.drawString(String.format("WCIF:" + willChangeIntoFiring), (int) point.getX() + 5, (int) point.getY() - 10);
+//            g.drawString(String.format("Patr.Reach.:%d", patrolsReaching.size()), (int) point.getX() + 5, (int) point.getY() - 20);
+//            g.drawString(String.format("Part.Solv.:%d", patrolsSolving.size()), (int) point.getX() + 5, (int) point.getY() - 30);
+        }
 
-        var mark = new Ellipse2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
-        g.fill(mark);
 
-        g.setColor(oldColor);*/
+//        final var size = 10;
+//
+//        var mark = new Ellipse2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
+//        g.fill(mark);
+//
+//        g.setColor(oldColor);*/
     }
 
     public Patrol getPatrolSolving() {

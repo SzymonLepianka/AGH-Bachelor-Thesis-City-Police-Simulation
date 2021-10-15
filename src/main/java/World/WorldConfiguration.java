@@ -25,6 +25,10 @@ public class WorldConfiguration {
     private double basicSearchDistance = 1200.0;
     private boolean drawDistrictsBorders = false;
     private boolean drawFiringDetails = false;
+    private long minimumInterventionDuration = 10 * 60;
+    private long maximumInterventionDuration = 50 * 60;
+    private long minimumFiringStrength = 1000;
+    private long maximumFiringStrength = 3000;
 
     public String getCityName() {
         return cityName;
@@ -88,6 +92,38 @@ public class WorldConfiguration {
 
     public void setDrawFiringDetails(boolean drawFiringDetails) {
         this.drawFiringDetails = drawFiringDetails;
+    }
+
+    public long getMinimumInterventionDuration() {
+        return minimumInterventionDuration;
+    }
+
+    public void setMinimumInterventionDuration(long minimumInterventionDuration) {
+        this.minimumInterventionDuration = minimumInterventionDuration;
+    }
+
+    public long getMaximumInterventionDuration() {
+        return maximumInterventionDuration;
+    }
+
+    public void setMaximumInterventionDuration(long maximumInterventionDuration) {
+        this.maximumInterventionDuration = maximumInterventionDuration;
+    }
+
+    public long getMinimumFiringStrength() {
+        return minimumFiringStrength;
+    }
+
+    public void setMinimumFiringStrength(long minimumFiringStrength) {
+        this.minimumFiringStrength = minimumFiringStrength;
+    }
+
+    public long getMaximumFiringStrength() {
+        return maximumFiringStrength;
+    }
+
+    public void setMaximumFiringStrength(long maximumFiringStrength) {
+        this.maximumFiringStrength = maximumFiringStrength;
     }
 
     public void resetMaxIncidentsPerHourForThreatLevel() {
