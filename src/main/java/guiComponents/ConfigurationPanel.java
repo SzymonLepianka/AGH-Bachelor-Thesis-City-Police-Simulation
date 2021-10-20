@@ -27,6 +27,7 @@ public class ConfigurationPanel {
     private final JTextField simulationDurationSecondsTextField = new JTextField();
     private final JCheckBox drawDistrictsBoundariesCheckBox = new JCheckBox();
     private final JCheckBox drawFiringDetailsCheckBox = new JCheckBox();
+    private final JCheckBox drawLegendCheckBox = new JCheckBox();
     private final JTextField threatLevelMaxIncidentsTextField_SAFE = new JTextField();
     private final JTextField threatLevelMaxIncidentsTextField_RATHERSAFE = new JTextField();
     private final JTextField threatLevelMaxIncidentsTextField_NOTSAFE = new JTextField();
@@ -199,13 +200,21 @@ public class ConfigurationPanel {
 
         var drawDistrictsPanel = new JPanel();
         drawDistrictsPanel.add(new JLabel("Draw districts boundaries"));
+        drawDistrictsBoundariesCheckBox.setSelected(true);
         drawDistrictsPanel.add(drawDistrictsBoundariesCheckBox);
         simulationConfigurationPanel.add(drawDistrictsPanel);
 
         var drawFiringDetailsPanel = new JPanel();
         drawFiringDetailsPanel.add(new JLabel("Draw firing details"));
+        drawFiringDetailsCheckBox.setSelected(true);
         drawFiringDetailsPanel.add(drawFiringDetailsCheckBox);
         simulationConfigurationPanel.add(drawFiringDetailsPanel);
+
+        var drawLegendPanel = new JPanel();
+        drawLegendPanel.add(new JLabel("Draw legend"));
+        drawLegendCheckBox.setSelected(true);
+        drawLegendPanel.add(drawLegendCheckBox);
+        simulationConfigurationPanel.add(drawLegendPanel);
 
 //----------------------------------------------------
 
@@ -446,6 +455,7 @@ public class ConfigurationPanel {
         config.setSimulationDuration(getDurationFromInputs());
         config.setDrawDistrictsBorders(drawDistrictsBoundariesCheckBox.isSelected());
         config.setDrawFiringDetails(drawFiringDetailsCheckBox.isSelected());
+        config.setDrawLegend(drawLegendCheckBox.isSelected());
 
         config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelMaxIncidentsTextField_SAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_SAFE, 0));
         config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelMaxIncidentsTextField_RATHERSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_RATHERSAFE, 0));

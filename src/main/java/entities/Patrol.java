@@ -300,8 +300,8 @@ public class Patrol extends Entity implements IAgent, IDrawable {
         switch (this.state) {
             case PATROLLING -> g.setColor(new Color(0, 153, 0)); // green
             case RETURNING_TO_HQ -> g.setColor(new Color(0, 100, 0)); // dark green
-            case TRANSFER_TO_INTERVENTION -> g.setColor(new Color(255, 175, 77)); // orange
-            case TRANSFER_TO_FIRING -> g.setColor(new Color(255, 77, 77)); // redish
+            case TRANSFER_TO_INTERVENTION -> g.setColor(new Color(255, 87, 36)); // yellowish
+            case TRANSFER_TO_FIRING -> g.setColor(new Color(255, 131, 54)); // orangeish
             case INTERVENTION -> g.setColor(new Color(0, 92, 230)); // blue
             case FIRING -> g.setColor(new Color(153, 0, 204)); // purple
             case NEUTRALIZED -> g.setColor(new Color(255, 255, 255)); // white

@@ -25,6 +25,7 @@ public class WorldConfiguration {
     private double basicSearchDistance = 1200.0;
     private boolean drawDistrictsBorders = false;
     private boolean drawFiringDetails = false;
+    private boolean drawLegend = false;
     private int minimumInterventionDuration = 10; // minutes
     private int maximumInterventionDuration = 30; // minutes
     private int minimumFiringStrength = 30;
@@ -94,7 +95,15 @@ public class WorldConfiguration {
         this.drawFiringDetails = drawFiringDetails;
     }
 
-    public long getMinimumInterventionDuration() {
+    public boolean isDrawLegend() {
+        return drawLegend;
+    }
+
+    public void setDrawLegend(boolean drawLegend) {
+        this.drawLegend = drawLegend;
+    }
+
+    public int getMinimumInterventionDuration() {
         return minimumInterventionDuration;
     }
 

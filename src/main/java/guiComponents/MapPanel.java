@@ -23,43 +23,8 @@ import java.util.Map;
 
 public class MapPanel {
 
-    class MapPainter implements Painter<JXMapViewer> {
-
-        @Override
-        public void paint(Graphics2D g, JXMapViewer mapViewer, int width, int height) {
-            World.getInstance().getAllEntities().stream().filter(x -> x instanceof IDrawable).forEach(x -> ((IDrawable) x).drawSelf(g, mapViewer));
-            if (World.getInstance().getConfig().isDrawDistrictsBorders()) {
-                World.getInstance().getMap().getDistricts().forEach(x -> x.drawSelf(g, mapViewer));
-            }
-
-            drawSimulationClock(g);
-        }
-
-        private void drawSimulationClock(Graphics2D g) {
-            var time = World.getInstance().getSimulationTimeLong();
-
-            var days = (int)(time / 86400);
-            var hours = (int)((time % 86400)/3600);
-            var minutes = (int)((time % 3600)/60);
-            var seconds = (int)(time % 60);
-
-            // Draw background
-            var oldColor = g.getColor();
-            g.setColor(new Color(244, 226, 198, 175));
-            g.fillRect(5,5,150, 20);
-            g.setColor(oldColor);
-
-            // Draw date
-            var oldFont = g.getFont();
-            g.setFont(new Font("TimesRoman", Font.BOLD, 15));
-            g.drawString(String.format("Day: %03d, %02d:%02d:%02d", days, hours, minutes, seconds), 10, 20);
-            g.setFont(oldFont);
-        }
-    }
-
     private final JFrame frame = new JFrame();
     private final JXMapViewer mapViewer = new JXMapViewer();
-
     private final JButton simulationPauseButton = new JButton("Pause");
 
     public MapPanel() {
@@ -73,7 +38,7 @@ public class MapPanel {
     }
 
     public void createMapWindow() {
-        frame.setSize( 1000, 1000);
+        frame.setSize(1000, 1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
@@ -135,7 +100,7 @@ public class MapPanel {
                     while (!World.getInstance().hasSimulationDurationElapsed()) {
                         mapViewer.repaint();
                         try {
-                            Thread.sleep(1000/30);
+                            Thread.sleep(1000 / 30);
                         } catch (Exception exception) {
                             // Ignore
                             exception.printStackTrace();
@@ -189,6 +154,105 @@ public class MapPanel {
         JOptionPane.showMessageDialog(frame, simulationSummaryMessage.toString());
 
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+    }
+
+    class MapPainter implements Painter<JXMapViewer> {
+
+        @Override
+        public void paint(Graphics2D g, JXMapViewer mapViewer, int width, int height) {
+            World.getInstance().getAllEntities().stream().filter(x -> x instanceof IDrawable).forEach(x -> ((IDrawable) x).drawSelf(g, mapViewer));
+            if (World.getInstance().getConfig().isDrawDistrictsBorders()) {
+                World.getInstance().getMap().getDistricts().forEach(x -> x.drawSelf(g, mapViewer));
+            }
+
+            drawSimulationClock(g);
+            if (World.getInstance().getConfig().isDrawLegend()){
+                drawLegend(g);
+            }
+        }
+
+        private void drawSimulationClock(Graphics2D g) {
+            var time = World.getInstance().getSimulationTimeLong();
+
+            var days = (int) (time / 86400);
+            var hours = (int) ((time % 86400) / 3600);
+            var minutes = (int) ((time % 3600) / 60);
+            var seconds = (int) (time % 60);
+
+            // Draw background
+            var oldColor = g.getColor();
+            g.setColor(new Color(244, 226, 198, 175));
+            g.fillRect(5, 5, 150, 20);
+            g.setColor(oldColor);
+
+            // Draw date
+            var oldFont = g.getFont();
+            g.setFont(new Font("TimesRoman", Font.BOLD, 15));
+            g.drawString(String.format("Day: %03d, %02d:%02d:%02d", days, hours, minutes, seconds), 10, 20);
+            g.setFont(oldFont);
+        }
+
+
+        private void drawLegend(Graphics2D g) {
+
+            var topLeftCornerX = 800;
+            var topLeftCornerY = 750;
+            final var size = 10;
+
+            // Draw background
+            var oldColor = g.getColor();
+            g.setColor(new Color(244, 226, 198, 225));
+            g.fillRect(topLeftCornerX, topLeftCornerY, 1000 - topLeftCornerX, 1000 - topLeftCornerY);
+            g.setColor(oldColor);
+
+            var patrolStates = new HashMap<String, Color>() {
+                {
+                    put("PATROLLING", new Color(0, 153, 0));
+                    put("RETURNING_TO_HQ", new Color(0, 100, 0));
+                    put("TXFR_TO_INTERVENTION", new Color(255, 87, 36));
+                    put("TRANSFER_TO_FIRING", new Color(255, 131, 54));
+                    put("INTERVENTION", new Color(0, 92, 230));
+                    put("FIRING", new Color(153, 0, 204));
+                    put("NEUTRALIZED", new Color(255, 255, 255));
+                    put("CALCULATING_PATH", new Color(255, 123, 255));
+                }
+            };
+            int i = 0;
+            for (Map.Entry<String, Color> entry : patrolStates.entrySet()) {
+                g.setColor(entry.getValue());
+                var mark = new Ellipse2D.Double((int) (topLeftCornerX + 10 - size / 2), 1000 - 60 - i * 15, size, size);
+                g.fill(mark);
+
+                g.setColor(oldColor);
+                g.drawString(entry.getKey(), topLeftCornerX + 25, 1000 - 50 - i * 15);
+                i++;
+            }
+            var oldFont = g.getFont();
+            g.setFont(new Font("TimesRoman", Font.BOLD, 13));
+            g.drawString("Patrol's states:", topLeftCornerX + 5, 1000 - 50 - i * 15);
+            g.setFont(oldFont);
+            i++;
+            var places = new HashMap<String, Color>() {
+                {
+                    put("HQ", Color.BLUE);
+                    put("INTERVENTION", Color.RED);
+                    put("FIRING", Color.BLACK);
+                }
+            };
+            for (Map.Entry<String, Color> entry : places.entrySet()) {
+                g.setColor(entry.getValue());
+                var mark = new Ellipse2D.Double((int) (topLeftCornerX + 10 - size / 2), 1000 - 60 - i * 15, size, size);
+                g.fill(mark);
+
+                g.setColor(oldColor);
+                g.drawString(entry.getKey(), topLeftCornerX + 25, 1000 - 50 - i * 15);
+                i++;
+            }
+            oldFont = g.getFont();
+            g.setFont(new Font("TimesRoman", Font.BOLD, 13));
+            g.drawString("Places:", topLeftCornerX + 5, 1000 - 50 - i * 15);
+            g.setFont(oldFont);
+        }
     }
 
 }
