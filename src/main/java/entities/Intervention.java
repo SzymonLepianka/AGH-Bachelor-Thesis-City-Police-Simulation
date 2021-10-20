@@ -6,6 +6,7 @@ import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 public class Intervention extends Incident implements IDrawable {
 
@@ -19,8 +20,9 @@ public class Intervention extends Incident implements IDrawable {
     public Intervention(double latitude, double longitude) {
         super(latitude, longitude);
 
-        // TODO Random parameters selection
-        this.duration = 500;
+        // the default intervention duration is the middle of the values entered by the user in the configuration
+        var config = World.getInstance().getConfig();
+        this.duration = config.getMinimumInterventionDuration()+(config.getMaximumInterventionDuration() - config.getMinimumInterventionDuration()) / 2;
         this.willChangeIntoFiring = false;
         this.timeToChange = -1;
     }

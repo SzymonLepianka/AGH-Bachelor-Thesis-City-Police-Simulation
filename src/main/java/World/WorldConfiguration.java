@@ -9,9 +9,9 @@ public class WorldConfiguration {
 
     private final HashMap<District, Integer> districtsDangerLevels = new HashMap<>();
     private final HashMap<District.ThreatLevelEnum, Integer> threatLevelToMaxIncidentsPerHour = new HashMap<>() {{
-        this.put(District.ThreatLevelEnum.Safe, 2);
-        this.put(District.ThreatLevelEnum.RatherSafe, 4);
-        this.put(District.ThreatLevelEnum.NotSafe, 7);
+        this.put(District.ThreatLevelEnum.Safe, 1);
+        this.put(District.ThreatLevelEnum.RatherSafe, 2);
+        this.put(District.ThreatLevelEnum.NotSafe, 4);
     }};
     private final HashMap<District.ThreatLevelEnum, Double> threatLevelToFiringChanceMap = new HashMap<>() {{
         this.put(District.ThreatLevelEnum.Safe, 0.01);
@@ -21,14 +21,14 @@ public class WorldConfiguration {
     private String cityName;
     private int timeRate = 300;
     private long simulationDuration = 86400;
-    private int numberOfPolicePatrols = 10;
+    private int numberOfPolicePatrols = 25;
     private double basicSearchDistance = 1200.0;
     private boolean drawDistrictsBorders = false;
     private boolean drawFiringDetails = false;
-    private long minimumInterventionDuration = 10 * 60;
-    private long maximumInterventionDuration = 50 * 60;
-    private long minimumFiringStrength = 1000;
-    private long maximumFiringStrength = 3000;
+    private int minimumInterventionDuration = 10; // minutes
+    private int maximumInterventionDuration = 30; // minutes
+    private int minimumFiringStrength = 30;
+    private int maximumFiringStrength = 90;
 
     public String getCityName() {
         return cityName;
@@ -98,31 +98,31 @@ public class WorldConfiguration {
         return minimumInterventionDuration;
     }
 
-    public void setMinimumInterventionDuration(long minimumInterventionDuration) {
+    public void setMinimumInterventionDuration(int minimumInterventionDuration) {
         this.minimumInterventionDuration = minimumInterventionDuration;
     }
 
-    public long getMaximumInterventionDuration() {
+    public int getMaximumInterventionDuration() {
         return maximumInterventionDuration;
     }
 
-    public void setMaximumInterventionDuration(long maximumInterventionDuration) {
+    public void setMaximumInterventionDuration(int maximumInterventionDuration) {
         this.maximumInterventionDuration = maximumInterventionDuration;
     }
 
-    public long getMinimumFiringStrength() {
+    public int getMinimumFiringStrength() {
         return minimumFiringStrength;
     }
 
-    public void setMinimumFiringStrength(long minimumFiringStrength) {
+    public void setMinimumFiringStrength(int minimumFiringStrength) {
         this.minimumFiringStrength = minimumFiringStrength;
     }
 
-    public long getMaximumFiringStrength() {
+    public int getMaximumFiringStrength() {
         return maximumFiringStrength;
     }
 
-    public void setMaximumFiringStrength(long maximumFiringStrength) {
+    public void setMaximumFiringStrength(int maximumFiringStrength) {
         this.maximumFiringStrength = maximumFiringStrength;
     }
 

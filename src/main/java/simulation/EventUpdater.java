@@ -27,10 +27,7 @@ public class EventUpdater extends Thread {
             try {
                 sleep(100);
             } catch (InterruptedException e) {
-                System.out.println(e);
-                System.out.println(e.getMessage());
                 e.printStackTrace();
-                e.getCause();
             }
         }
     }

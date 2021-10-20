@@ -9,32 +9,31 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class IncidentFactory {
 
-    private static final int MIN_EVENT_DURATION = 5;
-    private static final int MAX_EVENT_DURATION = 60;
-    private static final int MIN_FIRING_STRENGTH = 2000;
-    private static final int MAX_FIRING_STRENGTH = 5000;
     private static final World world = World.getInstance();
+    private static final int MIN_EVENT_DURATION = world.getConfig().getMinimumInterventionDuration() * 60; // seconds
+    private static final int MAX_EVENT_DURATION = world.getConfig().getMaximumInterventionDuration() * 60; // seconds
+    private static final int MIN_FIRING_STRENGTH = world.getConfig().getMinimumFiringStrength() * 60;
+    private static final int MAX_FIRING_STRENGTH = world.getConfig().getMaximumFiringStrength() * 60;
 
     public static Intervention createRandomInterventionForDistrict(District district) {
         var randomNode = district.getAllNodesInDistrict().get(ThreadLocalRandom.current().nextInt(0, district.getAllNodesInDistrict().size()));
         var latitude = randomNode.getPosition().getLatitude();
         var longitude = randomNode.getPosition().getLongitude();
+        var duration = calculateDurationOfIncident(district, MIN_EVENT_DURATION, MAX_EVENT_DURATION+1);
 
         // Will change into firing
         if (ThreadLocalRandom.current().nextDouble() < ThreatLevelToFiringChance(district.getThreatLevel())) {
-            var duration = ThreadLocalRandom.current().nextInt(MIN_EVENT_DURATION, MAX_EVENT_DURATION);
             var timeToChange = ThreadLocalRandom.current().nextInt(0, duration);
-
             return new Intervention(latitude, longitude, duration, true, timeToChange, district);
         } else {
-            return new Intervention(latitude, longitude, ThreadLocalRandom.current().nextInt(MIN_EVENT_DURATION, MAX_EVENT_DURATION + 1), district);
+            return new Intervention(latitude, longitude, duration, district);
         }
     }
 
     public static Firing createRandomFiringFromIntervention(Intervention intervention) {
-        var strength = ThreadLocalRandom.current().nextInt(MIN_FIRING_STRENGTH, MAX_FIRING_STRENGTH + 1);
-        var ceil = (int) Math.ceil(strength / 500.);
-        var numberOfRequiredPatrols = ThreadLocalRandom.current().nextInt(ceil > 3 ? ceil - 2 : 1, ceil + 1);
+        var strength = calculateDurationOfIncident(intervention.getDistrict(), MIN_FIRING_STRENGTH, MAX_FIRING_STRENGTH+1);
+        var ceil = (int) Math.ceil(strength / (15 * 60.0));
+        var numberOfRequiredPatrols = ThreadLocalRandom.current().nextInt(ceil > 4 ? ceil - 3 : 1, ceil + 1);
         return new Firing(intervention.getLatitude(), intervention.getLongitude(), numberOfRequiredPatrols, strength, intervention.getDistrict());
     }
 
@@ -42,4 +41,15 @@ public class IncidentFactory {
         return world.getConfig().getFiringChanceForThreatLevel(threatLevel);
     }
 
+    private static int calculateDurationOfIncident(District district, int minDuration, int maxDuration) {
+        var threatLevelValue = district.getThreatLevel().value;
+        if (threatLevelValue == 1){
+            return ThreadLocalRandom.current().nextInt(minDuration, minDuration + (maxDuration - minDuration) / 2);
+        } else if (threatLevelValue == 2){
+            return ThreadLocalRandom.current().nextInt(minDuration + (maxDuration - minDuration) / 4, maxDuration - (maxDuration - minDuration) / 4);
+        }else if (threatLevelValue == 3){
+            return ThreadLocalRandom.current().nextInt(minDuration + (maxDuration - minDuration) / 2, maxDuration);
+        }
+        return (minDuration + (maxDuration - minDuration) / 2);
+    }
 }

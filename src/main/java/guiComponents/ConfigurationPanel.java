@@ -325,10 +325,16 @@ public class ConfigurationPanel {
         descriptionLabel = new JLabel("Set the firing strength");
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         firingStrengthConfigurationPanel.add(descriptionLabel);
-        descriptionLabel = new JLabel("firing strengthfiring strength:");
+        descriptionLabel = new JLabel("(1 partol in 1 minute takes 1 unit");
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         firingStrengthConfigurationPanel.add(descriptionLabel);
-        descriptionLabel = new JLabel("firing strengthfiring strength:");
+        descriptionLabel = new JLabel("of firing \"strength\". Every 15 units");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        firingStrengthConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("of \"strength\" increases the maximum");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        firingStrengthConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("number of patrols needed for support.)");
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         firingStrengthConfigurationPanel.add(descriptionLabel);
 
@@ -452,7 +458,7 @@ public class ConfigurationPanel {
         config.setMinimumInterventionDuration(minimumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(minimumInterventionDurationTextField, Integer.parseInt(maximumInterventionDurationTextField.getText()) - 1));
         config.setMaximumInterventionDuration(maximumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(maximumInterventionDurationTextField, Integer.parseInt(minimumInterventionDurationTextField.getText()) + 1));
         config.setMinimumFiringStrength(minimumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(minimumFiringStrength, Integer.parseInt(maximumFiringStrength.getText()) - 1));
-        config.setMinimumFiringStrength(maximumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(maximumFiringStrength, Integer.parseInt(minimumFiringStrength.getText()) + 1));
+        config.setMaximumFiringStrength(maximumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(maximumFiringStrength, Integer.parseInt(minimumFiringStrength.getText()) + 1));
 
         Logger.getInstance().logNewMessage("World config has been set.");
 
