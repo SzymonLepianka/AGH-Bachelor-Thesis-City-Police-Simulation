@@ -6,6 +6,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 public abstract class Incident extends Entity implements IEvent, IDrawable {
 
@@ -46,12 +47,14 @@ public abstract class Incident extends Entity implements IEvent, IDrawable {
         if (isActive()) {
             var oldColor = g.getColor();
 
-            g.setColor(new Color(255, 0, 0, 175));
+            g.setColor(Color.RED);
 
             final var size = 10;
             var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
 
             var mark = new Ellipse2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
+//            var mark = new Rectangle2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
+
             g.fill(mark);
 
             g.setColor(oldColor);

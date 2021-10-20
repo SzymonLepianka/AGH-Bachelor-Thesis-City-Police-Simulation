@@ -68,19 +68,34 @@ public class Intervention extends Incident implements IDrawable {
         super.drawSelf(g, mapViewer);
         var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
         if (World.getInstance().isSimulationPaused()) {
-            g.drawString(String.format("Duration:" + duration), (int) point.getX() + 5, (int) point.getY());
-            g.drawString(String.format("WCIF:" + willChangeIntoFiring), (int) point.getX() + 5, (int) point.getY() - 10);
-//            g.drawString(String.format("Patr.Reach.:%d", patrolsReaching.size()), (int) point.getX() + 5, (int) point.getY() - 20);
-//            g.drawString(String.format("Part.Solv.:%d", patrolsSolving.size()), (int) point.getX() + 5, (int) point.getY() - 30);
+            drawString(g,(int) point.getX() + 5, (int) point.getY(),"Duration:" + duration / 60 + " [minutes]");
+            drawString(g,(int) point.getX() + 5, (int) point.getY() - 15,"Will change into firing: " + willChangeIntoFiring);
+            if (this.patrolSolving != null) {
+                if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation){
+                    var timeLeft = duration - (World.getInstance().getSimulationTime() - patrolSolving.getAction().startTime);
+
+                    drawString(g,(int) point.getX() + 5, (int) point.getY() - 30, String.format("Time left: %.2f [minutes]", timeLeft / 60));
+                } else{
+                    drawString(g,(int) point.getX() + 5, (int) point.getY() - 30, "Patrol is on its way to the intervention.");
+                }
+            }
         }
+    }
 
+    private void drawString(Graphics2D g, int x, int y, String str1){
 
-//        final var size = 10;
-//
-//        var mark = new Ellipse2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
-//        g.fill(mark);
-//
-//        g.setColor(oldColor);*/
+        var oldColor = g.getColor();
+
+        Color bgColor = new Color(1,1,1,0.6f );
+        FontMetrics fm = g.getFontMetrics();
+        Rectangle2D rect = fm.getStringBounds(str1, g);
+        g.setColor(bgColor);
+        g.fillRect(x,
+                y - fm.getAscent() + 2,
+                (int) rect.getWidth(),
+                (int) rect.getHeight());
+        g.setColor(oldColor);
+        g.drawString(str1, x, y);
     }
 
     public Patrol getPatrolSolving() {
