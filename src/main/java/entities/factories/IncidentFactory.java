@@ -19,7 +19,7 @@ public class IncidentFactory {
         var randomNode = district.getAllNodesInDistrict().get(ThreadLocalRandom.current().nextInt(0, district.getAllNodesInDistrict().size()));
         var latitude = randomNode.getPosition().getLatitude();
         var longitude = randomNode.getPosition().getLongitude();
-        var duration = calculateDurationOfIncident(district, MIN_EVENT_DURATION, MAX_EVENT_DURATION+1);
+        var duration = calculateDurationOfIncident(district, MIN_EVENT_DURATION, MAX_EVENT_DURATION + 1);
 
         // Will change into firing
         if (ThreadLocalRandom.current().nextDouble() < ThreatLevelToFiringChance(district.getThreatLevel())) {
@@ -31,9 +31,10 @@ public class IncidentFactory {
     }
 
     public static Firing createRandomFiringFromIntervention(Intervention intervention) {
-        var strength = calculateDurationOfIncident(intervention.getDistrict(), MIN_FIRING_STRENGTH, MAX_FIRING_STRENGTH+1);
+        var strength = calculateDurationOfIncident(intervention.getDistrict(), MIN_FIRING_STRENGTH, MAX_FIRING_STRENGTH + 1);
         var ceil = (int) Math.ceil(strength / (15 * 60.0));
         var numberOfRequiredPatrols = ThreadLocalRandom.current().nextInt(ceil > 4 ? ceil - 3 : 1, ceil + 1);
+        strength *= numberOfRequiredPatrols;
         return new Firing(intervention.getLatitude(), intervention.getLongitude(), numberOfRequiredPatrols, strength, intervention.getDistrict());
     }
 
@@ -43,11 +44,11 @@ public class IncidentFactory {
 
     private static int calculateDurationOfIncident(District district, int minDuration, int maxDuration) {
         var threatLevelValue = district.getThreatLevel().value;
-        if (threatLevelValue == 1){
+        if (threatLevelValue == 1) {
             return ThreadLocalRandom.current().nextInt(minDuration, minDuration + (maxDuration - minDuration) / 2);
-        } else if (threatLevelValue == 2){
+        } else if (threatLevelValue == 2) {
             return ThreadLocalRandom.current().nextInt(minDuration + (maxDuration - minDuration) / 4, maxDuration - (maxDuration - minDuration) / 4);
-        }else if (threatLevelValue == 3){
+        } else if (threatLevelValue == 3) {
             return ThreadLocalRandom.current().nextInt(minDuration + (maxDuration - minDuration) / 2, maxDuration);
         }
         return (minDuration + (maxDuration - minDuration) / 2);

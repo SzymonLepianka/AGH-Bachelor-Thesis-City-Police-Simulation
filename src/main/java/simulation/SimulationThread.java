@@ -37,16 +37,14 @@ public class SimulationThread extends Thread {
                     updateStatesOfAgents();
                     performAgentsActions();
                 } catch (Exception e) {
-                    System.out.println(e);
+                    e.printStackTrace();
                 }
             }
 
             try {
                 sleep(40);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
                 e.printStackTrace();
-                e.getCause();
             }
         }
     }

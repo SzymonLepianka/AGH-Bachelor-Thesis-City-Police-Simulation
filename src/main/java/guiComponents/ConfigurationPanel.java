@@ -334,19 +334,10 @@ public class ConfigurationPanel {
         firingStrengthConfigurationPanel.setLayout(new BoxLayout(firingStrengthConfigurationPanel, BoxLayout.Y_AXIS));
         firingStrengthConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
 
-        descriptionLabel = new JLabel("Set the firing strength");
+        descriptionLabel = new JLabel("Set the time range for the duration");
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         firingStrengthConfigurationPanel.add(descriptionLabel);
-        descriptionLabel = new JLabel("(1 partol in 1 minute takes 1 unit");
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        firingStrengthConfigurationPanel.add(descriptionLabel);
-        descriptionLabel = new JLabel("of firing \"strength\". Every 15 units");
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        firingStrengthConfigurationPanel.add(descriptionLabel);
-        descriptionLabel = new JLabel("of \"strength\" increases the maximum");
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        firingStrengthConfigurationPanel.add(descriptionLabel);
-        descriptionLabel = new JLabel("number of patrols needed for support.)");
+        descriptionLabel = new JLabel("of the firing [minutes]:");
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         firingStrengthConfigurationPanel.add(descriptionLabel);
 
