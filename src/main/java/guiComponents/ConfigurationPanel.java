@@ -20,6 +20,8 @@ public class ConfigurationPanel {
     private final int textInputColumns = 20;
     // TODO Change into dynamically generated
     private final HashMap<String, String[]> availablePlaces = new HashMap<>();
+    private final HashMap<String, Integer> cityAdminLevelForAvailablePlaces = new HashMap<>();
+    private final HashMap<String, Integer> districtAdminLevelForAvailablePlaces = new HashMap<>();
     private final JTextField numberOfCityPatrolsTextField = new JTextField();
     private final JTextField timeRateTextField = new JTextField();
     private final JTextField simulationDurationDaysTextField = new JTextField();
@@ -51,6 +53,12 @@ public class ConfigurationPanel {
 
     public ConfigurationPanel() {
         availablePlaces.put("Poland", new String[]{"Kraków", "Warszawa", "Rzeszów", "Katowice", "Gdańsk", "Łódź", "Szczecin", "Poznań", "Lublin", "Białystok", "Wrocław"});
+        cityAdminLevelForAvailablePlaces.put("Poland", 6);
+        districtAdminLevelForAvailablePlaces.put("Poland", 9);
+
+        availablePlaces.put("Germany", new String[]{"Berlin"});
+        cityAdminLevelForAvailablePlaces.put("Germany", 4);
+        districtAdminLevelForAvailablePlaces.put("Germany", 9);
     }
 
     private void setDurationInputs(long time) {
@@ -497,7 +505,10 @@ public class ConfigurationPanel {
 
     private boolean loadMapIntoWorld(String cityName) {
         try {
-            var map = ImportGraphFromRawData.createMap(cityName);
+            var countryName = countrySelectionComboBox.getSelectedItem().toString();
+            var cityAdminLevel = cityAdminLevelForAvailablePlaces.get(countryName);
+            var districtAdminLevel = districtAdminLevelForAvailablePlaces.get(countryName);
+            var map = ImportGraphFromRawData.createMap(cityName, cityAdminLevel, districtAdminLevel);
             World.getInstance().setMap(map);
         } catch (Exception e) {
             // TODO Add logger

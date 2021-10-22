@@ -25,19 +25,24 @@ import java.util.Map;
 
 public class ImportGraphFromRawData {
 
-    static String defaultCityName = "Kraków";
-    static String rawDataFile1 = "export";
-    static String rawDataFile2 = "Raw.osm";
-    static String rawDataDistrictFile1 = "export";
-    static String rawDataDistrictFile2 = "DistrictsRaw.osm";
-    static String rawDataPath = "OsmRawData/";
+    private static final String defaultCityName = "Kraków";
+    private static final int defaultCityAdminLevelName = 6;
+    private static final int defaultDistrictAdminLevelName = 9;
+    private static final String rawDataFile1 = "export";
+    private static final String rawDataFile2 = "Raw.osm";
+    private static final String rawDataDistrictFile1 = "export";
+    private static final String rawDataDistrictFile2 = "DistrictsRaw.osm";
+    private static final String rawDataPath = "OsmRawData/";
     // area["admin_level"=6][name="Kraków"]->.a;(way(area.a)["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|living_street|service|pedestrian|track|road)$"]["crossing"!~"."]["name"];);out meta;>;out meta qt;
-    static String query1 = "area[\"admin_level\"=6][name=\"";
-    static String query2 = "\"]->.a;(way(area.a)[\"highway\"~\"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|living_street|service|pedestrian|track|road)$\"][\"crossing\"!~\".\"][\"name\"];);out meta;>;out meta qt;";
-    static String apiURL = "https://overpass-api.de/api/interpreter";
+    private static final String query1 = "area[\"admin_level\"=";
+    private static final String query2 = "][name=\"";
+    private static final String query3 = "\"]->.a;(way(area.a)[\"highway\"~\"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|living_street|service|pedestrian|track|road)$\"][\"crossing\"!~\".\"][\"name\"];);out meta;>;out meta qt;";
+    private static final String apiURL = "https://overpass-api.de/api/interpreter";
     // area["admin_level"=6][name="Kraków"]->.a;(relation(area.a)["admin_level"=9][boundary=administrative]["name"];);out meta;>;out meta qt;
-    static String queryDistrict1 = "area[\"admin_level\"=6][name=\"";
-    static String queryDistrict2 = "\"]->.a;(relation(area.a)[\"admin_level\"=9][boundary=administrative][\"name\"];);out meta;>;out meta qt;";
+    private static final String queryDistrict1 = "area[\"admin_level\"=";
+    private static final String queryDistrict2 = "][name=\"";
+    private static final String queryDistrict3 = "\"]->.a;(relation(area.a)[\"admin_level\"=";
+    private static final String queryDistrict4 = "][boundary=administrative][\"name\"];);out meta;>;out meta qt;";
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -50,7 +55,7 @@ public class ImportGraphFromRawData {
 //
 //        Graph<Node, ImportedEdge> graph = dataHandler.getGraph();
 
-        entities.Map map = createMap(defaultCityName);
+        entities.Map map = createMap(defaultCityName, defaultCityAdminLevelName, defaultDistrictAdminLevelName);
         Graph<Node, ImportedEdge> graph = map.getGraph();
         HashMap<Long, Node> myNodes = map.getMyNodes();
         List<District> districts = map.getDistricts();
@@ -77,9 +82,9 @@ public class ImportGraphFromRawData {
         //END
     }
 
-    public static entities.Map createMap(String cityName) throws IOException, InterruptedException {
-        ParsingMapDataHandler dataHandler = handleRawData(rawDataPath + rawDataFile1 + cityName + rawDataFile2, query1 + cityName + query2, cityName, false);
-        ParsingMapDataHandler districtDataHandler = handleRawData(rawDataPath + rawDataDistrictFile1 + cityName + rawDataDistrictFile2, queryDistrict1 + cityName + queryDistrict2, cityName, true);
+    public static entities.Map createMap(String cityName, int cityAdminLevel, int districtAdminLevel) throws IOException, InterruptedException {
+        ParsingMapDataHandler dataHandler = handleRawData(rawDataPath + rawDataFile1 + cityName + rawDataFile2, query1 + cityAdminLevel + query2 + cityName + query3, cityName, false);
+        ParsingMapDataHandler districtDataHandler = handleRawData(rawDataPath + rawDataDistrictFile1 + cityName + rawDataDistrictFile2, queryDistrict1 + cityAdminLevel + queryDistrict2 + cityName + queryDistrict3 + districtAdminLevel + queryDistrict4, cityName, true);
         Logger.getInstance().logNewMessage("Loaded map data.");
 
         // exporting the graph to a DOT file:
