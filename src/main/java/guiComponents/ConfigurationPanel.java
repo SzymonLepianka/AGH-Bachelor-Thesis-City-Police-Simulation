@@ -29,6 +29,7 @@ public class ConfigurationPanel {
     private final JCheckBox drawDistrictsBoundariesCheckBox = new JCheckBox();
     private final JCheckBox drawFiringDetailsCheckBox = new JCheckBox();
     private final JCheckBox drawLegendCheckBox = new JCheckBox();
+    private final JCheckBox drawInterventionDetailsCheckBox = new JCheckBox();
     private final JTextField threatLevelMaxIncidentsTextField_SAFE = new JTextField();
     private final JTextField threatLevelMaxIncidentsTextField_RATHERSAFE = new JTextField();
     private final JTextField threatLevelMaxIncidentsTextField_NOTSAFE = new JTextField();
@@ -218,6 +219,12 @@ public class ConfigurationPanel {
         drawLegendCheckBox.setSelected(true);
         drawLegendPanel.add(drawLegendCheckBox);
         simulationConfigurationPanel.add(drawLegendPanel);
+
+        var drawInterventionDetailsPanel = new JPanel();
+        drawInterventionDetailsPanel.add(new JLabel("Draw intervention details while paused"));
+        drawInterventionDetailsCheckBox.setSelected(true);
+        drawInterventionDetailsPanel.add(drawInterventionDetailsCheckBox);
+        simulationConfigurationPanel.add(drawInterventionDetailsPanel);
 
 //----------------------------------------------------
 
@@ -450,6 +457,7 @@ public class ConfigurationPanel {
         config.setDrawDistrictsBorders(drawDistrictsBoundariesCheckBox.isSelected());
         config.setDrawFiringDetails(drawFiringDetailsCheckBox.isSelected());
         config.setDrawLegend(drawLegendCheckBox.isSelected());
+        config.setDrawInterventionDetails(drawInterventionDetailsCheckBox.isSelected());
 
         config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelMaxIncidentsTextField_SAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_SAFE, 0));
         config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelMaxIncidentsTextField_RATHERSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_RATHERSAFE, 0));

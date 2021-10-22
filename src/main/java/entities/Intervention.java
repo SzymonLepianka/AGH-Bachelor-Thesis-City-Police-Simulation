@@ -67,7 +67,7 @@ public class Intervention extends Incident implements IDrawable {
     public void drawSelf(Graphics2D g, JXMapViewer mapViewer) {
         super.drawSelf(g, mapViewer);
         var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
-        if (World.getInstance().isSimulationPaused()) {
+        if (World.getInstance().isSimulationPaused() && World.getInstance().getConfig().isDrawInterventionDetails()) {
             drawString(g,(int) point.getX() + 5, (int) point.getY(),"Duration:" + duration / 60 + " [minutes]");
             drawString(g,(int) point.getX() + 5, (int) point.getY() - 15,"Will change into firing: " + willChangeIntoFiring);
             if (this.patrolSolving != null) {
