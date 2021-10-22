@@ -81,10 +81,10 @@ public class Firing extends Incident implements IDrawable {
         g.fill(mark);
 
         if (World.getInstance().getConfig().isDrawFiringDetails()) {
-            g.drawString(String.format("Stren.:%.1f", strength), (int) point.getX() + 5, (int) point.getY());
-            g.drawString(String.format("Patr.Req.:%d", requiredPatrols), (int) point.getX() + 5, (int) point.getY() - 10);
-            g.drawString(String.format("Patr.Reach.:%d", patrolsReaching.size()), (int) point.getX() + 5, (int) point.getY() - 20);
-            g.drawString(String.format("Part.Solv.:%d", patrolsSolving.size()), (int) point.getX() + 5, (int) point.getY() - 30);
+            drawString(g,(int) point.getX() + 5, (int) point.getY(), String.format("Time left: %.2f [minutes]", strength / 60 / patrolsSolving.size()));
+            drawString(g, (int) point.getX() + 5, (int) point.getY() - 15, String.format("Patrols Required: %d", requiredPatrols));
+            drawString(g, (int) point.getX() + 5, (int) point.getY() - 30, String.format("Patrols Reaching: %d", patrolsReaching.size()));
+            drawString(g, (int) point.getX() + 5, (int) point.getY() - 45, String.format("Patrols Solving :%d", patrolsSolving.size()));
         }
 
         g.setColor(oldColor);
