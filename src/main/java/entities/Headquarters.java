@@ -1,6 +1,6 @@
 package entities;
 
-import CsvExport.ExportFiringDetails;
+import csv_export.ExportFiringDetails;
 import World.World;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -36,7 +36,7 @@ public class Headquarters extends Entity implements IDrawable {
         final var size = 10;
         var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
 
-        var mark = new Ellipse2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
+        var mark = new Ellipse2D.Double((int) (point.getX() - size / 2.0), (int) (point.getY() - size / 2.0), size, size);
         g.fill(mark);
 
         g.setColor(oldColor);

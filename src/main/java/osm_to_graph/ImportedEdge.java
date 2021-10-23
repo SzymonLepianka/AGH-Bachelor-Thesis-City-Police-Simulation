@@ -1,4 +1,4 @@
-package OSMToGraph;
+package osm_to_graph;
 
 import org.jgrapht.graph.DefaultEdge;
 

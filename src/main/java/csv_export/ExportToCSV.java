@@ -1,4 +1,4 @@
-package CsvExport;
+package csv_export;
 
 import World.World;
 import com.opencsv.CSVWriter;
@@ -18,8 +18,8 @@ public class ExportToCSV extends Thread {
     private final World world = World.getInstance();
     private final File simulationDetailsCsvFile;
     private final File districtsDetailsCsvFile;
-    private final String csvDirectoryPath = "results";
-    private final String[] simulationDetailsHeader = new String[]{
+    private static final String CSV_DIRECTORY_PATH = "results";
+    private static final String[] simulationDetailsHeader = new String[]{
             "simulationTime",
             "amountOfPatrols",
             "amountOfPatrollingPatrols",
@@ -55,20 +55,24 @@ public class ExportToCSV extends Thread {
     private int exportCounter = 1;
 
     public ExportToCSV() {
-        File csvDirectory = new File(csvDirectoryPath);
+        File csvDirectory = new File(CSV_DIRECTORY_PATH);
         if (!(csvDirectory.exists() && csvDirectory.isDirectory())) {
             csvDirectory.mkdir();
         }
 
-        simulationDetailsCsvFile = new File(csvDirectoryPath + "/" + dateFormat.format(LocalDateTime.now()) + "--Simulation Details.csv");
-        districtsDetailsCsvFile = new File(csvDirectoryPath + "/" + dateFormat.format(LocalDateTime.now()) + "--Districts Details.csv");
+        simulationDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Simulation Details.csv");
+        districtsDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Districts Details.csv");
         try {
-            simulationDetailsCsvFile.createNewFile();
+            if (!simulationDetailsCsvFile.createNewFile()){
+                throw new IOException("Unable to create file");
+            }
             CSVWriter csvWriter1 = new CSVWriter(new FileWriter(simulationDetailsCsvFile));
             csvWriter1.writeNext(simulationDetailsHeader);
             csvWriter1.close();
 
-            districtsDetailsCsvFile.createNewFile();
+            if (!districtsDetailsCsvFile.createNewFile()){
+                throw new IOException("Unable to create file");
+            }
             CSVWriter csvWriter2 = new CSVWriter(new FileWriter(districtsDetailsCsvFile));
             csvWriter2.writeNext(districtsDetailsHeader);
             csvWriter2.close();
@@ -84,12 +88,12 @@ public class ExportToCSV extends Thread {
                 exportCounter++;
                 var allEntities = world.getAllEntities();
                 var allPatrols = allEntities.stream()
-                        .filter(x -> x instanceof Patrol)
-                        .map(x -> (Patrol) x)
+                        .filter(Patrol.class::isInstance)
+                        .map(Patrol.class::cast)
                         .collect(Collectors.toList());
                 var allIncidents = allEntities.stream()
                         .filter(x -> x instanceof Incident && ((Incident) x).isActive())
-                        .map(x -> (Incident) x)
+                        .map(Incident.class::cast)
                         .collect(Collectors.toList());
                 var simulationTimeLong = world.getSimulationTimeLong();
 
@@ -105,8 +109,8 @@ public class ExportToCSV extends Thread {
                 try {
                     sleep((long) sleepTime, (int) ((sleepTime - (long) sleepTime) * 1000000));
                 } catch (InterruptedException e) {
-                    // Ignore
                     e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -126,10 +130,10 @@ public class ExportToCSV extends Thread {
                 String.valueOf(world.getNeutralizedPatrolsTotal() + allPatrols.stream().filter(x -> x.getState() == Patrol.State.NEUTRALIZED).count()),
                 String.valueOf(allPatrols.stream().filter(x -> x.getState() == Patrol.State.RETURNING_TO_HQ).count()),
                 String.valueOf(allIncidents.size()),
-                String.valueOf(allIncidents.stream().filter(x -> x instanceof Intervention).count()),
+                String.valueOf(allIncidents.stream().filter(Intervention.class::isInstance).count()),
                 String.valueOf(allIncidents.stream().filter(x -> x instanceof Intervention && ((Intervention) x).getPatrolSolving() != null).count()),
-                String.valueOf(allIncidents.stream().filter(x -> x instanceof Firing).count()),
-                String.valueOf(allIncidents.stream().filter(x -> x instanceof Firing && ((Firing) x).getPatrolsSolving().size() > 0).count())
+                String.valueOf(allIncidents.stream().filter(Firing.class::isInstance).count()),
+                String.valueOf(allIncidents.stream().filter(x -> x instanceof Firing && !((Firing) x).getPatrolsSolving().isEmpty()).count())
         }, false);
         csvWriter.close();
     }

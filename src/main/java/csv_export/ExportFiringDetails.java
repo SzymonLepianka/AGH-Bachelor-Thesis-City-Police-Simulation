@@ -1,4 +1,4 @@
-package CsvExport;
+package csv_export;
 
 import World.World;
 import com.opencsv.CSVWriter;
@@ -16,11 +16,11 @@ import java.util.List;
 
 public class ExportFiringDetails {
 
-    private static volatile ExportFiringDetails instance;
+    private static ExportFiringDetails instance;
     private final World world = World.getInstance();
     private final File firingsDetailsCsvFile;
-    private final String csvDirectoryPath = "results";
-    private final String[] firingDetailsHeader = new String[]{
+    private static final String CSV_DIRECTORY_PATH = "results";
+    private static final String[] firingDetailsHeader = new String[]{
             "simulationTime",
             "firingID",
             "districtName",
@@ -34,14 +34,16 @@ public class ExportFiringDetails {
     private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
 
     private ExportFiringDetails() {
-        File csvDirectory = new File(csvDirectoryPath);
+        File csvDirectory = new File(CSV_DIRECTORY_PATH);
         if (!(csvDirectory.exists() && csvDirectory.isDirectory())) {
             csvDirectory.mkdir();
         }
 
-        firingsDetailsCsvFile = new File(csvDirectoryPath + "/" + dateFormat.format(LocalDateTime.now()) + "--Firings Details.csv");
+        firingsDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Firings Details.csv");
         try {
-            firingsDetailsCsvFile.createNewFile();
+            if (!firingsDetailsCsvFile.createNewFile()){
+                throw new IOException("Unable to create file");
+            }
             var csvWriter1 = new CSVWriter(new FileWriter(firingsDetailsCsvFile));
             csvWriter1.writeNext(firingDetailsHeader);
             csvWriter1.close();

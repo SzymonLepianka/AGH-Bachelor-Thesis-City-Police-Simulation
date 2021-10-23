@@ -52,7 +52,7 @@ public abstract class Incident extends Entity implements IEvent, IDrawable {
             final var size = 10;
             var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
 
-            var mark = new Ellipse2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
+            var mark = new Ellipse2D.Double((int) (point.getX() - size / 2.0), (int) (point.getY() - size / 2.0), size, size);
 //            var mark = new Rectangle2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
 
             g.fill(mark);

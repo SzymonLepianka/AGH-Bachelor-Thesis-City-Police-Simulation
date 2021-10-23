@@ -1,4 +1,4 @@
-package guiComponents;
+package gui_components;
 
 import entities.District;
 
@@ -42,7 +42,7 @@ public class DistrictConfigComponent extends JPanel {
 
     private void inputChanged() {
         try {
-            this.district.setThreatLevel(Arrays.stream(District.ThreatLevelEnum.values()).filter(x -> x.value == districtThreatLevelInput.getValue()).findFirst().get());
+            this.district.setThreatLevel(Arrays.stream(District.ThreatLevelEnum.values()).filter(x -> x.value == districtThreatLevelInput.getValue()).findFirst().orElseThrow());
         } catch (Exception exception) {
             districtThreatLevelInput.setBorder(new LineBorder(Color.RED, MARGIN));
         }

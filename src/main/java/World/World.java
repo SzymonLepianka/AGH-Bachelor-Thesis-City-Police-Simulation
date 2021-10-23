@@ -1,6 +1,6 @@
 package World;
 
-import CsvExport.ExportToCSV;
+import csv_export.ExportToCSV;
 import de.westnordost.osmapi.map.data.LatLon;
 import de.westnordost.osmapi.map.data.OsmLatLon;
 import entities.*;
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 
 public class World {
 
-    private static volatile World instance;
+    private static World instance;
     private final List<Entity> allEntities = new ArrayList<>();
     private final WorldConfiguration worldConfig = new WorldConfiguration();
     // TODO let the user to choose durationOfTheShift
-    private final double durationOfTheShift = 28800;
+    private final static double durationOfTheShift = 28800;
     private LocalDateTime startTime;
     private double timePassedUntilPause = 0;
     private boolean isSimulationPaused = false;
@@ -101,13 +101,13 @@ public class World {
 
     public List<IEvent> getActiveEvents() {
         synchronized (allEntities) {
-            return allEntities.stream().filter(x -> x instanceof IEvent && ((IEvent) x).isActive()).map(x -> (IEvent) x).collect(Collectors.toList());
+            return allEntities.stream().filter(x -> x instanceof IEvent && ((IEvent) x).isActive()).map(IEvent.class::cast).collect(Collectors.toList());
         }
     }
 
     public List<IEvent> getEvents() {
         synchronized (allEntities) {
-            return allEntities.stream().filter(x -> x instanceof IEvent).map(x -> (IEvent) x).collect(Collectors.toList());
+            return allEntities.stream().filter(IEvent.class::isInstance).map(IEvent.class::cast).collect(Collectors.toList());
         }
     }
 
@@ -151,12 +151,12 @@ public class World {
 
         // Set world position to center of a map
         var minCoordinates = new GeoPosition(
-                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLatitude()).min(Double::compare).get(),
-                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLongitude()).min(Double::compare).get());
+                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLatitude()).min(Double::compare).orElseThrow(),
+                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLongitude()).min(Double::compare).orElseThrow());
 
         var maxCoordinates = new GeoPosition(
-                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLatitude()).max(Double::compare).get(),
-                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLongitude()).max(Double::compare).get());
+                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLatitude()).max(Double::compare).orElseThrow(),
+                map.getGraph().vertexSet().stream().map(x -> x.getPosition().getLongitude()).max(Double::compare).orElseThrow());
 
         var latitude = (minCoordinates.getLatitude() + maxCoordinates.getLatitude()) / 2;
         var longitude = (minCoordinates.getLongitude() + maxCoordinates.getLongitude()) / 2;

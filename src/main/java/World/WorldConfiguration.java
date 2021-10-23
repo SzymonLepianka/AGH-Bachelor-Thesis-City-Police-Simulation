@@ -3,21 +3,15 @@ package World;
 import entities.District;
 import utils.Logger;
 
+import java.util.EnumMap;
 import java.util.HashMap;
+
 
 public class WorldConfiguration {
 
-    private final HashMap<District, Integer> districtsDangerLevels = new HashMap<>();
-    private final HashMap<District.ThreatLevelEnum, Integer> threatLevelToMaxIncidentsPerHour = new HashMap<>() {{
-        this.put(District.ThreatLevelEnum.Safe, 1);
-        this.put(District.ThreatLevelEnum.RatherSafe, 2);
-        this.put(District.ThreatLevelEnum.NotSafe, 4);
-    }};
-    private final HashMap<District.ThreatLevelEnum, Double> threatLevelToFiringChanceMap = new HashMap<>() {{
-        this.put(District.ThreatLevelEnum.Safe, 0.01);
-        this.put(District.ThreatLevelEnum.RatherSafe, 0.1);
-        this.put(District.ThreatLevelEnum.NotSafe, 0.4);
-    }};
+    private final java.util.Map<District, Integer> districtsDangerLevels = new HashMap<>();
+    private final EnumMap<District.ThreatLevelEnum, Integer> threatLevelToMaxIncidentsPerHour = new EnumMap<>(District.ThreatLevelEnum.class);
+    private final EnumMap<District.ThreatLevelEnum, Double> threatLevelToFiringChanceMap = new EnumMap<>(District.ThreatLevelEnum.class);
     private String cityName;
     private int timeRate = 300;
     private long simulationDuration = 86400;
@@ -31,6 +25,15 @@ public class WorldConfiguration {
     private int maximumInterventionDuration = 30; // minutes
     private int minimumFiringStrength = 30;
     private int maximumFiringStrength = 90;
+
+    WorldConfiguration(){
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 1);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RATHER_SAFE, 2);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NOT_SAFE, 4);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.SAFE, 0.01);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RATHER_SAFE, 0.1);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NOT_SAFE, 0.4);
+    }
 
     public String getCityName() {
         return cityName;
@@ -76,7 +79,7 @@ public class WorldConfiguration {
         this.basicSearchDistance = basicSearchDistance;
     }
 
-    public HashMap<District, Integer> getDistrictsDangerLevels() {
+    public java.util.Map<District, Integer> getDistrictsDangerLevels() {
         return districtsDangerLevels;
     }
 
@@ -147,9 +150,9 @@ public class WorldConfiguration {
     public void resetMaxIncidentsPerHourForThreatLevel() {
         this.threatLevelToMaxIncidentsPerHour.clear();
 
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.Safe, 2);
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RatherSafe, 4);
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NotSafe, 7);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 2);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RATHER_SAFE, 4);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NOT_SAFE, 7);
 
         Logger.getInstance().logNewMessage("Settings for maximum number of incidents per hour for all threat levels have been reset to default values.");
     }
@@ -168,9 +171,9 @@ public class WorldConfiguration {
     public void resetFiringChanceForThreatLevel() {
         this.threatLevelToFiringChanceMap.clear();
 
-        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.Safe, 0.01);
-        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RatherSafe, 0.1);
-        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NotSafe, 0.4);
+        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.SAFE, 0.01);
+        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RATHER_SAFE, 0.1);
+        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NOT_SAFE, 0.4);
 
         Logger.getInstance().logNewMessage("Chances for firing have been reset to default values.");
     }

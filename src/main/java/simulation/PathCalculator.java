@@ -1,6 +1,6 @@
 package simulation;
 
-import OSMToGraph.ImportedEdge;
+import osm_to_graph.ImportedEdge;
 import World.World;
 import de.westnordost.osmapi.map.data.LatLon;
 import de.westnordost.osmapi.map.data.Node;
@@ -12,7 +12,6 @@ import org.jgrapht.alg.shortestpath.AStarShortestPath;
 import utils.Haversine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 

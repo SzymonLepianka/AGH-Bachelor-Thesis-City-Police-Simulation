@@ -1,4 +1,4 @@
-package OSMToGraph;
+package osm_to_graph;
 
 import de.westnordost.osmapi.map.data.*;
 import de.westnordost.osmapi.map.handler.DefaultMapDataHandler;

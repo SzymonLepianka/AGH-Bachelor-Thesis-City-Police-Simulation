@@ -37,7 +37,7 @@ public class Patrol extends Entity implements IAgent, IDrawable {
         this.timeOfLastMove = World.getInstance().getSimulationTime();
         this.durationOfTheShift = World.getInstance().getDurationOfTheShift();
         this.shiftEndTime = World.getInstance().getSimulationTime() + durationOfTheShift;
-        this.timeBetweenDrawNeutralization = new Random().nextInt(1000) + 3000;
+        this.timeBetweenDrawNeutralization = ThreadLocalRandom.current().nextInt(1000) + 3000.0;
         this.timeOfLastDrawNeutralization = World.getInstance().getSimulationTime();
     }
 
@@ -60,7 +60,7 @@ public class Patrol extends Entity implements IAgent, IDrawable {
         this.timeOfLastMove = World.getInstance().getSimulationTime();
         this.durationOfTheShift = World.getInstance().getDurationOfTheShift();
         this.shiftEndTime = World.getInstance().getSimulationTime() + durationOfTheShift;
-        this.timeBetweenDrawNeutralization = new Random().nextInt(1000) + 3000;
+        this.timeBetweenDrawNeutralization = ThreadLocalRandom.current().nextInt(1000) + 3000.0;
         this.timeOfLastDrawNeutralization = World.getInstance().getSimulationTime();
     }
 
@@ -172,8 +172,7 @@ public class Patrol extends Entity implements IAgent, IDrawable {
 
     private void drawNewTarget() {
         var world = World.getInstance();
-        Random generator = new Random();
-        var node = (Node) world.getMap().getMyNodes().values().toArray()[generator.nextInt(world.getMap().getMyNodes().size())];
+        var node = (Node) world.getMap().getMyNodes().values().toArray()[ThreadLocalRandom.current().nextInt(world.getMap().getMyNodes().size())];
         action = new Transfer(World.getInstance().getSimulationTimeLong(), new Point(node.getPosition().getLatitude(), node.getPosition().getLongitude()), this.state);
         Logger.getInstance().logNewMessage(this + " action set to " + action.getClass().toString() + " target: " + action.target.toString());
     }
@@ -315,7 +314,7 @@ public class Patrol extends Entity implements IAgent, IDrawable {
         final var size = 10;
         var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
 
-        var mark = new Ellipse2D.Double((int) (point.getX() - size / 2), (int) (point.getY() - size / 2), size, size);
+        var mark = new Ellipse2D.Double((int) (point.getX() - size / 2.0), (int) (point.getY() - size / 2.0), size, size);
         g.fill(mark);
         g.setColor(oldColor);
     }

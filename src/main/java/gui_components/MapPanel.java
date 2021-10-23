@@ -1,4 +1,4 @@
-package guiComponents;
+package gui_components;
 
 import World.World;
 import entities.Headquarters;
@@ -104,6 +104,7 @@ public class MapPanel {
                         } catch (Exception exception) {
                             // Ignore
                             exception.printStackTrace();
+                            Thread.currentThread().interrupt();
                         }
                     }
 
@@ -206,22 +207,20 @@ public class MapPanel {
             g.fillRect(topLeftCornerX, topLeftCornerY, 1000 - topLeftCornerX, 1000 - topLeftCornerY);
             g.setColor(oldColor);
 
-            var patrolStates = new HashMap<String, Color>() {
-                {
-                    put("PATROLLING", new Color(0, 153, 0));
-                    put("RETURNING_TO_HQ", new Color(0, 100, 0));
-                    put("TXFR_TO_INTERVENTION", new Color(255, 87, 36));
-                    put("TRANSFER_TO_FIRING", new Color(255, 131, 54));
-                    put("INTERVENTION", new Color(0, 92, 230));
-                    put("FIRING", new Color(153, 0, 204));
-                    put("NEUTRALIZED", new Color(255, 255, 255));
-                    put("CALCULATING_PATH", new Color(255, 123, 255));
-                }
-            };
+            var patrolStates = new HashMap<String, Color>();
+            patrolStates.put("PATROLLING", new Color(0, 153, 0));
+            patrolStates.put("RETURNING_TO_HQ", new Color(0, 100, 0));
+            patrolStates.put("TXFR_TO_INTERVENTION", new Color(255, 87, 36));
+            patrolStates.put("TRANSFER_TO_FIRING", new Color(255, 131, 54));
+            patrolStates.put("INTERVENTION", new Color(0, 92, 230));
+            patrolStates.put("FIRING", new Color(153, 0, 204));
+            patrolStates.put("NEUTRALIZED", new Color(255, 255, 255));
+            patrolStates.put("CALCULATING_PATH", new Color(255, 123, 255));
+
             int i = 0;
             for (Map.Entry<String, Color> entry : patrolStates.entrySet()) {
                 g.setColor(entry.getValue());
-                var mark = new Ellipse2D.Double((int) (topLeftCornerX + 10 - size / 2), 1000 - 60 - i * 15, size, size);
+                var mark = new Ellipse2D.Double((int) (topLeftCornerX + 10 - size / 2.0), 1000 - 60 - i * 15.0, size, size);
                 g.fill(mark);
 
                 g.setColor(oldColor);
@@ -233,16 +232,14 @@ public class MapPanel {
             g.drawString("Patrol's states:", topLeftCornerX + 5, 1000 - 50 - i * 15);
             g.setFont(oldFont);
             i++;
-            var places = new HashMap<String, Color>() {
-                {
-                    put("HQ", Color.BLUE);
-                    put("INTERVENTION", Color.RED);
-                    put("FIRING", Color.BLACK);
-                }
-            };
+            var places = new HashMap<String, Color>();
+            places.put("HQ", Color.BLUE);
+            places.put("INTERVENTION", Color.RED);
+            places.put("FIRING", Color.BLACK);
+
             for (Map.Entry<String, Color> entry : places.entrySet()) {
                 g.setColor(entry.getValue());
-                var mark = new Ellipse2D.Double((int) (topLeftCornerX + 10 - size / 2), 1000 - 60 - i * 15, size, size);
+                var mark = new Ellipse2D.Double((int) (topLeftCornerX + 10 - size / 2.0), 1000 - 60 - i * 15.0, size, size);
                 g.fill(mark);
 
                 g.setColor(oldColor);

@@ -1,7 +1,7 @@
 package utils;
 
 import World.World;
-import guiComponents.LoggerPanel;
+import gui_components.LoggerPanel;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.List;
 // TODO Add debug logger
 public class Logger {
 
-    private static volatile Logger instance;
+    private static Logger instance;
 
     public static Logger getInstance() {
         // Result variable here may seem pointless, but it's needed for DCL (Double-checked locking).
@@ -46,7 +46,9 @@ public class Logger {
 
         logFile = new File(logsDirectoryPath + "/" + dateFormat.format(LocalDateTime.now()) + ".log");
         try {
-            logFile.createNewFile();
+            if(!logFile.createNewFile()){
+                throw new IOException("Unable to create file");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

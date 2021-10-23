@@ -22,7 +22,7 @@ public class Intervention extends Incident implements IDrawable {
 
         // the default intervention duration is the middle of the values entered by the user in the configuration
         var config = World.getInstance().getConfig();
-        this.duration = config.getMinimumInterventionDuration()+(config.getMaximumInterventionDuration() - config.getMinimumInterventionDuration()) / 2;
+        this.duration = config.getMinimumInterventionDuration()+(config.getMaximumInterventionDuration() - config.getMinimumInterventionDuration()) / 2L;
         this.willChangeIntoFiring = false;
         this.timeToChange = -1;
     }

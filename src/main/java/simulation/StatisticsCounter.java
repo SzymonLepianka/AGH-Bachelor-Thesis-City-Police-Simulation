@@ -6,7 +6,7 @@ public class StatisticsCounter {
 
     }
 
-    private static volatile StatisticsCounter instance;
+    private static StatisticsCounter instance;
 
     public static StatisticsCounter getInstance() {
         // Result variable here may seem pointless, but it's needed for DCL (Double-checked locking).

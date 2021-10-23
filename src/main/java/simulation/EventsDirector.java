@@ -40,6 +40,7 @@ public class EventsDirector extends Thread {
                 } catch (InterruptedException e) {
                     // Ignore
                     e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }
         }

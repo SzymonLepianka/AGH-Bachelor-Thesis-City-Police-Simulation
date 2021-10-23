@@ -1,6 +1,6 @@
 package entities;
 
-import OSMToGraph.ImportedEdge;
+import osm_to_graph.ImportedEdge;
 import de.westnordost.osmapi.map.data.BoundingBox;
 import de.westnordost.osmapi.map.data.LatLon;
 import de.westnordost.osmapi.map.data.Node;

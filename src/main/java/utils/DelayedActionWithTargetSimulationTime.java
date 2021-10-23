@@ -29,6 +29,7 @@ public class DelayedActionWithTargetSimulationTime extends Thread {
         } catch (InterruptedException e) {
             // Ignore
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
         function.apply();
     }

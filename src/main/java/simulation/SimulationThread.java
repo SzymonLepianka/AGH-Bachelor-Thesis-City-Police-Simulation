@@ -45,6 +45,7 @@ public class SimulationThread extends Thread {
                 sleep(40);
             } catch (Exception e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }

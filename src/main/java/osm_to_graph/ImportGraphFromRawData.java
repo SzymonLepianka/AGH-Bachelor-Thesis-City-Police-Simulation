@@ -1,4 +1,4 @@
-package OSMToGraph;
+package osm_to_graph;
 
 import de.westnordost.osmapi.map.MapDataParser;
 import de.westnordost.osmapi.map.OsmMapDataFactory;
@@ -25,24 +25,30 @@ import java.util.Map;
 
 public class ImportGraphFromRawData {
 
-    private static final String defaultCityName = "Kraków";
-    private static final int defaultCityAdminLevelName = 6;
-    private static final int defaultDistrictAdminLevelName = 9;
-    private static final String rawDataFile1 = "export";
-    private static final String rawDataFile2 = "Raw.osm";
-    private static final String rawDataDistrictFile1 = "export";
-    private static final String rawDataDistrictFile2 = "DistrictsRaw.osm";
-    private static final String rawDataPath = "OsmRawData/";
-    // area["admin_level"=6][name="Kraków"]->.a;(way(area.a)["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|living_street|service|pedestrian|track|road)$"]["crossing"!~"."]["name"];);out meta;>;out meta qt;
-    private static final String query1 = "area[\"admin_level\"=";
-    private static final String query2 = "][name=\"";
-    private static final String query3 = "\"]->.a;(way(area.a)[\"highway\"~\"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|living_street|service|pedestrian|track|road)$\"][\"crossing\"!~\".\"][\"name\"];);out meta;>;out meta qt;";
-    private static final String apiURL = "https://overpass-api.de/api/interpreter";
-    // area["admin_level"=6][name="Kraków"]->.a;(relation(area.a)["admin_level"=9][boundary=administrative]["name"];);out meta;>;out meta qt;
-    private static final String queryDistrict1 = "area[\"admin_level\"=";
-    private static final String queryDistrict2 = "][name=\"";
-    private static final String queryDistrict3 = "\"]->.a;(relation(area.a)[\"admin_level\"=";
-    private static final String queryDistrict4 = "][boundary=administrative][\"name\"];);out meta;>;out meta qt;";
+    private static final String DEFAULT_CITY_NAME = "Kraków";
+    private static final int DEFAULT_CITY_ADMIN_LEVEL_NAME = 6;
+    private static final int DEFAULT_DISTRICT_ADMIN_LEVEL_NAME = 9;
+    private static final String RAW_DATA_FILE_1 = "export";
+    private static final String RAW_DATA_FILE_2 = "Raw.osm";
+    private static final String RAW_DATA_DISTRICT_FILE_1 = "export";
+    private static final String RAW_DATA_DISTRICT_FILE_2 = "DistrictsRaw.osm";
+    private static final String RAW_DATA_PATH = "OsmRawData/";
+    /*
+    full content of the request:
+    area["admin_level"=6][name="Kraków"]->.a;(way(area.a)["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|living_street|service|pedestrian|track|road)$"]["crossing"!~"."]["name"];);out meta;>;out meta qt;
+     */
+    private static final String QUERY_1 = "area[\"admin_level\"=";
+    private static final String QUERY_2 = "][name=\"";
+    private static final String QUERY_3 = "\"]->.a;(way(area.a)[\"highway\"~\"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|living_street|service|pedestrian|track|road)$\"][\"crossing\"!~\".\"][\"name\"];);out meta;>;out meta qt;";
+    private static final String API_URL = "https://overpass-api.de/api/interpreter";
+    /*
+    full content of the request:
+    area["admin_level"=6][name="Kraków"]->.a;(relation(area.a)["admin_level"=9][boundary=administrative]["name"];);out meta;>;out meta qt;
+     */
+    private static final String QUERY_DISTRICT_1 = "area[\"admin_level\"=";
+    private static final String QUERY_DISTRICT_2 = "][name=\"";
+    private static final String QUERY_DISTRICT_3 = "\"]->.a;(relation(area.a)[\"admin_level\"=";
+    private static final String QUERY_DISTRICT_4 = "][boundary=administrative][\"name\"];);out meta;>;out meta qt;";
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -55,7 +61,7 @@ public class ImportGraphFromRawData {
 //
 //        Graph<Node, ImportedEdge> graph = dataHandler.getGraph();
 
-        entities.Map map = createMap(defaultCityName, defaultCityAdminLevelName, defaultDistrictAdminLevelName);
+        entities.Map map = createMap(DEFAULT_CITY_NAME, DEFAULT_CITY_ADMIN_LEVEL_NAME, DEFAULT_DISTRICT_ADMIN_LEVEL_NAME);
         Graph<Node, ImportedEdge> graph = map.getGraph();
         HashMap<Long, Node> myNodes = map.getMyNodes();
         List<District> districts = map.getDistricts();
@@ -83,8 +89,8 @@ public class ImportGraphFromRawData {
     }
 
     public static entities.Map createMap(String cityName, int cityAdminLevel, int districtAdminLevel) throws IOException, InterruptedException {
-        ParsingMapDataHandler dataHandler = handleRawData(rawDataPath + rawDataFile1 + cityName + rawDataFile2, query1 + cityAdminLevel + query2 + cityName + query3, cityName, false);
-        ParsingMapDataHandler districtDataHandler = handleRawData(rawDataPath + rawDataDistrictFile1 + cityName + rawDataDistrictFile2, queryDistrict1 + cityAdminLevel + queryDistrict2 + cityName + queryDistrict3 + districtAdminLevel + queryDistrict4, cityName, true);
+        ParsingMapDataHandler dataHandler = handleRawData(RAW_DATA_PATH + RAW_DATA_FILE_1 + cityName + RAW_DATA_FILE_2, QUERY_1 + cityAdminLevel + QUERY_2 + cityName + QUERY_3, cityName, false);
+        ParsingMapDataHandler districtDataHandler = handleRawData(RAW_DATA_PATH + RAW_DATA_DISTRICT_FILE_1 + cityName + RAW_DATA_DISTRICT_FILE_2, QUERY_DISTRICT_1 + cityAdminLevel + QUERY_DISTRICT_2 + cityName + QUERY_DISTRICT_3 + districtAdminLevel + QUERY_DISTRICT_4, cityName, true);
         Logger.getInstance().logNewMessage("Loaded map data.");
 
         // exporting the graph to a DOT file:
@@ -101,14 +107,14 @@ public class ImportGraphFromRawData {
             dataHandler = handleInputStream(cityName, fin, true, districtData);
             // close the file:
             fin.close();
-        } catch (FileNotFoundException | InterruptedException e) {
+        } catch (IOException e) {
             dataHandler = handleRawDataFromRequest(query, cityName, districtData);
         }
         return dataHandler;
     }
 
     public static ParsingMapDataHandler handleRawDataFromRequest(String query, String cityName, boolean districtData) throws IOException, InterruptedException {
-        HttpURLConnection urlConn = makeRequest(apiURL, query);
+        HttpURLConnection urlConn = makeRequest(API_URL, query);
         InputStream inputStream = urlConn.getInputStream();
         return handleInputStream(cityName, inputStream, false, districtData);
     }
@@ -139,9 +145,9 @@ public class ImportGraphFromRawData {
     public static void writeRawDataToFile(String cityName, InputStream inputStream, boolean districtData) throws IOException {
         File myObj;
         if (districtData) {
-            myObj = new File(rawDataPath + rawDataDistrictFile1 + cityName + rawDataDistrictFile2);
+            myObj = new File(RAW_DATA_PATH + RAW_DATA_DISTRICT_FILE_1 + cityName + RAW_DATA_DISTRICT_FILE_2);
         } else {
-            myObj = new File(rawDataPath + rawDataFile1 + cityName + rawDataFile2);
+            myObj = new File(RAW_DATA_PATH + RAW_DATA_FILE_1 + cityName + RAW_DATA_FILE_2);
         }
         FileUtils.copyInputStreamToFile(inputStream, myObj);
     }

@@ -1,6 +1,6 @@
-package guiComponents;
+package gui_components;
 
-import OSMToGraph.ImportGraphFromRawData;
+import osm_to_graph.ImportGraphFromRawData;
 import World.World;
 import entities.District;
 import utils.Logger;
@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -140,7 +141,7 @@ public class ConfigurationPanel {
 
         //drop-down list with city selection
         citySelectionPanel.add(countrySelectionComboBox);
-        citySelectionComboBox = new JComboBox<>(availablePlaces.get(availablePlaces.keySet().stream().findFirst().get()));
+        citySelectionComboBox = new JComboBox<>(availablePlaces.get(availablePlaces.keySet().stream().findFirst().orElseThrow()));
         citySelectionPanel.add(citySelectionComboBox);
 
         // city select button
@@ -249,21 +250,21 @@ public class ConfigurationPanel {
 
         var panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2));
-        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ": "));
+        panel.add(new JLabel(District.ThreatLevelEnum.NOT_SAFE + ": "));
         threatLevelMaxIncidentsTextField_NOTSAFE.setColumns(11);
-        threatLevelMaxIncidentsTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.NotSafe)));
+        threatLevelMaxIncidentsTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.NOT_SAFE)));
         addRestrictionOfEnteringOnlyIntegers(threatLevelMaxIncidentsTextField_NOTSAFE);
-        threatLevelMaxIncidentsTextField_NOTSAFE.setInputVerifier(new MaxNumberOfIncidentsInputVerifier(District.ThreatLevelEnum.NotSafe));
+        threatLevelMaxIncidentsTextField_NOTSAFE.setInputVerifier(new MaxNumberOfIncidentsInputVerifier(District.ThreatLevelEnum.NOT_SAFE));
         panel.add(threatLevelMaxIncidentsTextField_NOTSAFE);
-        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ": "));
-        threatLevelMaxIncidentsTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
+        panel.add(new JLabel(District.ThreatLevelEnum.RATHER_SAFE + ": "));
+        threatLevelMaxIncidentsTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.RATHER_SAFE)));
         addRestrictionOfEnteringOnlyIntegers(threatLevelMaxIncidentsTextField_RATHERSAFE);
-        threatLevelMaxIncidentsTextField_RATHERSAFE.setInputVerifier(new MaxNumberOfIncidentsInputVerifier(District.ThreatLevelEnum.RatherSafe));
+        threatLevelMaxIncidentsTextField_RATHERSAFE.setInputVerifier(new MaxNumberOfIncidentsInputVerifier(District.ThreatLevelEnum.RATHER_SAFE));
         panel.add(threatLevelMaxIncidentsTextField_RATHERSAFE);
-        panel.add(new JLabel(District.ThreatLevelEnum.Safe + ": "));
-        threatLevelMaxIncidentsTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.Safe)));
+        panel.add(new JLabel(District.ThreatLevelEnum.SAFE + ": "));
+        threatLevelMaxIncidentsTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getMaxIncidentForThreatLevel(District.ThreatLevelEnum.SAFE)));
         addRestrictionOfEnteringOnlyIntegers(threatLevelMaxIncidentsTextField_SAFE);
-        threatLevelMaxIncidentsTextField_SAFE.setInputVerifier(new MaxNumberOfIncidentsInputVerifier(District.ThreatLevelEnum.Safe));
+        threatLevelMaxIncidentsTextField_SAFE.setInputVerifier(new MaxNumberOfIncidentsInputVerifier(District.ThreatLevelEnum.SAFE));
         panel.add(threatLevelMaxIncidentsTextField_SAFE);
         threatLevelToMaxIncidentsConfigurationPanel.add(panel);
 
@@ -287,21 +288,21 @@ public class ConfigurationPanel {
 
         panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2));
-        panel.add(new JLabel(District.ThreatLevelEnum.NotSafe + ": "));
+        panel.add(new JLabel(District.ThreatLevelEnum.NOT_SAFE + ": "));
         threatLevelFiringChanceTextField_NOTSAFE.setColumns(11);
-        threatLevelFiringChanceTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.NotSafe)));
+        threatLevelFiringChanceTextField_NOTSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.NOT_SAFE)));
         addRestrictionOfEnteringOnlyFloats(threatLevelFiringChanceTextField_NOTSAFE);
-        threatLevelFiringChanceTextField_NOTSAFE.setInputVerifier(new ProbabilityInputVerifier(District.ThreatLevelEnum.NotSafe));
+        threatLevelFiringChanceTextField_NOTSAFE.setInputVerifier(new ProbabilityInputVerifier(District.ThreatLevelEnum.NOT_SAFE));
         panel.add(threatLevelFiringChanceTextField_NOTSAFE);
-        panel.add(new JLabel(District.ThreatLevelEnum.RatherSafe + ": "));
-        threatLevelFiringChanceTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.RatherSafe)));
+        panel.add(new JLabel(District.ThreatLevelEnum.RATHER_SAFE + ": "));
+        threatLevelFiringChanceTextField_RATHERSAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.RATHER_SAFE)));
         addRestrictionOfEnteringOnlyFloats(threatLevelFiringChanceTextField_RATHERSAFE);
-        threatLevelFiringChanceTextField_RATHERSAFE.setInputVerifier(new ProbabilityInputVerifier(District.ThreatLevelEnum.RatherSafe));
+        threatLevelFiringChanceTextField_RATHERSAFE.setInputVerifier(new ProbabilityInputVerifier(District.ThreatLevelEnum.RATHER_SAFE));
         panel.add(threatLevelFiringChanceTextField_RATHERSAFE);
-        panel.add(new JLabel(District.ThreatLevelEnum.Safe + ": "));
-        threatLevelFiringChanceTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.Safe)));
+        panel.add(new JLabel(District.ThreatLevelEnum.SAFE + ": "));
+        threatLevelFiringChanceTextField_SAFE.setText(String.valueOf(World.getInstance().getConfig().getFiringChanceForThreatLevel(District.ThreatLevelEnum.SAFE)));
         addRestrictionOfEnteringOnlyFloats(threatLevelFiringChanceTextField_SAFE);
-        threatLevelFiringChanceTextField_SAFE.setInputVerifier(new ProbabilityInputVerifier(District.ThreatLevelEnum.Safe));
+        threatLevelFiringChanceTextField_SAFE.setInputVerifier(new ProbabilityInputVerifier(District.ThreatLevelEnum.SAFE));
         panel.add(threatLevelFiringChanceTextField_SAFE);
         threatLevelToFiringChanceConfigurationPanel.add(panel);
 
@@ -440,7 +441,7 @@ public class ConfigurationPanel {
         var cityName = citySelectionComboBox.getSelectedItem().toString();
         World.getInstance().getConfig().setCityName(cityName);
         if (loadMapIntoWorld(cityName)) {
-            var scrollContent = (JPanel) ((JScrollPane) Arrays.stream(districtConfigurationPanel.getComponents()).filter(x -> x instanceof JScrollPane).findFirst().get()).getViewport().getView();
+            var scrollContent = (JPanel) ((JScrollPane) Arrays.stream(districtConfigurationPanel.getComponents()).filter(x -> x instanceof JScrollPane).findFirst().orElseThrow()).getViewport().getView();
             scrollContent.removeAll();
             for (var district : World.getInstance().getMap().getDistricts()) {
                 scrollContent.add(new DistrictConfigComponent(district));
@@ -467,13 +468,13 @@ public class ConfigurationPanel {
         config.setDrawLegend(drawLegendCheckBox.isSelected());
         config.setDrawInterventionDetails(drawInterventionDetailsCheckBox.isSelected());
 
-        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelMaxIncidentsTextField_SAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_SAFE, 0));
-        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelMaxIncidentsTextField_RATHERSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_RATHERSAFE, 0));
-        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.NotSafe, threatLevelMaxIncidentsTextField_NOTSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_NOTSAFE, 0));
+        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.SAFE, threatLevelMaxIncidentsTextField_SAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_SAFE, 0));
+        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.RATHER_SAFE, threatLevelMaxIncidentsTextField_RATHERSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_RATHERSAFE, 0));
+        config.setMaxIncidentsForThreatLevel(District.ThreatLevelEnum.NOT_SAFE, threatLevelMaxIncidentsTextField_NOTSAFE.getText().equals("") ? 0 : convertInputToInteger(threatLevelMaxIncidentsTextField_NOTSAFE, 0));
 
-        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.Safe, threatLevelFiringChanceTextField_SAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_SAFE, 0.0));
-        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.RatherSafe, threatLevelFiringChanceTextField_RATHERSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_RATHERSAFE, 0.0));
-        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.NotSafe, threatLevelFiringChanceTextField_NOTSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_NOTSAFE, 0.0));
+        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.SAFE, threatLevelFiringChanceTextField_SAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_SAFE, 0.0));
+        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.RATHER_SAFE, threatLevelFiringChanceTextField_RATHERSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_RATHERSAFE, 0.0));
+        config.setFiringChanceForThreatLevel(District.ThreatLevelEnum.NOT_SAFE, threatLevelFiringChanceTextField_NOTSAFE.getText().equals("") ? 0.0 : convertInputToDouble(threatLevelFiringChanceTextField_NOTSAFE, 0.0));
 
         config.setMinimumInterventionDuration(minimumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(minimumInterventionDurationTextField, Integer.parseInt(maximumInterventionDurationTextField.getText()) - 1));
         config.setMaximumInterventionDuration(maximumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(maximumInterventionDurationTextField, Integer.parseInt(minimumInterventionDurationTextField.getText()) + 1));
@@ -510,9 +511,10 @@ public class ConfigurationPanel {
             var districtAdminLevel = districtAdminLevelForAvailablePlaces.get(countryName);
             var map = ImportGraphFromRawData.createMap(cityName, cityAdminLevel, districtAdminLevel);
             World.getInstance().setMap(map);
-        } catch (Exception e) {
+        } catch (InterruptedException | IOException e) {
             // TODO Add logger
             e.printStackTrace();
+            Thread.currentThread().interrupt();
             return false;
         }
         return true;
@@ -585,11 +587,11 @@ public class ConfigurationPanel {
                     var safetyLevel_RATHERSAFE = Integer.parseInt(threatLevelMaxIncidentsTextField_RATHERSAFE.getText());
                     var safetyLevel_NOTSAFE = Integer.parseInt(threatLevelMaxIncidentsTextField_NOTSAFE.getText());
 
-                    if (safetyLevel == District.ThreatLevelEnum.Safe) {
+                    if (safetyLevel == District.ThreatLevelEnum.SAFE) {
                         if (value >= safetyLevel_RATHERSAFE) {
                             ((JTextField) input).setText(String.valueOf(safetyLevel_RATHERSAFE - 1));
                         }
-                    } else if (safetyLevel == District.ThreatLevelEnum.RatherSafe) {
+                    } else if (safetyLevel == District.ThreatLevelEnum.RATHER_SAFE) {
                         if (value <= safetyLevel_SAFE || value >= safetyLevel_NOTSAFE) {
                             ((JTextField) input).setText(String.valueOf(safetyLevel_SAFE + 1));
                         }
@@ -625,11 +627,11 @@ public class ConfigurationPanel {
                     var safetyLevel_RATHERSAFE = Double.parseDouble(threatLevelFiringChanceTextField_RATHERSAFE.getText());
                     var safetyLevel_NOTSAFE = Double.parseDouble(threatLevelFiringChanceTextField_NOTSAFE.getText());
 
-                    if (safetyLevel == District.ThreatLevelEnum.Safe) {
+                    if (safetyLevel == District.ThreatLevelEnum.SAFE) {
                         if (value >= safetyLevel_RATHERSAFE) {
                             ((JTextField) input).setText(String.format(Locale.US, "%.2f", safetyLevel_RATHERSAFE - 0.01));
                         }
-                    } else if (safetyLevel == District.ThreatLevelEnum.RatherSafe) {
+                    } else if (safetyLevel == District.ThreatLevelEnum.RATHER_SAFE) {
                         if (value <= safetyLevel_SAFE || value >= safetyLevel_NOTSAFE) {
                             ((JTextField) input).setText(String.format(Locale.US, "%.2f", safetyLevel_SAFE + 0.01));
                         }
