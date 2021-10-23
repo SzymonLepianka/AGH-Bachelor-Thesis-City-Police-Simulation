@@ -1,6 +1,6 @@
 package utils;
 
-import World.World;
+import world.World;
 
 public class DelayedActionWithTargetSimulationTime extends Thread {
 
@@ -24,7 +24,7 @@ public class DelayedActionWithTargetSimulationTime extends Thread {
         try {
             while (world.getSimulationTimeLong() < targetSimulationTime) {
                 var sleepTime = ((targetSimulationTime - world.getSimulationTimeLong()) * 1000) / world.getConfig().getTimeRate();
-                Thread.sleep((long) sleepTime, (int) ((sleepTime - (long) sleepTime) * 1000000));
+                Thread.sleep(sleepTime, 0);
             }
         } catch (InterruptedException e) {
             // Ignore

@@ -1,16 +1,11 @@
 package utils;
 
-import java.lang.reflect.Method;
-import java.util.function.Function;
 
 public class DelayedAction extends Thread {
-
-    public interface Thunk { void apply(); }
 
     private long delayMillis = 0;
     private int delayNanos = 0;
     private Thunk function;
-
     public DelayedAction(long delayMillis, int delayNanos, Thunk function) {
         this.delayMillis = delayMillis;
         this.delayNanos = delayNanos;
@@ -31,5 +26,9 @@ public class DelayedAction extends Thread {
             Thread.currentThread().interrupt();
         }
         function.apply();
+    }
+
+    public interface Thunk {
+        void apply();
     }
 }

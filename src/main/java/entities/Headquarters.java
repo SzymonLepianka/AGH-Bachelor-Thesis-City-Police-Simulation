@@ -1,7 +1,7 @@
 package entities;
 
 import csv_export.ExportFiringDetails;
-import World.World;
+import world.World;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import utils.Logger;
@@ -17,7 +17,6 @@ public class Headquarters extends Entity implements IDrawable {
 
     private final double searchRange;
     private final double durationOfTheShift;
-    private List<Patrol> patrols = new ArrayList<>();
     private List<Incident> incidents = new ArrayList<>();
     private double endOfCurrentShift;
 
@@ -44,14 +43,20 @@ public class Headquarters extends Entity implements IDrawable {
 
     public void assignTasks() {
         checkIfTheShiftIsOver();
-        updatePatrolsAndIncidents();
-        var allInterventions = incidents.stream().filter(x -> x instanceof Intervention).sorted(Comparator.comparingLong(Incident::getStartTime)).collect(Collectors.toList());
-        var allFirings = incidents.stream().filter(x -> x instanceof Firing).sorted(Comparator.comparingLong(Incident::getStartTime)).collect(Collectors.toList());
 
+        updateListOfIncidents();
+        var allInterventions = incidents.stream().filter(Intervention.class::isInstance).sorted(Comparator.comparingLong(Incident::getStartTime)).collect(Collectors.toList());
+        var allFirings = incidents.stream().filter(Firing.class::isInstance).sorted(Comparator.comparingLong(Incident::getStartTime)).collect(Collectors.toList());
+
+        checkAllFirings(allFirings);
+        checkAllInterventions(allInterventions);
+    }
+
+    private void checkAllFirings(List<Incident> allFirings){
         for (var firing : allFirings) {
-            int requiredPatrols = ((Firing) firing).getRequiredPatrols();
-            List<Patrol> patrolsSolving = ((Firing) firing).getPatrolsSolving();
-            List<Patrol> patrolsReaching = ((Firing) firing).getPatrolsReaching();
+            var requiredPatrols = ((Firing) firing).getRequiredPatrols();
+            var patrolsSolving = ((Firing) firing).getPatrolsSolving();
+            var patrolsReaching = ((Firing) firing).getPatrolsReaching();
             if (requiredPatrols <= patrolsSolving.size()) {
                 for (int i = 0; i < patrolsReaching.size(); i++) {
                     Logger.getInstance().logNewMessage(patrolsReaching.get(i) + " state set from " + patrolsReaching.get(i).getState() + " to PATROLLING");
@@ -59,30 +64,36 @@ public class Headquarters extends Entity implements IDrawable {
                     ((Firing) firing).removeReachingPatrol(patrolsReaching.get(i));
                 }
             }
-            if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
-                for (int i = 1; i < 4; i++) {
-                    List<Patrol> foundPatrols = World.getInstance().getEntitiesNear(firing, searchRange * i)
-                            .stream()
-                            .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.PATROLLING)
-                            .map(x -> (Patrol) x)
-                            .collect(Collectors.toList());
-                    giveOrdersToFoundPatrols(firing, foundPatrols);
-                    if (foundPatrols.size() + patrolsSolving.size() + patrolsReaching.size() >= requiredPatrols) {
-                        break;
-                    }
-                }
-                if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
-                    List<Patrol> foundTransferringToInterventionPatrols = World.getInstance().getEntitiesNear(firing, searchRange * 2)
-                            .stream()
-                            .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.TRANSFER_TO_INTERVENTION)
-                            .map(x -> (Patrol) x)
-                            .collect(Collectors.toList());
-                    giveOrdersToFoundPatrols(firing, foundTransferringToInterventionPatrols);
+            summonSupportForFiring((Firing) firing, patrolsSolving, patrolsReaching, requiredPatrols);
+        }
+    }
+
+    private void summonSupportForFiring(Firing firing, List <Patrol> patrolsSolving, List<Patrol> patrolsReaching, int requiredPatrols){
+        if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
+            for (int i = 1; i < 4; i++) {
+                var foundPatrols = World.getInstance().getEntitiesNear(firing, searchRange * i)
+                        .stream()
+                        .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.PATROLLING)
+                        .map(Patrol.class::cast)
+                        .collect(Collectors.toList());
+                giveOrdersToFoundPatrols(firing, foundPatrols);
+                if (foundPatrols.size() + patrolsSolving.size() + patrolsReaching.size() >= requiredPatrols) {
+                    break;
                 }
             }
+            if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
+                var foundTransferringToInterventionPatrols = World.getInstance().getEntitiesNear(firing, searchRange * 2)
+                        .stream()
+                        .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.TRANSFER_TO_INTERVENTION)
+                        .map(Patrol.class::cast)
+                        .collect(Collectors.toList());
+                giveOrdersToFoundPatrols(firing, foundTransferringToInterventionPatrols);
+            }
         }
+    }
 
-        for (Entity intervention : allInterventions) {
+    private void checkAllInterventions(List<Incident> allInterventions){
+        for (var intervention : allInterventions) {
             if (((Intervention) intervention).getPatrolSolving() == null) {
                 Patrol availablePatrol;
                 int i = 0;
@@ -90,7 +101,7 @@ public class Headquarters extends Entity implements IDrawable {
                     availablePatrol = World.getInstance().getEntitiesNear(intervention, searchRange * i)
                             .stream()
                             .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.PATROLLING)
-                            .map(x -> (Patrol) x).findFirst()
+                            .map(Patrol.class::cast).findFirst()
                             .orElse(null);
                     if (availablePatrol != null || i > 10) {
                         break;
@@ -114,15 +125,14 @@ public class Headquarters extends Entity implements IDrawable {
             p.takeOrder(p.new Transfer(World.getInstance().getSimulationTimeLong(), firing, Patrol.State.TRANSFER_TO_FIRING));
             ((Firing) firing).addReachingPatrol(p);
         }
-        if (foundPatrols.size() > 0) {
+        if (!foundPatrols.isEmpty()) {
             ExportFiringDetails.getInstance().writeToCsvFile((Firing) firing, foundPatrols);
         }
     }
 
-    private void updatePatrolsAndIncidents() {
+    private void updateListOfIncidents() {
         var allEntities = World.getInstance().getAllEntities();
-        patrols = allEntities.stream().filter(x -> x instanceof Patrol).map(x -> (Patrol) x).collect(Collectors.toList());
-        incidents = allEntities.stream().filter(x -> x instanceof Incident).map(x -> (Incident) x).collect(Collectors.toList());
+        incidents = allEntities.stream().filter(Incident.class::isInstance).map(Incident.class::cast).collect(Collectors.toList());
     }
 
     private void checkIfTheShiftIsOver() {

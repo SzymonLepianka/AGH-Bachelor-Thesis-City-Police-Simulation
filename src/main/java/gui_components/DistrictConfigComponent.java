@@ -7,13 +7,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 public class DistrictConfigComponent extends JPanel {
 
-    private final int MARGIN = 10;
-    private District district;
-    private JSlider districtThreatLevelInput = new JSlider(District.ThreatLevelEnum.values()[0].value, District.ThreatLevelEnum.values()[District.ThreatLevelEnum.values().length - 1].value);
+    private final static int MARGIN = 10;
+    private final District district;
+    private final JSlider districtThreatLevelInput = new JSlider(District.ThreatLevelEnum.values()[0].value, District.ThreatLevelEnum.values()[District.ThreatLevelEnum.values().length - 1].value);
 
     public DistrictConfigComponent(District districtName) {
         this.district = districtName;
@@ -22,13 +23,13 @@ public class DistrictConfigComponent extends JPanel {
         this.setBorder(new EmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
         this.setSize(new Dimension(290 - (MARGIN * 2), 80));
 
-        var labels = new Hashtable<Integer, JLabel>();
+        var labels = new HashMap<Integer, JLabel>();
         for (var label : District.ThreatLevelEnum.values()) {
             labels.put(label.value, new JLabel(label.toString()));
         }
 
         this.districtThreatLevelInput.addChangeListener(event -> inputChanged());
-        this.districtThreatLevelInput.setLabelTable(labels);
+        this.districtThreatLevelInput.setLabelTable(new Hashtable<>(labels));
         this.districtThreatLevelInput.setPaintLabels(true);
 
         var districtNameLabel = new JLabel(this.district.getName());

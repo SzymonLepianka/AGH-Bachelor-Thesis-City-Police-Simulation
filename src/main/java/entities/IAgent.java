@@ -1,11 +1,9 @@
 package entities;
 
 public interface IAgent {
-    // TODO Add methods Perform Action, Think etc
+    void updateStateSelf() throws IllegalStateException;
 
-    void updateStateSelf() throws Exception;
-
-    void performAction() throws Exception;
+    void performAction() throws IllegalStateException;
 
     void takeOrder(Patrol.Action action);
 }

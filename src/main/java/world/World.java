@@ -1,4 +1,4 @@
-package World;
+package world;
 
 import csv_export.ExportToCSV;
 import de.westnordost.osmapi.map.data.LatLon;
@@ -19,11 +19,10 @@ import java.util.stream.Collectors;
 
 public class World {
 
+    private static final double DURATION_OF_THE_SHIFT = 28800;
     private static World instance;
     private final List<Entity> allEntities = new ArrayList<>();
     private final WorldConfiguration worldConfig = new WorldConfiguration();
-    // TODO let the user to choose durationOfTheShift
-    private final static double durationOfTheShift = 28800;
     private LocalDateTime startTime;
     private double timePassedUntilPause = 0;
     private boolean isSimulationPaused = false;
@@ -120,7 +119,7 @@ public class World {
     }
 
     public double getDurationOfTheShift() {
-        return durationOfTheShift;
+        return DURATION_OF_THE_SHIFT;
     }
 
     public long getSimulationTimeLong() {

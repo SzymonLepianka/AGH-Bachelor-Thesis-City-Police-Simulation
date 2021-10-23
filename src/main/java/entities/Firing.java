@@ -1,6 +1,6 @@
 package entities;
 
-import World.World;
+import world.World;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 
@@ -20,9 +20,8 @@ public class Firing extends Incident implements IDrawable {
     public Firing(double latitude, double longitude) {
         super(latitude, longitude);
 
-        // TODO Parameters random selection
-        this.requiredPatrols = 2;
-        this.strength = 500;
+        this.requiredPatrols = 3;
+        this.strength = requiredPatrols * 15 * 60.0;
     }
 
     public Firing(double latitude, double longitude, int requiredPatrols, double initialStrength, District district) {
@@ -92,8 +91,6 @@ public class Firing extends Incident implements IDrawable {
 
     @Override
     public void updateState() {
-//        super.updateState();
-        // TODO improve the calculation of loss of strength
         this.strength -= patrolsSolving.size() * (World.getInstance().getSimulationTime() - timeOfLastUpdate);
         timeOfLastUpdate = World.getInstance().getSimulationTime();
         if (this.strength <= 0) {

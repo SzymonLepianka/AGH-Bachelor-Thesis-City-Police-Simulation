@@ -1,6 +1,6 @@
 package entities.factories;
 
-import World.World;
+import world.World;
 import entities.District;
 import entities.Firing;
 import entities.Intervention;
@@ -15,6 +15,8 @@ public class IncidentFactory {
     private static final int MIN_FIRING_STRENGTH = world.getConfig().getMinimumFiringStrength() * 60;
     private static final int MAX_FIRING_STRENGTH = world.getConfig().getMaximumFiringStrength() * 60;
 
+    private IncidentFactory(){}
+
     public static Intervention createRandomInterventionForDistrict(District district) {
         var randomNode = district.getAllNodesInDistrict().get(ThreadLocalRandom.current().nextInt(0, district.getAllNodesInDistrict().size()));
         var latitude = randomNode.getPosition().getLatitude();
@@ -22,7 +24,7 @@ public class IncidentFactory {
         var duration = calculateDurationOfIncident(district, MIN_EVENT_DURATION, MAX_EVENT_DURATION + 1);
 
         // Will change into firing
-        if (ThreadLocalRandom.current().nextDouble() < ThreatLevelToFiringChance(district.getThreatLevel())) {
+        if (ThreadLocalRandom.current().nextDouble() < threatLevelToFiringChance(district.getThreatLevel())) {
             var timeToChange = ThreadLocalRandom.current().nextInt(0, duration);
             return new Intervention(latitude, longitude, duration, true, timeToChange, district);
         } else {
@@ -38,7 +40,7 @@ public class IncidentFactory {
         return new Firing(intervention.getLatitude(), intervention.getLongitude(), numberOfRequiredPatrols, strength, intervention.getDistrict());
     }
 
-    private static double ThreatLevelToFiringChance(District.ThreatLevelEnum threatLevel) {
+    private static double threatLevelToFiringChance(District.ThreatLevelEnum threatLevel) {
         return world.getConfig().getFiringChanceForThreatLevel(threatLevel);
     }
 

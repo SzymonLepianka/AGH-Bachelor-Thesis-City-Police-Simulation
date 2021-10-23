@@ -1,6 +1,6 @@
 package utils;
 
-import World.World;
+import world.World;
 import gui_components.LoggerPanel;
 
 import java.io.File;
@@ -33,18 +33,17 @@ public class Logger {
     }
 
     private final File logFile;
-    private final File logsDirectory;
-    private final String logsDirectoryPath = "logs";
+    private final static String logsDirectoryPath = "logs";
     private final List<LoggerPanel> loggingPanels = new ArrayList<>();
     private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
 
     private Logger() {
-        logsDirectory = new File(logsDirectoryPath);
+        File logsDirectory = new File(logsDirectoryPath);
         if (!(logsDirectory.exists() && logsDirectory.isDirectory())) {
             logsDirectory.mkdir();
         }
 
-        logFile = new File(logsDirectoryPath + "/" + dateFormat.format(LocalDateTime.now()) + ".log");
+        logFile = new File(logsDirectoryPath, dateFormat.format(LocalDateTime.now()) + ".log");
         try {
             if(!logFile.createNewFile()){
                 throw new IOException("Unable to create file");

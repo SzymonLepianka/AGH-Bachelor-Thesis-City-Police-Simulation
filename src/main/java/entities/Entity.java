@@ -5,7 +5,6 @@ import de.westnordost.osmapi.map.data.OsmLatLon;
 
 import java.util.UUID;
 
-// TODO Add entities in code documentation
 public abstract class Entity {
 
     private final UUID uniqueID = UUID.randomUUID();
@@ -15,12 +14,12 @@ public abstract class Entity {
     protected Entity() {
     }
 
-    public Entity(double latitude, double longitude) {
+    protected Entity(double latitude, double longitude) {
         this.setLatitude(latitude);
         this.setLongitude(longitude);
     }
 
-    public Entity(LatLon position) {
+    protected Entity(LatLon position) {
         this(position.getLatitude(), position.getLongitude());
     }
 

@@ -10,7 +10,7 @@ public class LoggerPanel {
 
     private class JPanelWithComponentsOrder extends JPanel {
 
-        private List<Component> componentList = new ArrayList<Component>();
+        private final List<Component> componentList = new ArrayList<>();
 
         @Override
         public void remove(Component component) {
@@ -62,17 +62,17 @@ public class LoggerPanel {
     private final JPanelWithComponentsOrder scrollContent = new JPanelWithComponentsOrder();
     private final JScrollPane scrollPane = new JScrollPane(scrollContent);
 
-    private final int MAX_NUMBER_OF_COMPONENTS = 1000;
+    private final static int MAX_NUMBER_OF_COMPONENTS = 1000;
 
     public void createWindow() {
         frame.setSize( 1000, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
         scrollContent.setLayout(new BoxLayout(scrollContent, BoxLayout.Y_AXIS));
 
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         scrollPane.setSize(800, 400);
         frame.add(scrollPane);

@@ -42,13 +42,8 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
         return id;
     }
 
-    public HashMap<Long, Node> getNodesMap() {
+    public Map<Long, Node> getNodesMap() {
         return this.myNodes;
-    }
-
-    @Override
-    public void handle(BoundingBox bounds) {
-        super.handle(bounds);
     }
 
     @Override

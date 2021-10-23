@@ -6,7 +6,8 @@ import org.jgrapht.alg.interfaces.AStarAdmissibleHeuristic;
 // class counting the distance between two nodes
 public class Haversine {
     private static final int EARTH_RADIUS = 6371; // Approx Earth radius in KM
-//    private static final int EARTH_RADIUS = 6365; // Approx Earth radius in KM
+
+    private Haversine(){}
 
     public static double distance(double startLat, double startLong, double endLat, double endLong) {
 
@@ -43,7 +44,7 @@ public class Haversine {
         return Math.pow(Math.sin(val / 2), 2);
     }
 
-    public static class ownHeuristics implements AStarAdmissibleHeuristic<Node> {
+    public static class OwnHeuristics implements AStarAdmissibleHeuristic<Node> {
         @Override
         public double getCostEstimate(Node sourceVertex, Node targetVertex) {
             return Haversine.distance(sourceVertex.getPosition().getLatitude(),

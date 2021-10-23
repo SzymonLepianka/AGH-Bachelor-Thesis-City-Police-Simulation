@@ -1,7 +1,5 @@
 package simulation;
 
-import osm_to_graph.ImportedEdge;
-import World.World;
 import de.westnordost.osmapi.map.data.LatLon;
 import de.westnordost.osmapi.map.data.Node;
 import de.westnordost.osmapi.map.data.OsmLatLon;
@@ -9,16 +7,17 @@ import entities.Entity;
 import entities.Patrol;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.AStarShortestPath;
+import osm_to_graph.ImportedEdge;
 import utils.Haversine;
+import world.World;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class PathCalculator extends Thread {
 
-    private final AStarShortestPath<Node, ImportedEdge> pathCalculator = World.getInstance().getMap().getPathCalculator();
-    private final HashMap<Long, Node> myNodes = World.getInstance().getMap().getMyNodes();
+    private final AStarShortestPath<Node, ImportedEdge> pathCalc = World.getInstance().getMap().getPathCalculator();
+    private final java.util.Map<Long, Node> myNodes = World.getInstance().getMap().getMyNodes();
     private final Entity source;
     private final Entity target;
 
@@ -30,19 +29,19 @@ public class PathCalculator extends Thread {
     @Override
     public void run() {
         var pathNodeList = getPathNodeList(source.getLatitude(), source.getLongitude(), target.getLatitude(), target.getLongitude());
-        if (pathNodeList.size() == 1){
-            ArrayList<Node> pathNodeList2 = new ArrayList<>();
+        if (pathNodeList.size() == 1) {
+            var pathNodeList2 = new ArrayList<Node>();
             pathNodeList2.add(pathNodeList.get(0));
             ((Patrol.Transfer) ((Patrol) source).getAction()).setPathNodeList(pathNodeList2);
-        }else{
-            ((Patrol.Transfer) ((Patrol) source).getAction()).setPathNodeList((ArrayList<Node>) pathNodeList);
+        } else {
+            ((Patrol.Transfer) ((Patrol) source).getAction()).setPathNodeList(pathNodeList);
         }
     }
 
     public List<Node> getPathNodeList(double sourceLatitude, double sourceLongitude, double targetLatitude, double targetLongitude) {
         Node nearSourceNode = findNearestNode(new OsmLatLon(sourceLatitude, sourceLongitude));
         Node nearTargetNode1 = findNearestNode(new OsmLatLon(targetLatitude, targetLongitude));
-        GraphPath<Node, ImportedEdge> path = pathCalculator.getPath(nearSourceNode, nearTargetNode1);
+        GraphPath<Node, ImportedEdge> path = pathCalc.getPath(nearSourceNode, nearTargetNode1);
 
         // the case where the route between nodes does not exist
         if (path == null) {
@@ -62,7 +61,7 @@ public class PathCalculator extends Thread {
                     nearSourceNode = findNearestNode(new OsmLatLon(sourceLatitude, sourceLongitude), forbiddenNodes);
                     nearTargetNode1 = findNearestNode(new OsmLatLon(targetLatitude, targetLongitude), forbiddenNodes);
                 }
-                path = pathCalculator.getPath(nearSourceNode, nearTargetNode1);
+                path = pathCalc.getPath(nearSourceNode, nearTargetNode1);
             }
         }
         return path.getVertexList();

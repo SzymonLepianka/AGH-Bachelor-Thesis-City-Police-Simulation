@@ -18,7 +18,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +62,7 @@ public class ImportGraphFromRawData {
 
         entities.Map map = createMap(DEFAULT_CITY_NAME, DEFAULT_CITY_ADMIN_LEVEL_NAME, DEFAULT_DISTRICT_ADMIN_LEVEL_NAME);
         Graph<Node, ImportedEdge> graph = map.getGraph();
-        HashMap<Long, Node> myNodes = map.getMyNodes();
+        java.util.Map<Long, Node> myNodes = map.getMyNodes();
         List<District> districts = map.getDistricts();
         System.out.println(districts.get(0).contains(new OsmLatLon(50.0192, 19.9258)));
         System.out.println(districts.get(0).contains(new OsmLatLon(50.0385, 19.9155)));
@@ -72,7 +71,7 @@ public class ImportGraphFromRawData {
         // and the distance between these points
         //START
 //        HashMap<Long, Node> myNodes = dataHandler.getNodesMap();
-        AStarShortestPath<Node, ImportedEdge> path = new AStarShortestPath<>(graph, new Haversine.ownHeuristics());
+        AStarShortestPath<Node, ImportedEdge> path = new AStarShortestPath<>(graph, new Haversine.OwnHeuristics());
         GraphPath<Node, ImportedEdge> path1 = path.getPath(myNodes.get(3195641657L), myNodes.get(244399516L)); // DZIALA
 //        GraphPath<Node, ImportedEdge> path1 = path.getPath(myNodes.get(288621572L), myNodes.get(288161697L)); // NIE DZIALA
 //        GraphPath<Node, ImportedEdge> path1 = path.getPath(myNodes.get(3195641657L), myNodes.get(244399516L));
@@ -113,13 +112,13 @@ public class ImportGraphFromRawData {
         return dataHandler;
     }
 
-    public static ParsingMapDataHandler handleRawDataFromRequest(String query, String cityName, boolean districtData) throws IOException, InterruptedException {
+    public static ParsingMapDataHandler handleRawDataFromRequest(String query, String cityName, boolean districtData) throws IOException {
         HttpURLConnection urlConn = makeRequest(API_URL, query);
         InputStream inputStream = urlConn.getInputStream();
         return handleInputStream(cityName, inputStream, false, districtData);
     }
 
-    public static ParsingMapDataHandler handleInputStream(String cityName, InputStream inputStream, boolean doesFileExist, boolean districtData) throws IOException, InterruptedException {
+    public static ParsingMapDataHandler handleInputStream(String cityName, InputStream inputStream, boolean doesFileExist, boolean districtData) throws IOException {
         BufferedInputStream bin;
 
         if (!doesFileExist) {
@@ -164,7 +163,7 @@ public class ImportGraphFromRawData {
         return urlConn;
     }
 
-    public static Long findNearestNode(LatLon point, HashMap<Long, Node> myNodes) {
+    public static Long findNearestNode(LatLon point, java.util.Map<Long, Node> myNodes) {
         double distance = Double.MAX_VALUE;
         Long id = null;
         for (Map.Entry<Long, Node> me : myNodes.entrySet()) {

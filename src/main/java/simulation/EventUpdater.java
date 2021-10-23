@@ -1,14 +1,11 @@
 package simulation;
 
-import World.World;
+import world.World;
 import entities.Incident;
 
 public class EventUpdater extends Thread {
 
     private final World world = World.getInstance();
-
-    public EventUpdater() {
-    }
 
     @Override
     public void run() {

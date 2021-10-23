@@ -1,6 +1,6 @@
 package simulation;
 
-import World.World;
+import world.World;
 import entities.District;
 import entities.Entity;
 import entities.Patrol;
@@ -15,8 +15,6 @@ public class EventsDirector extends Thread {
     private final World world = World.getInstance();
 
     private int eventSpawnCounter = 0;
-
-    public EventsDirector() {}
 
     @Override
     public void run() {

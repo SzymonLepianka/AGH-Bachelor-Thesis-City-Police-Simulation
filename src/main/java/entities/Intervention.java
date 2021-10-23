@@ -1,12 +1,11 @@
 package entities;
 
-import World.World;
+import world.World;
 import entities.factories.IncidentFactory;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 
 public class Intervention extends Incident implements IDrawable {
 
@@ -51,12 +50,12 @@ public class Intervention extends Incident implements IDrawable {
     public void updateState() {
         super.updateState();
         if (this.patrolSolving != null) {
-            if (willChangeIntoFiring && patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().startTime + this.timeToChange < World.getInstance().getSimulationTime()) {
+            if (willChangeIntoFiring && patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().getStartTime() + this.timeToChange < World.getInstance().getSimulationTime()) {
                 var firing = IncidentFactory.createRandomFiringFromIntervention(this);
                 this.patrolSolving.getAction().setTarget(firing);
                 World.getInstance().removeEntity(this);
                 World.getInstance().addEntity(firing);
-            } else if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().startTime + this.getDuration() < World.getInstance().getSimulationTime()) {
+            } else if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().getStartTime() + this.getDuration() < World.getInstance().getSimulationTime()) {
                 setActive(false);
                 World.getInstance().removeEntity(this);
             }
@@ -72,7 +71,7 @@ public class Intervention extends Incident implements IDrawable {
             drawString(g,(int) point.getX() + 5, (int) point.getY() - 15,"Will change into firing: " + willChangeIntoFiring);
             if (this.patrolSolving != null) {
                 if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation){
-                    var timeLeft = duration - (World.getInstance().getSimulationTime() - patrolSolving.getAction().startTime);
+                    var timeLeft = duration - (World.getInstance().getSimulationTime() - patrolSolving.getAction().getStartTime());
 
                     drawString(g,(int) point.getX() + 5, (int) point.getY() - 30, String.format("Time left: %.2f [minutes]", timeLeft / 60));
                 } else{

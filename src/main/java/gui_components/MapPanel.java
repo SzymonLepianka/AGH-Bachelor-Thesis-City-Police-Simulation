@@ -1,6 +1,6 @@
 package gui_components;
 
-import World.World;
+import world.World;
 import entities.Headquarters;
 import entities.IDrawable;
 import org.jxmapviewer.JXMapViewer;
@@ -39,22 +39,13 @@ public class MapPanel {
 
     public void createMapWindow() {
         frame.setSize(1000, 1000);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
         var position = World.getInstance().getPosition();
 
         mapViewer.setAddressLocation(new GeoPosition(position.getLatitude(), position.getLongitude()));
 
-        // TODO Add automatic zoom calculation
-        /*mapViewer.calculateZoomFrom(new HashSet<>() {
-            {
-                add(minCoordinates);
-                add(maxCoordinates);
-            }
-        });*/
-        //mapViewer.setZoom(mapViewer.getZoom() / 2);
-        //mapViewer.setZoom(mapViewer.getZoom());
         mapViewer.setZoom(7);
 
         simulationPauseButton.setMaximumSize(new Dimension(50, 50));
@@ -92,8 +83,8 @@ public class MapPanel {
                 var position = mapViewer.convertPointToGeoPosition(e.getPoint());
                 Logger.getInstance().logNewMessage("HQ position has been selected.");
 
-                var HQ = new Headquarters(position.getLatitude(), position.getLongitude());
-                World.getInstance().addEntity(HQ);
+                var hq = new Headquarters(position.getLatitude(), position.getLongitude());
+                World.getInstance().addEntity(hq);
 
                 // GUI Drawing thread
                 new Thread(() -> {
@@ -119,22 +110,22 @@ public class MapPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-
+                // nothing should be happening here
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-
+                // nothing should be happening here
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-
+                // nothing should be happening here
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-
+                // nothing should be happening here
             }
         });
         JOptionPane.showMessageDialog(frame, "Please select HQ location.");
@@ -165,7 +156,7 @@ public class MapPanel {
                 World.getInstance().getMap().getDistricts().forEach(x -> x.drawSelf(g, mapViewer));
             }
 
-            World.getInstance().getAllEntities().stream().filter(x -> x instanceof IDrawable).forEach(x -> ((IDrawable) x).drawSelf(g, mapViewer));
+            World.getInstance().getAllEntities().stream().filter(IDrawable.class::isInstance).forEach(x -> ((IDrawable) x).drawSelf(g, mapViewer));
 
             drawSimulationClock(g);
             if (World.getInstance().getConfig().isDrawLegend()){
@@ -200,6 +191,7 @@ public class MapPanel {
             var topLeftCornerX = 800;
             var topLeftCornerY = 750;
             final var size = 10;
+            final String newFont = "TimesRoman";
 
             // Draw background
             var oldColor = g.getColor();
@@ -228,7 +220,7 @@ public class MapPanel {
                 i++;
             }
             var oldFont = g.getFont();
-            g.setFont(new Font("TimesRoman", Font.BOLD, 13));
+            g.setFont(new Font(newFont, Font.BOLD, 13));
             g.drawString("Patrol's states:", topLeftCornerX + 5, 1000 - 50 - i * 15);
             g.setFont(oldFont);
             i++;
@@ -247,7 +239,7 @@ public class MapPanel {
                 i++;
             }
             oldFont = g.getFont();
-            g.setFont(new Font("TimesRoman", Font.BOLD, 13));
+            g.setFont(new Font(newFont, Font.BOLD, 13));
             g.drawString("Places:", topLeftCornerX + 5, 1000 - 50 - i * 15);
             g.setFont(oldFont);
         }

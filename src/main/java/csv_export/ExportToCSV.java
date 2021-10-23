@@ -1,6 +1,6 @@
 package csv_export;
 
-import World.World;
+import world.World;
 import com.opencsv.CSVWriter;
 import entities.*;
 
