@@ -1,9 +1,9 @@
 package gui_components;
 
-import osm_to_graph.ImportGraphFromRawData;
-import world.World;
 import entities.District;
+import osm_to_graph.ImportGraphFromRawData;
 import utils.Logger;
+import world.World;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -43,6 +43,9 @@ public class ConfigurationPanel {
     private final JTextField maximumInterventionDurationTextField = new JTextField();
     private final JTextField minimumFiringStrength = new JTextField();
     private final JTextField maximumFiringStrength = new JTextField();
+    private final JTextField basePatrollingSpeed = new JTextField();
+    private final JTextField baseTransferSpeed = new JTextField();
+    private final JTextField basePrivilegedSpeed = new JTextField();
     private final JFrame mainFrame = new JFrame("City Police Simulation");
     private JPanel districtConfigurationPanel;
     private JPanel simulationConfigurationPanel;
@@ -379,6 +382,42 @@ public class ConfigurationPanel {
 
 //----------------------------------------------------
 
+        var baseSpeedConfigurationPanel = new JPanel();
+        baseSpeedConfigurationPanel.setLayout(new BoxLayout(baseSpeedConfigurationPanel, BoxLayout.Y_AXIS));
+        baseSpeedConfigurationPanel.setBorder(new LineBorder(Color.BLACK, 1));
+
+        descriptionLabel = new JLabel("Set the speed of the patrols ");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        baseSpeedConfigurationPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("in the given situation [km/h]:");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        baseSpeedConfigurationPanel.add(descriptionLabel);
+
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(3, 1));
+        panel.add(new JLabel("Patrolling: "));
+        basePatrollingSpeed.setText(String.valueOf(World.getInstance().getConfig().getBasePatrollingSpeed()));
+        baseTransferSpeed.setText(String.valueOf(World.getInstance().getConfig().getBaseTransferSpeed()));
+        basePrivilegedSpeed.setText(String.valueOf(World.getInstance().getConfig().getBasePrivilegedSpeed()));
+        addRestrictionOfEnteringOnlyIntegers(basePatrollingSpeed);
+        basePatrollingSpeed.setInputVerifier(new SpeedVerifier(null, baseTransferSpeed));
+        panel.add(basePatrollingSpeed);
+        panel.add(new JLabel("Transfer to intervention: "));
+        addRestrictionOfEnteringOnlyIntegers(baseTransferSpeed);
+        baseTransferSpeed.setColumns(11);
+        baseTransferSpeed.setInputVerifier(new SpeedVerifier(basePatrollingSpeed, basePrivilegedSpeed));
+        panel.add(baseTransferSpeed);
+        panel.add(new JLabel("Privileged: "));
+        addRestrictionOfEnteringOnlyIntegers(basePrivilegedSpeed);
+        basePrivilegedSpeed.setInputVerifier(new SpeedVerifier(baseTransferSpeed, null));
+        panel.add(basePrivilegedSpeed);
+
+        baseSpeedConfigurationPanel.add(panel);
+
+        buttonsPanel.add(baseSpeedConfigurationPanel);
+
+//----------------------------------------------------
+
         // line separating the components
         jSeparator = new JSeparator();
         jSeparator.setOrientation(SwingConstants.HORIZONTAL);
@@ -474,6 +513,9 @@ public class ConfigurationPanel {
         config.setMaximumInterventionDuration(maximumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(maximumInterventionDurationTextField, Integer.parseInt(minimumInterventionDurationTextField.getText()) + 1));
         config.setMinimumFiringStrength(minimumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(minimumFiringStrength, Integer.parseInt(maximumFiringStrength.getText()) - 1));
         config.setMaximumFiringStrength(maximumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(maximumFiringStrength, Integer.parseInt(minimumFiringStrength.getText()) + 1));
+        config.setBasePatrollingSpeed(basePatrollingSpeed.getText().equals("") ? 1 : convertInputToInteger(basePatrollingSpeed, 1));
+        config.setBaseTransferSpeed(baseTransferSpeed.getText().equals("") ? 1 : convertInputToInteger(baseTransferSpeed, Integer.parseInt(basePatrollingSpeed.getText()) + 1));
+        config.setBasePrivilegedSpeed(basePrivilegedSpeed.getText().equals("") ? 1 : convertInputToInteger(basePrivilegedSpeed, Integer.parseInt(baseTransferSpeed.getText()) + 1));
 
         Logger.getInstance().logNewMessage("World config has been set.");
 
@@ -562,9 +604,50 @@ public class ConfigurationPanel {
         }
     }
 
+    public static class SpeedVerifier extends InputVerifier {
+
+        private final JTextField lowerBound;
+        private final JTextField upperBound;
+
+        public SpeedVerifier(JTextField lowerBound, JTextField upperBound) {
+            this.lowerBound = lowerBound;
+            this.upperBound = upperBound;
+        }
+
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var value = Integer.parseInt(((JTextField) input).getText());
+                if (value < 0) {
+                    if (lowerBound != null) {
+                        ((JTextField) input).setText(String.valueOf(Integer.parseInt(lowerBound.getText()) + 1));
+                    } else {
+                        ((JTextField) input).setText(String.valueOf(1));
+                    }
+                } else {
+                    if (lowerBound != null && value <= Integer.parseInt(lowerBound.getText())) {
+
+                        ((JTextField) input).setText(String.valueOf(Integer.parseInt(lowerBound.getText()) + 1));
+
+                    } else if (upperBound != null && value >= Integer.parseInt(upperBound.getText())) {
+                        ((JTextField) input).setText(String.valueOf(Integer.parseInt(upperBound.getText()) - 1));
+                    }
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                if (lowerBound != null) {
+                    ((JTextField) input).setText(String.valueOf(Integer.parseInt(lowerBound.getText()) + 1));
+                } else {
+                    ((JTextField) input).setText(String.valueOf(1));
+                }
+                return false;
+            }
+        }
+    }
+
     public class MaxNumberOfIncidentsInputVerifier extends InputVerifier {
 
-        private District.ThreatLevelEnum safetyLevel;
+        private final District.ThreatLevelEnum safetyLevel;
 
         public MaxNumberOfIncidentsInputVerifier(District.ThreatLevelEnum safetyLevel) {
             this.safetyLevel = safetyLevel;
@@ -604,7 +687,7 @@ public class ConfigurationPanel {
     }
 
     public class ProbabilityInputVerifier extends InputVerifier {
-        private District.ThreatLevelEnum safetyLevel;
+        private final District.ThreatLevelEnum safetyLevel;
 
         public ProbabilityInputVerifier(District.ThreatLevelEnum safetyLevel) {
             this.safetyLevel = safetyLevel;

@@ -25,8 +25,11 @@ public class WorldConfiguration {
     private int maximumInterventionDuration = 30; // minutes
     private int minimumFiringStrength = 30;
     private int maximumFiringStrength = 90;
+    private int basePatrollingSpeed = 40;
+    private int baseTransferSpeed = 60;
+    private int basePrivilegedSpeed = 80;
 
-    WorldConfiguration(){
+    WorldConfiguration() {
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.Safe, 1);
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RatherSafe, 2);
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NotSafe, 4);
@@ -145,6 +148,30 @@ public class WorldConfiguration {
 
     public void setMaximumFiringStrength(int maximumFiringStrength) {
         this.maximumFiringStrength = maximumFiringStrength;
+    }
+
+    public int getBasePatrollingSpeed() {
+        return basePatrollingSpeed;
+    }
+
+    public void setBasePatrollingSpeed(int basePatrollingSpeed) {
+        this.basePatrollingSpeed = basePatrollingSpeed;
+    }
+
+    public int getBaseTransferSpeed() {
+        return baseTransferSpeed;
+    }
+
+    public void setBaseTransferSpeed(int baseTransferSpeed) {
+        this.baseTransferSpeed = baseTransferSpeed;
+    }
+
+    public int getBasePrivilegedSpeed() {
+        return basePrivilegedSpeed;
+    }
+
+    public void setBasePrivilegedSpeed(int basePrivilegedSpeed) {
+        this.basePrivilegedSpeed = basePrivilegedSpeed;
     }
 
     public void resetMaxIncidentsPerHourForThreatLevel() {

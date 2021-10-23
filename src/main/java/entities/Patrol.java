@@ -11,7 +11,6 @@ import world.World;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -30,10 +29,9 @@ public class Patrol extends Entity implements IAgent, IDrawable {
     private double timeOfLastDrawNeutralization;
 
     public Patrol() {
-        // TODO Change default values
-        basePatrollingSpeed = 40;
-        baseTransferSpeed = 60;
-        basePrivilegedSpeed = 80;
+        basePatrollingSpeed = World.getInstance().getConfig().getBasePatrollingSpeed();
+        baseTransferSpeed = World.getInstance().getConfig().getBaseTransferSpeed();
+        basePrivilegedSpeed = World.getInstance().getConfig().getBasePrivilegedSpeed();
         this.timeOfLastMove = World.getInstance().getSimulationTime();
         this.durationOfTheShift = World.getInstance().getDurationOfTheShift();
         this.shiftEndTime = World.getInstance().getSimulationTime() + durationOfTheShift;
