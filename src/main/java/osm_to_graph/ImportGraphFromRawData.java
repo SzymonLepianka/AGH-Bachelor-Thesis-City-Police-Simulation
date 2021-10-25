@@ -99,7 +99,7 @@ public class ImportGraphFromRawData {
         return new entities.Map(dataHandler.getGraph(), dataHandler.getNodesMap(), boundingBox, districtDataHandler.getDistricts());
     }
 
-    public static ParsingMapDataHandler handleRawData(String rawDataFilePath, String query, String cityName, boolean districtData) throws IOException, InterruptedException {
+    public static ParsingMapDataHandler handleRawData(String rawDataFilePath, String query, String cityName, boolean districtData) throws IOException {
         ParsingMapDataHandler dataHandler;
         try {
             InputStream fin = new FileInputStream(rawDataFilePath);

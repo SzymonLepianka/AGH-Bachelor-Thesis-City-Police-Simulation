@@ -30,12 +30,12 @@ public class WorldConfiguration {
     private int basePrivilegedSpeed = 80;
 
     WorldConfiguration() {
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.Safe, 1);
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RatherSafe, 2);
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NotSafe, 4);
-        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.Safe, 0.01);
-        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RatherSafe, 0.1);
-        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NotSafe, 0.4);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 1);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RATHER_SAFE, 2);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NOT_SAFE, 4);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.SAFE, 0.01);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RATHER_SAFE, 0.1);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NOT_SAFE, 0.4);
     }
 
     public String getCityName() {
@@ -177,9 +177,9 @@ public class WorldConfiguration {
     public void resetMaxIncidentsPerHourForThreatLevel() {
         this.threatLevelToMaxIncidentsPerHour.clear();
 
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.Safe, 2);
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RatherSafe, 4);
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NotSafe, 7);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 2);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RATHER_SAFE, 4);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NOT_SAFE, 7);
 
         Logger.getInstance().logNewMessage("Settings for maximum number of incidents per hour for all threat levels have been reset to default values.");
     }
@@ -198,9 +198,9 @@ public class WorldConfiguration {
     public void resetFiringChanceForThreatLevel() {
         this.threatLevelToFiringChanceMap.clear();
 
-        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.Safe, 0.01);
-        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RatherSafe, 0.1);
-        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NotSafe, 0.4);
+        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.SAFE, 0.01);
+        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RATHER_SAFE, 0.1);
+        this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NOT_SAFE, 0.4);
 
         Logger.getInstance().logNewMessage("Chances for firing have been reset to default values.");
     }

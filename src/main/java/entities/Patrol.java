@@ -63,109 +63,132 @@ public class Patrol extends Entity implements IAgent, IDrawable {
     }
 
     public void updateStateSelf() {
-        final String TARGET = " target: ";
         if (state == State.PATROLLING) {
-            if (isShiftOver()) {
-                setState(State.RETURNING_TO_HQ);
-                Logger.getInstance().logNewMessage(this + " state set from PATROLLING to " + state + TARGET + action.target.toString());
-                var HQ = World.getInstance().getAllEntities().stream().filter(Headquarters.class::isInstance).findFirst().orElse(null);
-                setAction(new Transfer(World.getInstance().getSimulationTimeLong(), HQ, this.state));
-            } else if (action == null) {
-                drawNewTarget();
-            } else if (action instanceof Transfer) {
-                // if pathNodeList is empty, it draws a new patrol target
-                if (((Transfer) action).pathNodeList != null && ((Transfer) action).pathNodeList.isEmpty()) {
-                    drawNewTarget();
-                }
-            } else {
-                drawNewTarget();
-            }
+            updateStateIfPatrolling();
         } else if (state == State.TRANSFER_TO_INTERVENTION) {
-            // if patrol has reached his destination, patrol changes state to INTERVENTION
-            if (action instanceof Transfer) {
-                if (((Transfer) action).pathNodeList.isEmpty()) {
-                    setState(State.INTERVENTION);
-                    Logger.getInstance().logNewMessage(this + " state set from TRANSFER_TO_INTERVENTION to " + state + TARGET + action.target.toString());
-                    action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
-                }
-            } else {
-                throw new IllegalStateException("Action should be 'Transfer' and it is not");
-            }
+            updateStateIfTransferToIntervention();
         } else if (state == State.INTERVENTION) {
-            if (action.target instanceof Firing) {
+            updateStateIfIntervention();
+        } else if (state == State.TRANSFER_TO_FIRING) {
+            updateStateIfTransferToFiring();
+        } else if (state == State.FIRING) {
+            updateStateIfFiring();
+        } else if (state == State.CALCULATING_PATH) {
+            updateStateIfCalculatingPath();
+        } else if (state == State.RETURNING_TO_HQ) {
+            updateStateIfReturningToHQ();
+        }
+    }
+
+    private void updateStateIfPatrolling(){
+        if (isShiftOver()) {
+            setState(State.RETURNING_TO_HQ);
+            Logger.getInstance().logNewMessage(this + " state set from PATROLLING to " + state + " target: " + action.target.toString());
+            var hq = World.getInstance().getAllEntities().stream().filter(Headquarters.class::isInstance).findFirst().orElse(null);
+            setAction(new Transfer(World.getInstance().getSimulationTimeLong(), hq, this.state));
+        } else if (action == null) {
+            drawNewTarget();
+        } else if (action instanceof Transfer) {
+            // if pathNodeList is empty, it draws a new patrol target
+            if (((Transfer) action).pathNodeList != null && ((Transfer) action).pathNodeList.isEmpty()) {
+                drawNewTarget();
+            }
+        } else {
+            drawNewTarget();
+        }
+    }
+
+    private void updateStateIfTransferToIntervention(){
+        // if patrol has reached his destination, patrol changes state to INTERVENTION
+        if (action instanceof Transfer) {
+            if (((Transfer) action).pathNodeList.isEmpty()) {
+                setState(State.INTERVENTION);
+                Logger.getInstance().logNewMessage(this + " state set from TRANSFER_TO_INTERVENTION to " + state + " target: " + action.target.toString());
+                action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
+            }
+        } else {
+            throw new IllegalStateException("Action should be 'Transfer' and it is not");
+        }
+    }
+
+    private void updateStateIfIntervention(){
+        if (action.target instanceof Firing) {
+            setState(State.FIRING);
+            Logger.getInstance().logNewMessage(this + " state set from INTERVENTION to " + state + " target: " + action.target.toString());
+            ((Firing) action.target).addSolvingPatrol(this);
+            action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
+        }
+        // if the duration of the intervention is over, patrol changes state to PATROLLING
+        else if (action instanceof IncidentParticipation) {
+            if (action.target == null) {
+                setState(State.PATROLLING);
+                Logger.getInstance().logNewMessage(this + " state set from INTERVENTION to " + state + " target: " + action.target.toString());
+                drawNewTarget();
+            } else if (!(((Intervention) (action).target).isActive())) {
+                World.getInstance().removeEntity((action.target));
+                setState(State.PATROLLING);
+                Logger.getInstance().logNewMessage(this + " state set from INTERVENTION to " + state + " target: " + action.target.toString());
+                drawNewTarget();
+            }
+        } else {
+            throw new IllegalStateException("Action should be 'IncidentParticipation' and it is not");
+        }
+    }
+
+    private void updateStateIfTransferToFiring(){
+        // if patrol has reached his destination, patrol changes state to FIRING
+        if (action instanceof Transfer) {
+            if (((Transfer) action).pathNodeList != null && ((Transfer) action).pathNodeList.isEmpty()) {
                 setState(State.FIRING);
-                Logger.getInstance().logNewMessage(this + " state set from INTERVENTION to " + state + TARGET + action.target.toString());
+                Logger.getInstance().logNewMessage(this + " state set from TRANSFER_TO_FIRING to " + state + " target: " + action.target.toString());
+                ((Firing) action.target).removeReachingPatrol(this);
                 ((Firing) action.target).addSolvingPatrol(this);
                 action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
             }
-            // if the duration of the intervention is over, patrol changes state to PATROLLING
-            else if (action instanceof IncidentParticipation) {
-                if (action.target == null) {
-                    setState(State.PATROLLING);
-                    Logger.getInstance().logNewMessage(this + " state set from INTERVENTION to " + state + TARGET + action.target.toString());
-                    drawNewTarget();
-                } else if (!(((Intervention) (action).target).isActive())) {
-                    World.getInstance().removeEntity((action.target));
-                    setState(State.PATROLLING);
-                    Logger.getInstance().logNewMessage(this + " state set from INTERVENTION to " + state + TARGET + action.target.toString());
-                    drawNewTarget();
+        } else {
+            throw new IllegalStateException("Action should be 'Transfer' and it is not");
+        }
+    }
+
+    private void updateStateIfFiring(){
+        // when the firing strength drops to zero, patrol changes state to PATROLLING
+        if (action instanceof IncidentParticipation) {
+            if (action.target == null) {
+                setState(State.PATROLLING);
+                Logger.getInstance().logNewMessage(this + " state set from FIRING to " + state + " target: " + action.target.toString());
+                drawNewTarget();
+            } else if (!((Firing) action.target).isActive() || !(action.target instanceof Firing)) {
+                setState(State.PATROLLING);
+                Logger.getInstance().logNewMessage(this + " state set from FIRING to " + state + " target: " + action.target.toString());
+                drawNewTarget();
+            } else if (World.getInstance().getSimulationTime() > timeOfLastDrawNeutralization + timeBetweenDrawNeutralization) {
+                if (ThreadLocalRandom.current().nextDouble() < 0.01) {
+                    ((Firing) this.action.target).removeSolvingPatrol(this);
+                    setState(State.NEUTRALIZED);
+                    Logger.getInstance().logNewMessage(this + " state set from FIRING to " + state + " target: " + action.target.toString());
                 }
-            } else {
-                throw new IllegalStateException("Action should be 'IncidentParticipation' and it is not");
+                timeOfLastDrawNeutralization = World.getInstance().getSimulationTime();
             }
-        } else if (state == State.TRANSFER_TO_FIRING) {
-            // if patrol has reached his destination, patrol changes state to FIRING
-            if (action instanceof Transfer) {
-                if (((Transfer) action).pathNodeList != null && ((Transfer) action).pathNodeList.isEmpty()) {
-                    setState(State.FIRING);
-                    Logger.getInstance().logNewMessage(this + " state set from TRANSFER_TO_FIRING to " + state + TARGET + action.target.toString());
-                    ((Firing) action.target).removeReachingPatrol(this);
-                    ((Firing) action.target).addSolvingPatrol(this);
-                    action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
-                }
-            } else {
-                throw new IllegalStateException("Action should be 'Transfer' and it is not");
-            }
-        } else if (state == State.FIRING) {
-            // when the firing strength drops to zero, patrol changes state to PATROLLING
-            if (action instanceof IncidentParticipation) {
-                if (action.target == null) {
-                    setState(State.PATROLLING);
-                    Logger.getInstance().logNewMessage(this + " state set from FIRING to " + state + TARGET + action.target.toString());
-                    drawNewTarget();
-                } else if (!((Firing) action.target).isActive()) {
-                    setState(State.PATROLLING);
-                    Logger.getInstance().logNewMessage(this + " state set from FIRING to " + state + TARGET + action.target.toString());
-                    drawNewTarget();
-                } else if (!(action.target instanceof Firing)) {
-                    setState(State.PATROLLING);
-                    Logger.getInstance().logNewMessage(this + " state set from FIRING to " + state + TARGET + action.target.toString());
-                    drawNewTarget();
-                } else if (World.getInstance().getSimulationTime() > timeOfLastDrawNeutralization + timeBetweenDrawNeutralization) {
-                    if (ThreadLocalRandom.current().nextDouble() < 0.01) {
-                        ((Firing) this.action.target).removeSolvingPatrol(this);
-                        setState(State.NEUTRALIZED);
-                        Logger.getInstance().logNewMessage(this + " state set from FIRING to " + state + TARGET + action.target.toString());
-                    }
-                    timeOfLastDrawNeutralization = World.getInstance().getSimulationTime();
-                }
-            } else {
-                throw new IllegalStateException("Action should be 'IncidentParticipation' and it is not");
-            }
-        } else if (state == State.CALCULATING_PATH) {
-            if (((Transfer) getAction()).pathNodeList != null) {
-                setState(this.previousState);
-            }
-        } else if (state == State.RETURNING_TO_HQ) {
-            if (action == null) {
-                World.getInstance().getAllEntities()
-                        .stream()
-                        .filter(Headquarters.class::isInstance)
-                        .findFirst()
-                        .ifPresent(hq -> action = new Transfer(World.getInstance().getSimulationTimeLong(), hq, this.state));
-            } else if (!(action instanceof Transfer)) {
-                throw new IllegalStateException("Action should be 'Transfer' and it is not");
-            }
+        } else {
+            throw new IllegalStateException("Action should be 'IncidentParticipation' and it is not");
+        }
+    }
+
+    private void updateStateIfCalculatingPath(){
+        if (((Transfer) getAction()).pathNodeList != null) {
+            setState(this.previousState);
+        }
+    }
+
+    private void updateStateIfReturningToHQ(){
+        if (action == null) {
+            World.getInstance().getAllEntities()
+                    .stream()
+                    .filter(Headquarters.class::isInstance)
+                    .findFirst()
+                    .ifPresent(hq -> action = new Transfer(World.getInstance().getSimulationTimeLong(), hq, this.state));
+        } else if (!(action instanceof Transfer)) {
+            throw new IllegalStateException("Action should be 'Transfer' and it is not");
         }
     }
 

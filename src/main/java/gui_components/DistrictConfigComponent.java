@@ -12,7 +12,7 @@ import java.util.Hashtable;
 
 public class DistrictConfigComponent extends JPanel {
 
-    private final static int MARGIN = 10;
+    private static final int MARGIN = 10;
     private final District district;
     private final JSlider districtThreatLevelInput = new JSlider(District.ThreatLevelEnum.values()[0].value, District.ThreatLevelEnum.values()[District.ThreatLevelEnum.values().length - 1].value);
 

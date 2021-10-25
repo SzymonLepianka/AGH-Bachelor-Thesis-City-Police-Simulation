@@ -19,7 +19,7 @@ public class District implements IDrawable {
     private final String name;
     private final Path2D boundaries;
     private final List<Node> allNodesInDistrict = new ArrayList<>();
-    private ThreatLevelEnum threatLevel = ThreatLevelEnum.RatherSafe;
+    private ThreatLevelEnum threatLevel = ThreatLevelEnum.RATHER_SAFE;
 
     public District(Long id, String name, Path2D boundaries) {
         this.boundaries = boundaries;
@@ -86,14 +86,25 @@ public class District implements IDrawable {
     }
 
     public enum ThreatLevelEnum {
-        Safe(1),
-        RatherSafe(2),
-        NotSafe(3);
+        SAFE(1),
+        RATHER_SAFE(2),
+        NOT_SAFE(3);
 
         public final int value;
 
         ThreatLevelEnum(int value) {
             this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            if (this.value == 1) {
+                return "Safe";
+            } else if (this.value == 2) {
+                return "RatherSafe";
+            } else {
+                return "NotSafe";
+            }
         }
     }
 }

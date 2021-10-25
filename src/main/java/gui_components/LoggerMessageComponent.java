@@ -21,7 +21,7 @@ public class LoggerMessageComponent extends JPanel {
         var simulationTimeLabel = new JLabel(Long.toString(simulationTime));
 
         var timePanel = new JPanel();
-        timePanel.setLayout(new GridLayout(0,2));
+        timePanel.setLayout(new GridLayout(0, 2));
         timePanel.add(simulationTimeLabel);
         timePanel.add(realWorldDateLabel);
 
