@@ -1,7 +1,7 @@
 package utils;
 
-import world.World;
 import gui_components.LoggerPanel;
+import world.World;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,43 +13,40 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO Add debug logger
 public class Logger {
 
+    private static final String LOGS_DIRECTORY_PATH = "logs";
     private static Logger instance;
+    private final File logFile;
+    private final List<LoggerPanel> loggingPanels = new ArrayList<>();
+    private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
+    private Logger() {
+        File logsDirectory = new File(LOGS_DIRECTORY_PATH);
+        if (!(logsDirectory.exists() && logsDirectory.isDirectory())) {
+            logsDirectory.mkdir();
+        }
+
+        logFile = new File(LOGS_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + ".log");
+        try {
+            if (!logFile.createNewFile()) {
+                throw new IOException("Unable to create file");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static Logger getInstance() {
         // Result variable here may seem pointless, but it's needed for DCL (Double-checked locking).
         var result = instance;
         if (instance != null) {
-            return  result;
+            return result;
         }
         synchronized (Logger.class) {
             if (instance == null) {
                 instance = new Logger();
             }
             return instance;
-        }
-    }
-
-    private final File logFile;
-    private final static String logsDirectoryPath = "logs";
-    private final List<LoggerPanel> loggingPanels = new ArrayList<>();
-    private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
-
-    private Logger() {
-        File logsDirectory = new File(logsDirectoryPath);
-        if (!(logsDirectory.exists() && logsDirectory.isDirectory())) {
-            logsDirectory.mkdir();
-        }
-
-        logFile = new File(logsDirectoryPath, dateFormat.format(LocalDateTime.now()) + ".log");
-        try {
-            if(!logFile.createNewFile()){
-                throw new IOException("Unable to create file");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -83,7 +80,7 @@ public class Logger {
             e.printStackTrace();
         }
 
-        for(var loggerPanel : loggingPanels) {
+        for (var loggerPanel : loggingPanels) {
             loggerPanel.showNewLogMessage(message, realDate, simulationTime);
         }
     }

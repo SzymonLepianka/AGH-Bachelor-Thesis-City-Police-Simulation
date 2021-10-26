@@ -14,6 +14,8 @@ import world.World;
 import java.util.ArrayList;
 import java.util.List;
 
+import static entities.Map.getNearestNode;
+
 public class PathCalculator extends Thread {
 
     private final AStarShortestPath<Node, ImportedEdge> pathCalc = World.getInstance().getMap().getPathCalculator();
@@ -82,16 +84,6 @@ public class PathCalculator extends Thread {
     }
 
     public Node findNearestNode(LatLon point, List<Node> forbiddenNodes) {
-        double distance = Double.MAX_VALUE;
-        Node nearestNode = null;
-        for (java.util.Map.Entry<Long, Node> me : myNodes.entrySet()) {
-            LatLon nodePosition = me.getValue().getPosition();
-            double tmpDistance = Haversine.distance(point.getLatitude(), point.getLongitude(), nodePosition.getLatitude(), nodePosition.getLongitude());
-            if (tmpDistance < distance && !forbiddenNodes.contains(me.getValue())) {
-                distance = tmpDistance;
-                nearestNode = me.getValue();
-            }
-        }
-        return nearestNode;
+        return getNearestNode(point, forbiddenNodes, myNodes);
     }
 }

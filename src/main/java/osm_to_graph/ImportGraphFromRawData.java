@@ -50,7 +50,7 @@ public class ImportGraphFromRawData {
     private static final String QUERY_DISTRICT_4 = "][boundary=administrative][\"name\"];);out meta;>;out meta qt;";
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
 
 //        // example of file-based data handling: (It takes about 2 seconds)
 //        ParsingMapDataHandler dataHandler = handleRawDataFromFile(defaultCityName);
@@ -87,7 +87,7 @@ public class ImportGraphFromRawData {
         //END
     }
 
-    public static entities.Map createMap(String cityName, int cityAdminLevel, int districtAdminLevel) throws IOException, InterruptedException {
+    public static entities.Map createMap(String cityName, int cityAdminLevel, int districtAdminLevel) throws IOException {
         ParsingMapDataHandler dataHandler = handleRawData(RAW_DATA_PATH + RAW_DATA_FILE_1 + cityName + RAW_DATA_FILE_2, QUERY_1 + cityAdminLevel + QUERY_2 + cityName + QUERY_3, cityName, false);
         ParsingMapDataHandler districtDataHandler = handleRawData(RAW_DATA_PATH + RAW_DATA_DISTRICT_FILE_1 + cityName + RAW_DATA_DISTRICT_FILE_2, QUERY_DISTRICT_1 + cityAdminLevel + QUERY_DISTRICT_2 + cityName + QUERY_DISTRICT_3 + districtAdminLevel + QUERY_DISTRICT_4, cityName, true);
         Logger.getInstance().logNewMessage("Loaded map data.");

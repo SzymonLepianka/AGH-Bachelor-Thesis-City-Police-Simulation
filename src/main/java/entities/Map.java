@@ -52,6 +52,7 @@ public class Map {
 
     public void assignNodesToDistricts() {
         //TODO improve this - not all nodes are assign to districts
+        // the algorithm for sorting nodes in districts is to be improved
         for (java.util.Map.Entry<Long, Node> me : myNodes.entrySet()) {
             for (var d : districts) {
                 if (d.contains(me.getValue().getPosition())) {
@@ -78,8 +79,7 @@ public class Map {
                 nearTargetNode1 = findNearestNode(new OsmLatLon(targetLatitude, targetLongitude), forbiddenNodes);
 
                 // calculation of the route between two points in the case where initially there is no route between them, the simulation stops working smoothly
-
-                while (nearSourceNode.equals(nearTargetNode1)) {
+                while (nearSourceNode == null || nearSourceNode.equals(nearTargetNode1)) {
                     forbiddenNodes.add(nearSourceNode);
                     forbiddenNodes.add(nearTargetNode1);
                     nearSourceNode = findNearestNode(new OsmLatLon(sourceLatitude, sourceLongitude), forbiddenNodes);
@@ -91,12 +91,16 @@ public class Map {
         return path.getVertexList();
     }
 
-    public Node findNearestNode(LatLon point, List<Node> forbiddenNodes) {
-        double distance = Double.MAX_VALUE;
+    private Node findNearestNode(LatLon point, List<Node> forbiddenNodes) {
+        return getNearestNode(point, forbiddenNodes, myNodes);
+    }
+
+    public static Node getNearestNode(LatLon point, List<Node> forbiddenNodes, java.util.Map<Long, Node> myNodes) {
+        var distance = Double.MAX_VALUE;
         Node nearestNode = null;
         for (java.util.Map.Entry<Long, Node> me : myNodes.entrySet()) {
             LatLon nodePosition = me.getValue().getPosition();
-            double tmpDistance = Haversine.distance(point.getLatitude(), point.getLongitude(), nodePosition.getLatitude(), nodePosition.getLongitude());
+            var tmpDistance = Haversine.distance(point.getLatitude(), point.getLongitude(), nodePosition.getLatitude(), nodePosition.getLongitude());
             if (tmpDistance < distance && !forbiddenNodes.contains(me.getValue())) {
                 distance = tmpDistance;
                 nearestNode = me.getValue();

@@ -500,7 +500,7 @@ public class ConfigurationPanel {
         mapPanel.selectHQLocation();
     }
 
-    private void setDataFromConfigurationPanel(WorldConfiguration config){
+    private void setDataFromConfigurationPanel(WorldConfiguration config) {
         config.setNumberOfPolicePatrols(numberOfCityPatrolsTextField.getText().equals("") ? 1 : convertInputToInteger(numberOfCityPatrolsTextField, 1));
         config.setBasicSearchDistance(basicSearchDistanceTextField.getText().equals("") ? 1.0 : convertInputToDouble(basicSearchDistanceTextField, 1.0));
         config.setTimeRate(timeRateTextField.getText().equals("") ? 1 : convertInputToInteger(timeRateTextField, 1));
@@ -524,7 +524,7 @@ public class ConfigurationPanel {
         config.setMaximumFiringStrength(maximumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(maximumFiringStrength, Integer.parseInt(minimumFiringStrength.getText()) + 1));
         config.setBasePatrollingSpeed(basePatrollingSpeed.getText().equals("") ? 1 : convertInputToInteger(basePatrollingSpeed, 1));
         config.setBaseTransferSpeed(baseTransferSpeed.getText().equals("") ? 1 : convertInputToInteger(baseTransferSpeed, Integer.parseInt(basePatrollingSpeed.getText()) + 1));
-        config.setBasePrivilegedSpeed(basePrivilegedSpeed.getText().equals("") ? 1 : convertInputToInteger(basePrivilegedSpeed, Integer.parseInt(baseTransferSpeed.getText()) + 1));
+        config.setBasePrivilegedSpeed(convertInputToInteger(basePrivilegedSpeed, Integer.parseInt(baseTransferSpeed.getText()) + 1));
     }
 
     private Double convertInputToDouble(JTextField textField, Double basicValue) {
@@ -550,13 +550,42 @@ public class ConfigurationPanel {
             var districtAdminLevel = districtAdminLevelForAvailablePlaces.get(countryName);
             var map = ImportGraphFromRawData.createMap(cityName, cityAdminLevel, districtAdminLevel);
             World.getInstance().setMap(map);
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             Logger.getInstance().logNewMessage("Unable to load map into world" + e.getLocalizedMessage());
             e.printStackTrace();
             Thread.currentThread().interrupt();
             return false;
         }
         return true;
+    }
+
+    private boolean verifyMinimumInput(JTextField input, JTextField maximumInterventionDurationTextField) {
+        try {
+            var minDurValue = Integer.parseInt(input.getText());
+            var maxDurValue = Integer.parseInt(maximumInterventionDurationTextField.getText());
+
+            if (minDurValue >= maxDurValue) {
+                input.setText(String.valueOf(maxDurValue - 1));
+            }
+            return true;
+        } catch (NumberFormatException e) {
+            input.setText("1");
+            return false;
+        }
+    }
+
+    private boolean verifyMaximumInput(JTextField input, JTextField minimumInterventionDurationTextField) {
+        try {
+            var maxDurValue = Integer.parseInt(input.getText());
+            var minDurValue = Integer.parseInt(minimumInterventionDurationTextField.getText());
+            if (maxDurValue <= minDurValue) {
+                input.setText(String.valueOf(minDurValue + 1));
+            }
+            return true;
+        } catch (NumberFormatException e) {
+            input.setText("1");
+            return false;
+        }
     }
 
     public static class PositiveIntegerInputVerifier extends InputVerifier {
@@ -660,32 +689,33 @@ public class ConfigurationPanel {
         public boolean verify(JComponent input) {
             try {
                 var value = Integer.parseInt(((JTextField) input).getText());
-                if (value < 0) {
-                    ((JTextField) input).setText("1");
-                } else {
-                    var safetyLevelSafe = Integer.parseInt(threatLevelMaxIncidentsTextFieldSAFE.getText());
-                    var safetyLevelRatherSafe = Integer.parseInt(threatLevelMaxIncidentsTextFieldRATHERSAFE.getText());
-                    var safetyLevelNotSafe = Integer.parseInt(threatLevelMaxIncidentsTextFieldNOTSAFE.getText());
+                var safetyLevelSafe = Integer.parseInt(threatLevelMaxIncidentsTextFieldSAFE.getText());
+                var safetyLevelRatherSafe = Integer.parseInt(threatLevelMaxIncidentsTextFieldRATHERSAFE.getText());
+                var safetyLevelNotSafe = Integer.parseInt(threatLevelMaxIncidentsTextFieldNOTSAFE.getText());
 
-                    if (safetyLevel == District.ThreatLevelEnum.SAFE) {
-                        if (value >= safetyLevelRatherSafe) {
-                            ((JTextField) input).setText(String.valueOf(safetyLevelRatherSafe - 1));
-                        }
-                    } else if (safetyLevel == District.ThreatLevelEnum.RATHER_SAFE) {
-                        if (value <= safetyLevelSafe || value >= safetyLevelNotSafe) {
-                            ((JTextField) input).setText(String.valueOf(safetyLevelSafe + 1));
-                        }
-                    } else {
-                        if (value <= safetyLevelRatherSafe) {
-                            ((JTextField) input).setText(String.valueOf(safetyLevelRatherSafe + 1));
-                        }
-                    }
-                }
+                ((JTextField) input).setText(changeValueIfIllegal(value, safetyLevelSafe, safetyLevelRatherSafe, safetyLevelNotSafe));
                 return true;
             } catch (NumberFormatException e) {
                 ((JTextField) input).setText("1");
                 return false;
             }
+        }
+
+        private String changeValueIfIllegal(int value, int safetyLevelSafe, int safetyLevelRatherSafe, int safetyLevelNotSafe) {
+            if (safetyLevel.equals(District.ThreatLevelEnum.SAFE)) {
+                if (value >= safetyLevelRatherSafe) {
+                    return String.valueOf(safetyLevelRatherSafe - 1);
+                }
+            } else if (safetyLevel == District.ThreatLevelEnum.RATHER_SAFE) {
+                if (value <= safetyLevelSafe || value >= safetyLevelNotSafe) {
+                    return String.valueOf(safetyLevelSafe + 1);
+                }
+            } else {
+                if (value <= safetyLevelRatherSafe) {
+                    return String.valueOf(safetyLevelRatherSafe + 1);
+                }
+            }
+            return String.valueOf(value);
         }
     }
 
@@ -706,20 +736,7 @@ public class ConfigurationPanel {
                     var safetyLevelSafe = Double.parseDouble(threatLevelFiringChanceTextFieldSAFE.getText());
                     var safetyLevelRatherSafe = Double.parseDouble(threatLevelFiringChanceTextFieldRATHERSAFE.getText());
                     var safetyLevelNotSafe = Double.parseDouble(threatLevelFiringChanceTextFieldNOTSAFE.getText());
-
-                    if (safetyLevel == District.ThreatLevelEnum.SAFE) {
-                        if (value >= safetyLevelRatherSafe) {
-                            ((JTextField) input).setText(String.format(Locale.US, "%.2f", safetyLevelRatherSafe - 0.01));
-                        }
-                    } else if (safetyLevel == District.ThreatLevelEnum.RATHER_SAFE) {
-                        if (value <= safetyLevelSafe || value >= safetyLevelNotSafe) {
-                            ((JTextField) input).setText(String.format(Locale.US, "%.2f", safetyLevelSafe + 0.01));
-                        }
-                    } else {
-                        if (value <= safetyLevelRatherSafe) {
-                            ((JTextField) input).setText(String.format(Locale.US, "%.2f", safetyLevelRatherSafe + 0.01));
-                        }
-                    }
+                    ((JTextField) input).setText(changeProbabilityValueIfIllegal(value, safetyLevelSafe, safetyLevelRatherSafe, safetyLevelNotSafe));
                 }
                 return true;
             } catch (NumberFormatException e) {
@@ -727,74 +744,50 @@ public class ConfigurationPanel {
                 return false;
             }
         }
+
+        private String changeProbabilityValueIfIllegal(double value, double safetyLevelSafe, double safetyLevelRatherSafe, double safetyLevelNotSafe) {
+            if (safetyLevel == District.ThreatLevelEnum.SAFE) {
+                if (value >= safetyLevelRatherSafe) {
+                    return String.format(Locale.US, "%.2f", safetyLevelRatherSafe - 0.01);
+                }
+            } else if (safetyLevel == District.ThreatLevelEnum.RATHER_SAFE) {
+                if (value <= safetyLevelSafe || value >= safetyLevelNotSafe) {
+                    return String.format(Locale.US, "%.2f", safetyLevelSafe + 0.01);
+                }
+            } else {
+                if (value <= safetyLevelRatherSafe) {
+                    return String.format(Locale.US, "%.2f", safetyLevelRatherSafe + 0.01);
+                }
+            }
+            return String.valueOf(value);
+        }
     }
 
     public class MinDurationInputVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
-            try {
-                var minDurValue = Integer.parseInt(((JTextField) input).getText());
-                var maxDurValue = Integer.parseInt(maximumInterventionDurationTextField.getText());
-
-                if (minDurValue >= maxDurValue) {
-                    ((JTextField) input).setText(String.valueOf(maxDurValue - 1));
-                }
-                return true;
-            } catch (NumberFormatException e) {
-                ((JTextField) input).setText("1");
-                return false;
-            }
+            return verifyMinimumInput((JTextField) input, maximumInterventionDurationTextField);
         }
     }
 
     public class MaxDurationInputVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
-            try {
-                var maxDurValue = Integer.parseInt(((JTextField) input).getText());
-                var minDurValue = Integer.parseInt(minimumInterventionDurationTextField.getText());
-                if (maxDurValue <= minDurValue) {
-                    ((JTextField) input).setText(String.valueOf(minDurValue + 1));
-                }
-                return true;
-            } catch (NumberFormatException e) {
-                ((JTextField) input).setText("1");
-                return false;
-            }
+            return verifyMaximumInput((JTextField) input, minimumInterventionDurationTextField);
         }
     }
 
     public class MinStrengthInputVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
-            try {
-                var minStrengthValue = Integer.parseInt(((JTextField) input).getText());
-                var maxStrengthValue = Integer.parseInt(maximumFiringStrength.getText());
-                if (minStrengthValue >= maxStrengthValue) {
-                    ((JTextField) input).setText(String.valueOf(maxStrengthValue - 1));
-                }
-                return true;
-            } catch (NumberFormatException e) {
-                ((JTextField) input).setText("1");
-                return false;
-            }
+            return verifyMinimumInput((JTextField) input, maximumFiringStrength);
         }
     }
 
     public class MaxStrengthInputVerifier extends InputVerifier {
         @Override
         public boolean verify(JComponent input) {
-            try {
-                var maxStrengthValue = Integer.parseInt(((JTextField) input).getText());
-                var minStrengthValue = Integer.parseInt(minimumFiringStrength.getText());
-                if (maxStrengthValue <= minStrengthValue) {
-                    ((JTextField) input).setText(String.valueOf(minStrengthValue + 1));
-                }
-                return true;
-            } catch (NumberFormatException e) {
-                ((JTextField) input).setText("1");
-                return false;
-            }
+            return verifyMaximumInput((JTextField) input, minimumFiringStrength);
         }
     }
 }

@@ -1,6 +1,9 @@
 package osm_to_graph;
 
-import de.westnordost.osmapi.map.data.*;
+import de.westnordost.osmapi.map.data.Node;
+import de.westnordost.osmapi.map.data.Relation;
+import de.westnordost.osmapi.map.data.RelationMember;
+import de.westnordost.osmapi.map.data.Way;
 import de.westnordost.osmapi.map.handler.DefaultMapDataHandler;
 import de.westnordost.osmapi.map.handler.MapDataHandler;
 import entities.District;
@@ -158,7 +161,7 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
         return graph;
     }
 
-    public void checkConnectivity() {
+    private void checkConnectivity() {
         ConnectivityInspector<Node, ImportedEdge> connectivityInspector = new ConnectivityInspector<>(graph);
         List<Set<Node>> sets = connectivityInspector.connectedSets();
         int index = 0;
@@ -205,35 +208,23 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
 
         for (Relation r : relations) {
             List<Node> unorderedNodes = new ArrayList<>();
-            List<Long> ways = waysInRelation.get(r.getId());
+            var ways = waysInRelation.get(r.getId());
 
             for (Long wayID : ways) {
-                Way way = myWays.get(wayID);
-                List<Long> nodeIds = way.getNodeIds();
+                var way = myWays.get(wayID);
+                var nodeIds = way.getNodeIds();
                 for (Long node : nodeIds) {
                     unorderedNodes.add(myNodes.get(node));
                 }
             }
 
             unorderedNodes = new ArrayList<>(new HashSet<>(unorderedNodes));
+            var sortedNodes = sortNodes(unorderedNodes);
 
-            List<Node> sortedNodes = new ArrayList<>();
-            Node removed1 = unorderedNodes.remove(0);
-            sortedNodes.add(removed1);
-            int size = unorderedNodes.size();
-            for (int i = 0; i < size; i++) {
-                Node node = sortedNodes.get(sortedNodes.size() - 1);
-                int nearestNode = findNearestNode(node, unorderedNodes);
-                Node removedTemp = unorderedNodes.remove(nearestNode);
-                if (!(Haversine.distance(node.getPosition().getLatitude(), node.getPosition().getLongitude(), removedTemp.getPosition().getLatitude(), removedTemp.getPosition().getLongitude()) > 2 * Haversine.distance(node.getPosition().getLatitude(), node.getPosition().getLongitude(), removed1.getPosition().getLatitude(), removed1.getPosition().getLongitude()) && i > 100)) {
-                    sortedNodes.add(removedTemp);
-                }
-            }
-
-            double[] lats = new double[sortedNodes.size()];
-            double[] lons = new double[sortedNodes.size()];
+            var lats = new double[sortedNodes.size()];
+            var lons = new double[sortedNodes.size()];
             for (int i = 0; i < sortedNodes.size(); ++i) {
-                LatLon position = sortedNodes.get(i).getPosition();
+                var position = sortedNodes.get(i).getPosition();
                 lats[i] = position.getLatitude();
                 lons[i] = position.getLongitude();
             }
@@ -253,5 +244,21 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
             districts.add(new District(r.getId(), r.getTags().get("name"), path));
         }
         return districts;
+    }
+
+    private List<Node> sortNodes(List<Node> unorderedNodes) {
+        List<Node> sortedNodes = new ArrayList<>();
+        Node removed1 = unorderedNodes.remove(0);
+        sortedNodes.add(removed1);
+        int size = unorderedNodes.size();
+        for (int i = size - 1; i >= 0; i--) {
+            Node node = sortedNodes.get(sortedNodes.size() - 1);
+            int nearestNode = findNearestNode(node, unorderedNodes);
+            Node removedTemp = unorderedNodes.remove(nearestNode);
+            if (!(Haversine.distance(node.getPosition().getLatitude(), node.getPosition().getLongitude(), removedTemp.getPosition().getLatitude(), removedTemp.getPosition().getLongitude()) > 2 * Haversine.distance(node.getPosition().getLatitude(), node.getPosition().getLongitude(), removed1.getPosition().getLatitude(), removed1.getPosition().getLongitude()) && i < size - 100)) {
+                sortedNodes.add(removedTemp);
+            }
+        }
+        return sortedNodes;
     }
 }
