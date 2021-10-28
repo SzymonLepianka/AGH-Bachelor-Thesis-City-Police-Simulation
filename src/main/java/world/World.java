@@ -203,4 +203,9 @@ public class World {
         isSimulationPaused = false;
         Logger.getInstance().logNewMessage("Simulation has been resumed.");
     }
+
+    public boolean isNight() {
+        var x = World.getInstance().getSimulationTime() % 86400;
+        return 57600 <= x && x <= 86400;
+    }
 }

@@ -9,6 +9,7 @@ import world.WorldConfiguration;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -47,6 +48,8 @@ public class ConfigurationPanel {
     private final JTextField basePatrollingSpeed = new JTextField();
     private final JTextField baseTransferSpeed = new JTextField();
     private final JTextField basePrivilegedSpeed = new JTextField();
+    private final JCheckBox considerTimeOfDayCheckBox = new JCheckBox();
+    private final JTextField nightStatisticMultiplier = new JTextField();
     private final JFrame mainFrame = new JFrame("City Police Simulation");
     private JPanel districtConfigurationPanel;
     private JPanel simulationConfigurationPanel;
@@ -419,6 +422,46 @@ public class ConfigurationPanel {
 
 //----------------------------------------------------
 
+        var considerTimeOfDayPanel = new JPanel();
+        considerTimeOfDayPanel.setLayout(new BoxLayout(considerTimeOfDayPanel, BoxLayout.Y_AXIS));
+        considerTimeOfDayPanel.setBorder(new LineBorder(Color.BLACK, 1));
+
+        var label = new JPanel();
+        label.add(new JLabel("Consider the time of day (day/night)"));
+        considerTimeOfDayCheckBox.setSelected(true);
+        considerTimeOfDayCheckBox.addItemListener(e -> {
+            if(e.getStateChange() == ItemEvent.SELECTED){
+                nightStatisticMultiplier.setEnabled(true);
+            }
+            else if(e.getStateChange() == ItemEvent.DESELECTED){
+                nightStatisticMultiplier.setEnabled(false);
+            }
+        });
+        label.add(considerTimeOfDayCheckBox);
+        considerTimeOfDayPanel.add(label);
+
+        descriptionLabel = new JLabel("The hours from 16:00 to 24:00 are assumed");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        considerTimeOfDayPanel.add(descriptionLabel);
+        descriptionLabel = new JLabel("as night for each simulation day");
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        considerTimeOfDayPanel.add(descriptionLabel);
+
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 1));
+        panel.add(new JLabel("Set a multiplier of statistics for the night: "));
+        nightStatisticMultiplier.setText(String.valueOf(World.getInstance().getConfig().getNightStatisticMultiplier()));
+        addRestrictionOfEnteringOnlyFloats(nightStatisticMultiplier);
+        nightStatisticMultiplier.setColumns(11);
+        nightStatisticMultiplier.setInputVerifier(new MultiplierVerifier());
+        panel.add(nightStatisticMultiplier);
+
+        considerTimeOfDayPanel.add(panel);
+
+        buttonsPanel.add(considerTimeOfDayPanel);
+
+//----------------------------------------------------
+
         // line separating the components
         jSeparator = new JSeparator();
         jSeparator.setOrientation(SwingConstants.HORIZONTAL);
@@ -520,11 +563,16 @@ public class ConfigurationPanel {
 
         config.setMinimumInterventionDuration(minimumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(minimumInterventionDurationTextField, Integer.parseInt(maximumInterventionDurationTextField.getText()) - 1));
         config.setMaximumInterventionDuration(maximumInterventionDurationTextField.getText().equals("") ? 1 : convertInputToInteger(maximumInterventionDurationTextField, Integer.parseInt(minimumInterventionDurationTextField.getText()) + 1));
+
         config.setMinimumFiringStrength(minimumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(minimumFiringStrength, Integer.parseInt(maximumFiringStrength.getText()) - 1));
         config.setMaximumFiringStrength(maximumFiringStrength.getText().equals("") ? 1 : convertInputToInteger(maximumFiringStrength, Integer.parseInt(minimumFiringStrength.getText()) + 1));
+
         config.setBasePatrollingSpeed(basePatrollingSpeed.getText().equals("") ? 1 : convertInputToInteger(basePatrollingSpeed, 1));
         config.setBaseTransferSpeed(baseTransferSpeed.getText().equals("") ? 1 : convertInputToInteger(baseTransferSpeed, Integer.parseInt(basePatrollingSpeed.getText()) + 1));
         config.setBasePrivilegedSpeed(convertInputToInteger(basePrivilegedSpeed, Integer.parseInt(baseTransferSpeed.getText()) + 1));
+
+        config.setConsiderTimeOfDay(considerTimeOfDayCheckBox.isSelected());
+        config.setNightStatisticMultiplier(convertInputToDouble(nightStatisticMultiplier, 1.1));
     }
 
     private Double convertInputToDouble(JTextField textField, Double basicValue) {
@@ -631,6 +679,25 @@ public class ConfigurationPanel {
                 return true;
             } catch (NumberFormatException e) {
                 ((JTextField) input).setText("1.0");
+                return false;
+            }
+        }
+    }
+
+    public static class MultiplierVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            try {
+                var value = Double.parseDouble(((JTextField) input).getText());
+                if (value <= 1.0) {
+                    ((JTextField) input).setText("1.1");
+                }
+                if (value >= 10.0) {
+                    ((JTextField) input).setText("9.9");
+                }
+                return true;
+            } catch (NumberFormatException e) {
+                ((JTextField) input).setText("1.1");
                 return false;
             }
         }

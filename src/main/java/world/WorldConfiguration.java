@@ -28,6 +28,8 @@ public class WorldConfiguration {
     private int basePatrollingSpeed = 40;
     private int baseTransferSpeed = 60;
     private int basePrivilegedSpeed = 80;
+    private double nightStatisticMultiplier = 1.1;
+    private boolean considerTimeOfDay = false;
 
     WorldConfiguration() {
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 1);
@@ -67,7 +69,11 @@ public class WorldConfiguration {
     }
 
     public int getNumberOfPolicePatrols() {
-        return numberOfPolicePatrols;
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return (int) (numberOfPolicePatrols * nightStatisticMultiplier);
+        } else {
+            return numberOfPolicePatrols;
+        }
     }
 
     public void setNumberOfPolicePatrols(int numberOfPolicePatrols) {
@@ -75,7 +81,11 @@ public class WorldConfiguration {
     }
 
     public double getBasicSearchDistance() {
-        return basicSearchDistance;
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return basicSearchDistance * nightStatisticMultiplier;
+        } else {
+            return basicSearchDistance;
+        }
     }
 
     public void setBasicSearchDistance(double basicSearchDistance) {
@@ -119,7 +129,11 @@ public class WorldConfiguration {
     }
 
     public int getMinimumInterventionDuration() {
-        return minimumInterventionDuration;
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return (int) (minimumInterventionDuration * nightStatisticMultiplier);
+        } else {
+            return minimumInterventionDuration;
+        }
     }
 
     public void setMinimumInterventionDuration(int minimumInterventionDuration) {
@@ -127,7 +141,11 @@ public class WorldConfiguration {
     }
 
     public int getMaximumInterventionDuration() {
-        return maximumInterventionDuration;
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return (int) (maximumInterventionDuration * nightStatisticMultiplier);
+        } else {
+            return maximumInterventionDuration;
+        }
     }
 
     public void setMaximumInterventionDuration(int maximumInterventionDuration) {
@@ -135,7 +153,11 @@ public class WorldConfiguration {
     }
 
     public int getMinimumFiringStrength() {
-        return minimumFiringStrength;
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return (int) (minimumFiringStrength * nightStatisticMultiplier);
+        } else {
+            return minimumFiringStrength;
+        }
     }
 
     public void setMinimumFiringStrength(int minimumFiringStrength) {
@@ -143,7 +165,11 @@ public class WorldConfiguration {
     }
 
     public int getMaximumFiringStrength() {
-        return maximumFiringStrength;
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return (int) (maximumFiringStrength * nightStatisticMultiplier);
+        } else {
+            return maximumFiringStrength;
+        }
     }
 
     public void setMaximumFiringStrength(int maximumFiringStrength) {
@@ -192,7 +218,11 @@ public class WorldConfiguration {
     }
 
     public int getMaxIncidentForThreatLevel(District.ThreatLevelEnum threatLevel) {
-        return this.threatLevelToMaxIncidentsPerHour.get(threatLevel);
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return (int) (this.threatLevelToMaxIncidentsPerHour.get(threatLevel) * nightStatisticMultiplier);
+        } else {
+            return this.threatLevelToMaxIncidentsPerHour.get(threatLevel);
+        }
     }
 
     public void resetFiringChanceForThreatLevel() {
@@ -213,6 +243,22 @@ public class WorldConfiguration {
     }
 
     public double getFiringChanceForThreatLevel(District.ThreatLevelEnum threatLevel) {
-        return this.threatLevelToFiringChanceMap.get(threatLevel);
+        if (World.getInstance().isNight() && considerTimeOfDay) {
+            return this.threatLevelToFiringChanceMap.get(threatLevel) * nightStatisticMultiplier;
+        } else {
+            return this.threatLevelToFiringChanceMap.get(threatLevel);
+        }
+    }
+
+    public double getNightStatisticMultiplier() {
+        return nightStatisticMultiplier;
+    }
+
+    public void setNightStatisticMultiplier(double nightStatisticMultiplier) {
+        this.nightStatisticMultiplier = nightStatisticMultiplier;
+    }
+
+    public void setConsiderTimeOfDay(boolean considerTimeOfDay) {
+        this.considerTimeOfDay = considerTimeOfDay;
     }
 }
