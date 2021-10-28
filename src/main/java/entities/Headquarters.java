@@ -58,7 +58,7 @@ public class Headquarters extends Entity implements IDrawable {
             var patrolsSolving = ((Firing) firing).getPatrolsSolving();
             var patrolsReaching = ((Firing) firing).getPatrolsReaching();
             if (requiredPatrols <= patrolsSolving.size()) {
-                for (int i = 0; i < patrolsReaching.size(); i++) {
+                for (int i = patrolsReaching.size() - 1; i >= 0; i--) {
                     Logger.getInstance().logNewMessage(patrolsReaching.get(i) + " state set from " + patrolsReaching.get(i).getState() + " to PATROLLING");
                     patrolsReaching.get(i).setState(Patrol.State.PATROLLING);
                     ((Firing) firing).removeReachingPatrol(patrolsReaching.get(i));
@@ -82,7 +82,7 @@ public class Headquarters extends Entity implements IDrawable {
                 }
             }
             if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
-                var foundTransferringToInterventionPatrols = World.getInstance().getEntitiesNear(firing, searchRange * 2)
+                var foundTransferringToInterventionPatrols = World.getInstance().getEntitiesNear(firing, searchRange * 3)
                         .stream()
                         .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.TRANSFER_TO_INTERVENTION)
                         .map(Patrol.class::cast)

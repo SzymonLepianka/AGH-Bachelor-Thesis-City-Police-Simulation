@@ -28,7 +28,7 @@ public class WorldConfiguration {
     private int basePatrollingSpeed = 40;
     private int baseTransferSpeed = 60;
     private int basePrivilegedSpeed = 80;
-    private double nightStatisticMultiplier = 1.1;
+    private double nightStatisticMultiplier = 1.3;
     private boolean considerTimeOfDay = false;
 
     WorldConfiguration() {
