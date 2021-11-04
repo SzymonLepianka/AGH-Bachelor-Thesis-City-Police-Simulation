@@ -1,11 +1,12 @@
 package entities;
 
 import csv_export.ExportFiringDetails;
-import world.World;
 import csv_export.ExportRevokingPatrolsDetails;
+import csv_export.ExportSupportSummonDetails;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import utils.Logger;
+import world.World;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -84,7 +85,7 @@ public class Headquarters extends Entity implements IDrawable {
                         .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.PATROLLING)
                         .map(Patrol.class::cast)
                         .collect(Collectors.toList());
-                giveOrdersToFoundPatrols(firing, foundPatrols);
+                giveOrdersToFoundPatrols(firing, foundPatrols, i);
                 if (foundPatrols.size() + patrolsSolving.size() + patrolsReaching.size() >= requiredPatrols) {
                     break;
                 }
@@ -95,12 +96,12 @@ public class Headquarters extends Entity implements IDrawable {
                         .filter(x -> x instanceof Patrol && ((Patrol) x).getState() == Patrol.State.TRANSFER_TO_INTERVENTION)
                         .map(Patrol.class::cast)
                         .collect(Collectors.toList());
-                giveOrdersToFoundPatrols(firing, foundTransferringToInterventionPatrols);
+                giveOrdersToFoundPatrols(firing, foundTransferringToInterventionPatrols, 4);
             }
         }
     }
 
-    private void checkAllInterventions(List<Incident> allInterventions){
+    private void checkAllInterventions(List<Incident> allInterventions) {
         for (var intervention : allInterventions) {
             if (((Intervention) intervention).getPatrolSolving() == null) {
                 Patrol availablePatrol;
@@ -117,7 +118,8 @@ public class Headquarters extends Entity implements IDrawable {
                     i++;
                 }
                 if (availablePatrol != null) {
-                    Logger.getInstance().logNewMessage(availablePatrol + " took order from HQ. State set from " + availablePatrol.getState() + " to TRANSFER_TO_INTERVENTION; target: " + intervention);
+                    Logger.getInstance().logNewOtherMessage(availablePatrol + " took order from HQ.");
+                    Logger.getInstance().logNewMessageChangingState(availablePatrol , availablePatrol.getState().toString(),"TRANSFER_TO_INTERVENTION");
                     availablePatrol.takeOrder(
                             availablePatrol.new Transfer(World.getInstance().getSimulationTimeLong(),
                                     intervention, Patrol.State.TRANSFER_TO_INTERVENTION));
@@ -127,14 +129,16 @@ public class Headquarters extends Entity implements IDrawable {
         }
     }
 
-    private void giveOrdersToFoundPatrols(Incident firing, List<Patrol> foundPatrols) {
-        for (Patrol p : foundPatrols) {
-            Logger.getInstance().logNewMessage(p + " took order from HQ. State set from " + p.getState() + " to TRANSFER_TO_FIRING; target: " + firing);
+    private void giveOrdersToFoundPatrols(Incident firing, List<Patrol> foundPatrols, int numberOfIteration) {
+        for (var p : foundPatrols) {
+            Logger.getInstance().logNewOtherMessage(p + " took order from HQ.");
+            Logger.getInstance().logNewMessageChangingState(p, p.getState().toString(),"TRANSFER_TO_FIRING");
+            ExportSupportSummonDetails.getInstance().writeToCsvFile((Firing) firing, p, p.getState().name(), numberOfIteration);
             p.takeOrder(p.new Transfer(World.getInstance().getSimulationTimeLong(), firing, Patrol.State.TRANSFER_TO_FIRING));
             ((Firing) firing).addReachingPatrol(p);
         }
         if (!foundPatrols.isEmpty()) {
-            ExportFiringDetails.getInstance().writeToCsvFile((Firing) firing, foundPatrols);
+            ExportFiringDetails.getInstance().writeToCsvFileCalledPatrols((Firing) firing, foundPatrols);
         }
     }
 
@@ -152,7 +156,7 @@ public class Headquarters extends Entity implements IDrawable {
                 world.addEntity(newPatrol);
             }
             endOfCurrentShift += durationOfTheShift;
-            Logger.getInstance().logNewMessage("New shift has started");
+            Logger.getInstance().logNewOtherMessage("New shift has started");
         }
     }
 }
