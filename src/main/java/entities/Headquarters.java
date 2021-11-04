@@ -119,7 +119,7 @@ public class Headquarters extends Entity implements IDrawable {
                 }
                 if (availablePatrol != null) {
                     Logger.getInstance().logNewOtherMessage(availablePatrol + " took order from HQ.");
-                    Logger.getInstance().logNewMessageChangingState(availablePatrol , availablePatrol.getState().toString(),"TRANSFER_TO_INTERVENTION");
+                    Logger.getInstance().logNewMessageChangingState(availablePatrol, availablePatrol.getState().toString(), "TRANSFER_TO_INTERVENTION");
                     availablePatrol.takeOrder(
                             availablePatrol.new Transfer(World.getInstance().getSimulationTimeLong(),
                                     intervention, Patrol.State.TRANSFER_TO_INTERVENTION));
@@ -132,7 +132,7 @@ public class Headquarters extends Entity implements IDrawable {
     private void giveOrdersToFoundPatrols(Incident firing, List<Patrol> foundPatrols, int numberOfIteration) {
         for (var p : foundPatrols) {
             Logger.getInstance().logNewOtherMessage(p + " took order from HQ.");
-            Logger.getInstance().logNewMessageChangingState(p, p.getState().toString(),"TRANSFER_TO_FIRING");
+            Logger.getInstance().logNewMessageChangingState(p, p.getState().toString(), "TRANSFER_TO_FIRING");
             ExportSupportSummonDetails.getInstance().writeToCsvFile((Firing) firing, p, p.getState().name(), numberOfIteration);
             p.takeOrder(p.new Transfer(World.getInstance().getSimulationTimeLong(), firing, Patrol.State.TRANSFER_TO_FIRING));
             ((Firing) firing).addReachingPatrol(p);
