@@ -1,6 +1,6 @@
 package world;
 
-import csv_export.ExportToCSV;
+import csv_export.ExportSimulationAndDistrictDetails;
 import de.westnordost.osmapi.map.data.LatLon;
 import de.westnordost.osmapi.map.data.OsmLatLon;
 import entities.*;
@@ -188,7 +188,7 @@ public class World {
         hasSimulationStarted = true;
         new EventsDirector().start();
         new EventUpdater().start();
-        new ExportToCSV().start();
+        new ExportSimulationAndDistrictDetails().start();
         Logger.getInstance().logNewOtherMessage("Simulation has started.");
     }
 
