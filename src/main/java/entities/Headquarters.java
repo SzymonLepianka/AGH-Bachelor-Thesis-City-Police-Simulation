@@ -2,6 +2,7 @@ package entities;
 
 import csv_export.ExportFiringDetails;
 import world.World;
+import csv_export.ExportRevokingPatrolsDetails;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import utils.Logger;
@@ -52,23 +53,30 @@ public class Headquarters extends Entity implements IDrawable {
         checkAllInterventions(allInterventions);
     }
 
-    private void checkAllFirings(List<Incident> allFirings){
+    private void checkAllFirings(List<Incident> allFirings) {
         for (var firing : allFirings) {
             var requiredPatrols = ((Firing) firing).getRequiredPatrols();
             var patrolsSolving = ((Firing) firing).getPatrolsSolving();
             var patrolsReaching = ((Firing) firing).getPatrolsReaching();
-            if (requiredPatrols <= patrolsSolving.size()) {
-                for (int i = patrolsReaching.size() - 1; i >= 0; i--) {
-                    Logger.getInstance().logNewMessage(patrolsReaching.get(i) + " state set from " + patrolsReaching.get(i).getState() + " to PATROLLING");
-                    patrolsReaching.get(i).setState(Patrol.State.PATROLLING);
-                    ((Firing) firing).removeReachingPatrol(patrolsReaching.get(i));
-                }
-            }
+            revokeRedundantPatrols((Firing) firing, patrolsSolving, patrolsReaching, requiredPatrols);
             summonSupportForFiring((Firing) firing, patrolsSolving, patrolsReaching, requiredPatrols);
         }
     }
 
-    private void summonSupportForFiring(Firing firing, List <Patrol> patrolsSolving, List<Patrol> patrolsReaching, int requiredPatrols){
+    private void revokeRedundantPatrols(Firing firing, List<Patrol> patrolsSolving, List<Patrol> patrolsReaching, int requiredPatrols) {
+        if (requiredPatrols <= patrolsSolving.size()) {
+            if (patrolsReaching.size() > 0) {
+                ExportRevokingPatrolsDetails.getInstance().writeToCsvFileRevokedPatrols(firing, patrolsReaching.size());
+            }
+            for (int i = patrolsReaching.size() - 1; i >= 0; i--) {
+//                Logger.getInstance().logNewMessageChangingState(patrolsReaching.get(i) , patrolsReaching.get(i).getState().toString(), "PATROLLING");
+                patrolsReaching.get(i).setState(Patrol.State.PATROLLING);
+                firing.removeReachingPatrol(patrolsReaching.get(i));
+            }
+        }
+    }
+
+    private void summonSupportForFiring(Firing firing, List<Patrol> patrolsSolving, List<Patrol> patrolsReaching, int requiredPatrols) {
         if (patrolsSolving.size() + patrolsReaching.size() < requiredPatrols) {
             for (int i = 1; i < 4; i++) {
                 var foundPatrols = World.getInstance().getEntitiesNear(firing, searchRange * i)
