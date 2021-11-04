@@ -1,10 +1,10 @@
 package csv_export;
 
-import world.World;
 import com.opencsv.CSVWriter;
 import entities.Firing;
 import entities.Patrol;
 import utils.Haversine;
+import world.World;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,21 +16,22 @@ import java.util.List;
 
 public class ExportFiringDetails {
 
-    private static ExportFiringDetails instance;
-    private final World world = World.getInstance();
-    private final File firingsDetailsCsvFile;
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] firingDetailsHeader = new String[]{
             "simulationTime",
             "firingID",
             "districtName",
             "districtSafetyLevel",
-            "requiredPatrols",
+            "generallyRequiredPatrols",
             "solvingPatrols",
             "reachingPatrols(including 'called')",
             "calledPatrols",
-            "totalDistanceOfCalledPatrols"
+            "totalDistanceOfCalledPatrols",
+            "isNight"
     };
+    private static ExportFiringDetails instance;
+    private final World world = World.getInstance();
+    private final File firingsDetailsCsvFile;
     private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
 
     private ExportFiringDetails() {
@@ -41,7 +42,7 @@ public class ExportFiringDetails {
 
         firingsDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Firings Details.csv");
         try {
-            if (!firingsDetailsCsvFile.createNewFile()){
+            if (!firingsDetailsCsvFile.createNewFile()) {
                 throw new IOException("Unable to create file");
             }
             var csvWriter1 = new CSVWriter(new FileWriter(firingsDetailsCsvFile));
@@ -66,16 +67,17 @@ public class ExportFiringDetails {
         }
     }
 
-    public void writeToCsvFile(Firing firing, List<Patrol> calledPatrols) {
+    public void writeToCsvFileCalledPatrols(Firing firing, List<Patrol> calledPatrols) {
         var simulationTimeLong = world.getSimulationTimeLong();
+        var isNight = world.isNight();
         try {
-            writeToFiringsDetailsCsvFile(simulationTimeLong, firing, calledPatrols);
+            writeToFiringsDetailsCsvFileCalledPatrols(simulationTimeLong, firing, calledPatrols, isNight);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeToFiringsDetailsCsvFile(long simulationTimeLong, Firing firing, List<Patrol> calledPatrols) throws IOException {
+    private void writeToFiringsDetailsCsvFileCalledPatrols(long simulationTimeLong, Firing firing, List<Patrol> calledPatrols, boolean isNight) throws IOException {
         var csvWriter = new CSVWriter(new FileWriter(firingsDetailsCsvFile, true));
         csvWriter.writeNext(new String[]{
                 String.valueOf(simulationTimeLong),
@@ -86,7 +88,8 @@ public class ExportFiringDetails {
                 String.valueOf(firing.getPatrolsSolving().size()),
                 String.valueOf(firing.getPatrolsReaching().size()),
                 String.valueOf(calledPatrols.size()),
-                String.valueOf(totalDistanceOfPatrols(firing, calledPatrols))
+                String.valueOf(totalDistanceOfPatrols(firing, calledPatrols)).replace(".",","),
+                isNight ? "1" : "0"
         }, false);
         csvWriter.close();
     }
