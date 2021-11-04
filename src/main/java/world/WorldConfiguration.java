@@ -13,9 +13,9 @@ public class WorldConfiguration {
     private final EnumMap<District.ThreatLevelEnum, Integer> threatLevelToMaxIncidentsPerHour = new EnumMap<>(District.ThreatLevelEnum.class);
     private final EnumMap<District.ThreatLevelEnum, Double> threatLevelToFiringChanceMap = new EnumMap<>(District.ThreatLevelEnum.class);
     private String cityName;
-    private int timeRate = 300;
-    private long simulationDuration = 86400;
-    private int numberOfPolicePatrols = 25;
+    private int timeRate = 650;
+    private long simulationDuration = 259200;
+    private int numberOfPolicePatrols = 40;
     private double basicSearchDistance = 1200.0;
     private boolean drawDistrictsBorders = false;
     private boolean drawFiringDetails = false;
@@ -32,12 +32,12 @@ public class WorldConfiguration {
     private boolean considerTimeOfDay = false;
 
     WorldConfiguration() {
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 1);
-        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RATHER_SAFE, 2);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 2);
+        threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RATHER_SAFE, 3);
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NOT_SAFE, 4);
-        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.SAFE, 0.01);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.SAFE, 0.05);
         threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RATHER_SAFE, 0.1);
-        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NOT_SAFE, 0.4);
+        threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NOT_SAFE, 0.2);
     }
 
     public String getCityName() {
@@ -46,7 +46,7 @@ public class WorldConfiguration {
 
     public void setCityName(String cityName) {
         this.cityName = cityName;
-        Logger.getInstance().logNewMessage("City has been set.");
+        Logger.getInstance().logNewOtherMessage("City has been set.");
     }
 
     public int getTimeRate() {
@@ -207,13 +207,13 @@ public class WorldConfiguration {
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.RATHER_SAFE, 4);
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.NOT_SAFE, 7);
 
-        Logger.getInstance().logNewMessage("Settings for maximum number of incidents per hour for all threat levels have been reset to default values.");
+        Logger.getInstance().logNewOtherMessage("Settings for maximum number of incidents per hour for all threat levels have been reset to default values.");
     }
 
     public void setMaxIncidentsForThreatLevel(District.ThreatLevelEnum threatLevel, int maxIncidents) {
         if (this.threatLevelToMaxIncidentsPerHour.get(threatLevel) != maxIncidents) {
             this.threatLevelToMaxIncidentsPerHour.put(threatLevel, maxIncidents);
-            Logger.getInstance().logNewMessage(String.format("Chance for firing for %s was changed to %d.", threatLevel.toString(), maxIncidents));
+            Logger.getInstance().logNewOtherMessage(String.format("Chance for firing for %s was changed to %d.", threatLevel.toString(), maxIncidents));
         }
     }
 
@@ -232,13 +232,13 @@ public class WorldConfiguration {
         this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.RATHER_SAFE, 0.1);
         this.threatLevelToFiringChanceMap.put(District.ThreatLevelEnum.NOT_SAFE, 0.4);
 
-        Logger.getInstance().logNewMessage("Chances for firing have been reset to default values.");
+        Logger.getInstance().logNewOtherMessage("Chances for firing have been reset to default values.");
     }
 
     public void setFiringChanceForThreatLevel(District.ThreatLevelEnum threatLevel, double chance) {
         if (this.threatLevelToFiringChanceMap.get(threatLevel) != chance) {
             this.threatLevelToFiringChanceMap.put(threatLevel, chance);
-            Logger.getInstance().logNewMessage(String.format("Chance for firing for %s was changed to %f.", threatLevel.toString(), chance));
+            Logger.getInstance().logNewOtherMessage(String.format("Chance for firing for %s was changed to %f.", threatLevel.toString(), chance));
         }
     }
 
