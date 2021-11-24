@@ -1,9 +1,9 @@
 package entities;
 
-import world.World;
 import entities.factories.IncidentFactory;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
+import world.World;
 
 import java.awt.*;
 
@@ -21,7 +21,7 @@ public class Intervention extends Incident implements IDrawable {
 
         // the default intervention duration is the middle of the values entered by the user in the configuration
         var config = World.getInstance().getConfig();
-        this.duration = config.getMinimumInterventionDuration()+(config.getMaximumInterventionDuration() - config.getMinimumInterventionDuration()) / 2L;
+        this.duration = config.getMinimumInterventionDuration() + (config.getMaximumInterventionDuration() - config.getMinimumInterventionDuration()) / 2L;
         this.willChangeIntoFiring = false;
         this.timeToChange = -1;
     }
@@ -53,6 +53,7 @@ public class Intervention extends Incident implements IDrawable {
             if (willChangeIntoFiring && patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().getStartTime() + this.timeToChange < World.getInstance().getSimulationTime()) {
                 var firing = IncidentFactory.createRandomFiringFromIntervention(this);
                 this.patrolSolving.getAction().setTarget(firing);
+                firing.addSolvingPatrol(this.patrolSolving);
                 World.getInstance().removeEntity(this);
                 World.getInstance().addEntity(firing);
             } else if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation && patrolSolving.getAction().getStartTime() + this.getDuration() < World.getInstance().getSimulationTime()) {
@@ -67,15 +68,15 @@ public class Intervention extends Incident implements IDrawable {
         super.drawSelf(g, mapViewer);
         var point = mapViewer.convertGeoPositionToPoint(new GeoPosition(getLatitude(), getLongitude()));
         if (World.getInstance().isSimulationPaused() && World.getInstance().getConfig().isDrawInterventionDetails()) {
-            drawString(g,(int) point.getX() + 5, (int) point.getY(),"Duration:" + duration / 60 + " [minutes]");
-            drawString(g,(int) point.getX() + 5, (int) point.getY() - 15,"Will change into firing: " + willChangeIntoFiring);
+            drawString(g, (int) point.getX() + 5, (int) point.getY(), "Duration:" + duration / 60 + " [minutes]");
+            drawString(g, (int) point.getX() + 5, (int) point.getY() - 15, "Will change into firing: " + willChangeIntoFiring);
             if (this.patrolSolving != null) {
-                if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation){
+                if (patrolSolving.getAction() instanceof Patrol.IncidentParticipation) {
                     var timeLeft = duration - (World.getInstance().getSimulationTime() - patrolSolving.getAction().getStartTime());
 
-                    drawString(g,(int) point.getX() + 5, (int) point.getY() - 30, String.format("Time left: %.2f [minutes]", timeLeft / 60));
-                } else{
-                    drawString(g,(int) point.getX() + 5, (int) point.getY() - 30, "Patrol is on its way to the intervention.");
+                    drawString(g, (int) point.getX() + 5, (int) point.getY() - 30, String.format("Time left: %.2f [minutes]", timeLeft / 60));
+                } else {
+                    drawString(g, (int) point.getX() + 5, (int) point.getY() - 30, "Patrol is on its way to the intervention.");
                 }
             }
         }

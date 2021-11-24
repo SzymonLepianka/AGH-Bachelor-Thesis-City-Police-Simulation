@@ -1,6 +1,6 @@
 package world;
 
-import csv_export.ExportToCSV;
+import csv_export.ExportSimulationAndDistrictDetails;
 import de.westnordost.osmapi.map.data.LatLon;
 import de.westnordost.osmapi.map.data.OsmLatLon;
 import entities.*;
@@ -66,7 +66,7 @@ public class World {
     public void addEntity(Entity entity) {
         synchronized (allEntities) {
             allEntities.add(entity);
-            Logger.getInstance().logNewMessage("Added new " + entity.toString());
+            Logger.getInstance().logNewOtherMessage("Added new " + entity.toString());
 
             if (entity instanceof Patrol) {
                 StatisticsCounter.getInstance().increaseNumberOfPatrols();
@@ -81,7 +81,7 @@ public class World {
     public void removeEntity(Entity entity) {
         synchronized (allEntities) {
             if (allEntities.remove(entity)) {
-                Logger.getInstance().logNewMessage("Removed " + entity.toString());
+                Logger.getInstance().logNewOtherMessage("Removed " + entity.toString());
 
                 if (entity instanceof Patrol && ((Patrol) entity).getState() == Patrol.State.NEUTRALIZED) {
                     StatisticsCounter.getInstance().increaseNumberOfNeutralizedPatrols();
@@ -161,7 +161,7 @@ public class World {
         var longitude = (minCoordinates.getLongitude() + maxCoordinates.getLongitude()) / 2;
 
         position = new OsmLatLon(latitude, longitude);
-        Logger.getInstance().logNewMessage("Map has been set.");
+        Logger.getInstance().logNewOtherMessage("Map has been set.");
     }
 
     public boolean hasSimulationDurationElapsed() {
@@ -188,20 +188,20 @@ public class World {
         hasSimulationStarted = true;
         new EventsDirector().start();
         new EventUpdater().start();
-        new ExportToCSV().start();
-        Logger.getInstance().logNewMessage("Simulation has started.");
+        new ExportSimulationAndDistrictDetails().start();
+        Logger.getInstance().logNewOtherMessage("Simulation has started.");
     }
 
     public void pauseSimulation() {
         timePassedUntilPause = getSimulationTime();
         isSimulationPaused = true;
-        Logger.getInstance().logNewMessage("Simulation has been paused.");
+        Logger.getInstance().logNewOtherMessage("Simulation has been paused.");
     }
 
     public void resumeSimulation() {
         startTime = LocalDateTime.now();
         isSimulationPaused = false;
-        Logger.getInstance().logNewMessage("Simulation has been resumed.");
+        Logger.getInstance().logNewOtherMessage("Simulation has been resumed.");
     }
 
     public boolean isNight() {

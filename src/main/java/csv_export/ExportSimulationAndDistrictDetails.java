@@ -1,8 +1,8 @@
 package csv_export;
 
-import world.World;
 import com.opencsv.CSVWriter;
 import entities.*;
+import world.World;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,11 +13,8 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ExportToCSV extends Thread {
+public class ExportSimulationAndDistrictDetails extends Thread {
 
-    private final World world = World.getInstance();
-    private final File simulationDetailsCsvFile;
-    private final File districtsDetailsCsvFile;
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] simulationDetailsHeader = new String[]{
             "simulationTime",
@@ -34,8 +31,12 @@ public class ExportToCSV extends Thread {
             "amountOfInterventions",
             "amountOfInterventionsBeingSolved",
             "amountOfFirings",
-            "amountOfFiringBeingSolved"
+            "amountOfFiringBeingSolved",
+            "isNight"
     };
+    private final World world = World.getInstance();
+    private final File simulationDetailsCsvFile;
+    private final File districtsDetailsCsvFile;
     private final String[] districtsDetailsHeader = new String[]{
             "simulationTime",
             "districtName",
@@ -48,13 +49,14 @@ public class ExportToCSV extends Thread {
             "amountOfInterventionPatrols",
             "amountOfFiringPatrols",
             "amountOfReturningToHqPatrols",
-            "amountOfIncidents"
+            "amountOfIncidents",
+            "isNight"
     };
 
     private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
     private int exportCounter = 1;
 
-    public ExportToCSV() {
+    public ExportSimulationAndDistrictDetails() {
         File csvDirectory = new File(CSV_DIRECTORY_PATH);
         if (!(csvDirectory.exists() && csvDirectory.isDirectory())) {
             csvDirectory.mkdir();
@@ -63,14 +65,14 @@ public class ExportToCSV extends Thread {
         simulationDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Simulation Details.csv");
         districtsDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Districts Details.csv");
         try {
-            if (!simulationDetailsCsvFile.createNewFile()){
+            if (!simulationDetailsCsvFile.createNewFile()) {
                 throw new IOException("Unable to create file");
             }
             CSVWriter csvWriter1 = new CSVWriter(new FileWriter(simulationDetailsCsvFile));
             csvWriter1.writeNext(simulationDetailsHeader);
             csvWriter1.close();
 
-            if (!districtsDetailsCsvFile.createNewFile()){
+            if (!districtsDetailsCsvFile.createNewFile()) {
                 throw new IOException("Unable to create file");
             }
             CSVWriter csvWriter2 = new CSVWriter(new FileWriter(districtsDetailsCsvFile));
@@ -96,10 +98,10 @@ public class ExportToCSV extends Thread {
                         .map(Incident.class::cast)
                         .collect(Collectors.toList());
                 var simulationTimeLong = world.getSimulationTimeLong();
-
+                var isNight = world.isNight();
                 try {
-                    writeToSimulationDetailsCsvFile(simulationTimeLong, allPatrols, allIncidents);
-                    writeToDistrictsDetailsCsvFile(simulationTimeLong, allPatrols, allIncidents);
+                    writeToSimulationDetailsCsvFile(simulationTimeLong, allPatrols, allIncidents, isNight);
+                    writeToDistrictsDetailsCsvFile(simulationTimeLong, allPatrols, allIncidents, isNight);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -116,7 +118,7 @@ public class ExportToCSV extends Thread {
         }
     }
 
-    private void writeToSimulationDetailsCsvFile(long simulationTimeLong, List<Patrol> allPatrols, List<Incident> allIncidents) throws IOException {
+    private void writeToSimulationDetailsCsvFile(long simulationTimeLong, List<Patrol> allPatrols, List<Incident> allIncidents, boolean isNight) throws IOException {
         var csvWriter = new CSVWriter(new FileWriter(simulationDetailsCsvFile, true));
         csvWriter.writeNext(new String[]{
                 String.valueOf(simulationTimeLong),
@@ -133,12 +135,13 @@ public class ExportToCSV extends Thread {
                 String.valueOf(allIncidents.stream().filter(Intervention.class::isInstance).count()),
                 String.valueOf(allIncidents.stream().filter(x -> x instanceof Intervention && ((Intervention) x).getPatrolSolving() != null).count()),
                 String.valueOf(allIncidents.stream().filter(Firing.class::isInstance).count()),
-                String.valueOf(allIncidents.stream().filter(x -> x instanceof Firing && !((Firing) x).getPatrolsSolving().isEmpty()).count())
+                String.valueOf(allIncidents.stream().filter(x -> x instanceof Firing && !((Firing) x).getPatrolsSolving().isEmpty()).count()),
+                isNight ? "1" : "0"
         }, false);
         csvWriter.close();
     }
 
-    private void writeToDistrictsDetailsCsvFile(long simulationTimeLong, List<Patrol> allPatrols, List<Incident> allIncidents) throws IOException {
+    private void writeToDistrictsDetailsCsvFile(long simulationTimeLong, List<Patrol> allPatrols, List<Incident> allIncidents, boolean isNight) throws IOException {
         var districts = world.getDistricts();
         var csvWriter = new CSVWriter(new FileWriter(districtsDetailsCsvFile, true));
         for (District d : districts) {
@@ -155,7 +158,8 @@ public class ExportToCSV extends Thread {
                     String.valueOf(allPatrolsInDistrict.stream().filter(x -> x.getState() == Patrol.State.INTERVENTION).count()),
                     String.valueOf(allPatrolsInDistrict.stream().filter(x -> x.getState() == Patrol.State.FIRING).count()),
                     String.valueOf(allPatrolsInDistrict.stream().filter(x -> x.getState() == Patrol.State.RETURNING_TO_HQ).count()),
-                    String.valueOf(allIncidents.stream().filter(x -> d.contains(x.getPosition())).count())
+                    String.valueOf(allIncidents.stream().filter(x -> d.contains(x.getPosition())).count()),
+                    isNight ? "1" : "0"
             }, false);
         }
         csvWriter.close();

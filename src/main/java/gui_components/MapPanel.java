@@ -81,7 +81,7 @@ public class MapPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 var position = mapViewer.convertPointToGeoPosition(e.getPoint());
-                Logger.getInstance().logNewMessage("HQ position has been selected.");
+                Logger.getInstance().logNewOtherMessage("HQ position has been selected.");
 
                 var hq = new Headquarters(position.getLatitude(), position.getLongitude());
                 World.getInstance().addEntity(hq);

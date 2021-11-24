@@ -1,5 +1,7 @@
 package utils;
 
+import csv_export.ExportChangingStateDetails;
+import entities.Patrol;
 import gui_components.LoggerPanel;
 import world.World;
 
@@ -20,6 +22,7 @@ public class Logger {
     private final File logFile;
     private final List<LoggerPanel> loggingPanels = new ArrayList<>();
     private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
+
     private Logger() {
         File logsDirectory = new File(LOGS_DIRECTORY_PATH);
         if (!(logsDirectory.exists() && logsDirectory.isDirectory())) {
@@ -62,7 +65,22 @@ public class Logger {
         loggingPanels.clear();
     }
 
-    public void logNewMessage(String message) {
+    public void logNewMessageChangingState(Patrol patrol, String previousState, String currentState) {
+        ExportChangingStateDetails.getInstance().writeToCsvFile(patrol, previousState, currentState);
+        String message;
+        if (patrol.getAction() != null) {
+            message = patrol + " state set from " + previousState + " to " + currentState + "; action: " + patrol.getAction().getClass().toString() + "; target: " + patrol.getAction().getTarget().toString();
+        } else {
+            message = patrol + " state set from " + previousState + " to " + currentState;
+        }
+        logNewMessage(message);
+    }
+
+    public void logNewOtherMessage(String message) {
+        logNewMessage(message);
+    }
+
+    private void logNewMessage(String message) {
         var realDate = LocalDateTime.now();
         var simulationTime = World.getInstance().getSimulationTimeLong();
 

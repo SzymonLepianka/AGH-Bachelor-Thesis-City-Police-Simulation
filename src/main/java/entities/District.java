@@ -54,7 +54,7 @@ public class District implements IDrawable {
     public void setThreatLevel(ThreatLevelEnum threatLevel) {
         if (this.threatLevel != threatLevel) {
             this.threatLevel = threatLevel;
-            Logger.getInstance().logNewMessage(name + " district's thread level has been set to " + threatLevel);
+            Logger.getInstance().logNewOtherMessage(name + " district's thread level has been set to " + threatLevel);
         }
     }
 

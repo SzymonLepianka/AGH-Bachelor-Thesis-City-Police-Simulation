@@ -537,7 +537,7 @@ public class ConfigurationPanel {
 
         var config = World.getInstance().getConfig();
         setDataFromConfigurationPanel(config);
-        Logger.getInstance().logNewMessage("World config has been set.");
+        Logger.getInstance().logNewOtherMessage("World config has been set.");
 
         mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
         mapPanel.selectHQLocation();
@@ -599,7 +599,7 @@ public class ConfigurationPanel {
             var map = ImportGraphFromRawData.createMap(cityName, cityAdminLevel, districtAdminLevel);
             World.getInstance().setMap(map);
         } catch (IOException e) {
-            Logger.getInstance().logNewMessage("Unable to load map into world" + e.getLocalizedMessage());
+            Logger.getInstance().logNewOtherMessage("Unable to load map into world" + e.getLocalizedMessage());
             e.printStackTrace();
             Thread.currentThread().interrupt();
             return false;
