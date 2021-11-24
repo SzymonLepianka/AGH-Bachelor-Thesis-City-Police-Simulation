@@ -29,9 +29,9 @@ public class Patrol extends Entity implements IAgent, IDrawable {
     private double timeOfLastDrawNeutralization;
 
     public Patrol() {
-        basePatrollingSpeed = World.getInstance().getConfig().getBasePatrollingSpeed();
-        baseTransferSpeed = World.getInstance().getConfig().getBaseTransferSpeed();
-        basePrivilegedSpeed = World.getInstance().getConfig().getBasePrivilegedSpeed();
+        this.basePatrollingSpeed = World.getInstance().getConfig().getBasePatrollingSpeed();
+        this.baseTransferSpeed = World.getInstance().getConfig().getBaseTransferSpeed();
+        this.basePrivilegedSpeed = World.getInstance().getConfig().getBasePrivilegedSpeed();
         this.timeOfLastMove = World.getInstance().getSimulationTime();
         this.durationOfTheShift = World.getInstance().getDurationOfTheShift();
         this.shiftEndTime = World.getInstance().getSimulationTime() + durationOfTheShift;
@@ -276,11 +276,11 @@ public class Patrol extends Entity implements IAgent, IDrawable {
     public double getSpeed() {
         switch (state) {
             case PATROLLING, RETURNING_TO_HQ:
-                return basePatrollingSpeed;
+                return basePatrollingSpeed - (ThreadLocalRandom.current().nextBoolean() ? ThreadLocalRandom.current().nextDouble(basePatrollingSpeed * 10 / 100) : 0);
             case TRANSFER_TO_INTERVENTION:
                 return baseTransferSpeed;
             case TRANSFER_TO_FIRING:
-                return basePrivilegedSpeed;
+                return basePrivilegedSpeed + (ThreadLocalRandom.current().nextBoolean() ? ThreadLocalRandom.current().nextDouble(basePrivilegedSpeed * 10 / 100) : 0);
             default:
                 Logger.getInstance().logNewOtherMessage("The patrol is currently not moving");
                 return basePatrollingSpeed;
