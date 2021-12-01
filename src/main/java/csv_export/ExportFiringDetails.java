@@ -9,12 +9,9 @@ import world.World;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 
-public class ExportFiringDetails {
+public class ExportFiringDetails extends ExportData {
 
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] firingDetailsHeader = new String[]{
@@ -32,25 +29,9 @@ public class ExportFiringDetails {
     private static ExportFiringDetails instance;
     private final World world = World.getInstance();
     private final File firingsDetailsCsvFile;
-    private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
 
     private ExportFiringDetails() {
-        File csvDirectory = new File(CSV_DIRECTORY_PATH);
-        if (!(csvDirectory.exists() && csvDirectory.isDirectory())) {
-            csvDirectory.mkdir();
-        }
-
-        firingsDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Firings Details.csv");
-        try {
-            if (!firingsDetailsCsvFile.createNewFile()) {
-                throw new IOException("Unable to create file");
-            }
-            var csvWriter1 = new CSVWriter(new FileWriter(firingsDetailsCsvFile));
-            csvWriter1.writeNext(firingDetailsHeader);
-            csvWriter1.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        firingsDetailsCsvFile = createExportFile(CSV_DIRECTORY_PATH, firingDetailsHeader, "--Firings Details.csv");
     }
 
     public static ExportFiringDetails getInstance() {
@@ -88,7 +69,7 @@ public class ExportFiringDetails {
                 String.valueOf(firing.getPatrolsSolving().size()),
                 String.valueOf(firing.getPatrolsReaching().size()),
                 String.valueOf(calledPatrols.size()),
-                String.valueOf(totalDistanceOfPatrols(firing, calledPatrols)).replace(".",","),
+                String.valueOf(totalDistanceOfPatrols(firing, calledPatrols)).replace(".", ","),
                 isNight ? "1" : "0"
         }, false);
         csvWriter.close();

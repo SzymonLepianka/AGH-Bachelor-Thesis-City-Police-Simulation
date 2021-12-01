@@ -66,11 +66,10 @@ public class Headquarters extends Entity implements IDrawable {
 
     private void revokeRedundantPatrols(Firing firing, List<Patrol> patrolsSolving, List<Patrol> patrolsReaching, int requiredPatrols) {
         if (requiredPatrols <= patrolsSolving.size()) {
-            if (patrolsReaching.size() > 0) {
+            if (!patrolsReaching.isEmpty()) {
                 ExportRevokingPatrolsDetails.getInstance().writeToCsvFileRevokedPatrols(firing, patrolsReaching.size());
             }
             for (int i = patrolsReaching.size() - 1; i >= 0; i--) {
-//                Logger.getInstance().logNewMessageChangingState(patrolsReaching.get(i) , patrolsReaching.get(i).getState().toString(), "PATROLLING");
                 patrolsReaching.get(i).setState(Patrol.State.PATROLLING);
                 firing.removeReachingPatrol(patrolsReaching.get(i));
             }
