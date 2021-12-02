@@ -90,7 +90,8 @@ public class ConfigurationPanel {
 
         var citiesList = new ArrayList<String>();
         for (var city : cities) {
-            citiesList.add((String) city);
+            var bytes = ((String) city).getBytes(StandardCharsets.UTF_8);
+            citiesList.add(new String (bytes, StandardCharsets.UTF_8));
         }
 
         int size = citiesList.size();
