@@ -7,26 +7,10 @@ import org.jgrapht.alg.interfaces.AStarAdmissibleHeuristic;
 public class Haversine {
     private static final int EARTH_RADIUS = 6371; // Approx Earth radius in KM
 
-    private Haversine(){}
+    private Haversine() {
+    }
 
     public static double distance(double startLat, double startLong, double endLat, double endLong) {
-
-        // VERSION 1:
-        // START
-//        double dLat = Math.toRadians((endLat - startLat));
-//        double dLong = Math.toRadians((endLong - startLong));
-//
-//        startLat = Math.toRadians(startLat);
-//        endLat = Math.toRadians(endLat);
-//
-//        double a = haversin(dLat) + Math.cos(startLat) * Math.cos(endLat) * haversin(dLong);
-//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//
-//        return EARTH_RADIUS * c; // <-- d
-        //END
-
-        // VERSION 2:
-        // START
         double latDistance = Math.toRadians(endLat - startLat);
         double lonDistance = Math.toRadians(endLong - startLong);
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
@@ -37,11 +21,6 @@ public class Haversine {
 
         distance = Math.pow(distance, 2);
         return Math.sqrt(distance);
-        //END
-    }
-
-    public static double haversin(double val) {
-        return Math.pow(Math.sin(val / 2), 2);
     }
 
     public static class OwnHeuristics implements AStarAdmissibleHeuristic<Node> {
