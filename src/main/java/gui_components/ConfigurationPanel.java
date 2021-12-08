@@ -1,6 +1,10 @@
 package gui_components;
 
 import entities.District;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import osm_to_graph.ImportGraphFromRawData;
 import utils.Logger;
 import world.World;
@@ -13,7 +17,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -58,18 +65,40 @@ public class ConfigurationPanel {
     private JComboBox<String> citySelectionComboBox;
 
     public ConfigurationPanel() {
-        final String POLAND = "Poland";
-        final String[] polandCities = new String[]{"Kraków", "Warszawa", "Rzeszów", "Katowice", "Gdańsk", "Łódź", "Szczecin", "Poznań", "Lublin", "Białystok", "Wrocław"};
-        final String GERMANY = "Germany";
-        final String[] germanyCities = new String[]{"Berlin"};
+        getAvailableCitiesFromFile();
+    }
 
-        availablePlaces.put(POLAND, polandCities);
-        cityAdminLevelForAvailablePlaces.put(POLAND, 6);
-        districtAdminLevelForAvailablePlaces.put(POLAND, 9);
+    private void getAvailableCitiesFromFile() {
+        var jsonParser = new JSONParser();
+        try (var reader = new FileReader("availableCities.json", StandardCharsets.UTF_8)) {
+            //Read JSON file
+            var obj = jsonParser.parse(reader);
+            JSONArray countriesList = (JSONArray) obj;
+            for (var country : countriesList) {
+                parseCountryObject((JSONObject) country);
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
-        availablePlaces.put(GERMANY, germanyCities);
-        cityAdminLevelForAvailablePlaces.put(GERMANY, 4);
-        districtAdminLevelForAvailablePlaces.put(GERMANY, 9);
+    private void parseCountryObject(JSONObject country) {
+        var name = (String) country.get("name");
+        var cityAdminLevel = (long) country.get("cityAdminLevel");
+        var districtAdminLevel = (long) country.get("districtAdminLevel");
+        var cities = (JSONArray) country.get("cities");
+
+        var citiesList = new ArrayList<String>();
+        for (var city : cities) {
+            var bytes = ((String) city).getBytes(StandardCharsets.UTF_8);
+            citiesList.add(new String (bytes, StandardCharsets.UTF_8));
+        }
+
+        int size = citiesList.size();
+        String[] stringArray = citiesList.toArray(new String[size]);
+        availablePlaces.put(name, stringArray);
+        cityAdminLevelForAvailablePlaces.put(name, (int) cityAdminLevel);
+        districtAdminLevelForAvailablePlaces.put(name, (int) districtAdminLevel);
     }
 
     private void setDurationInputs(long time) {
@@ -430,10 +459,9 @@ public class ConfigurationPanel {
         label.add(new JLabel("Consider the time of day (day/night)"));
         considerTimeOfDayCheckBox.setSelected(true);
         considerTimeOfDayCheckBox.addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED){
+            if (e.getStateChange() == ItemEvent.SELECTED) {
                 nightStatisticMultiplier.setEnabled(true);
-            }
-            else if(e.getStateChange() == ItemEvent.DESELECTED){
+            } else if (e.getStateChange() == ItemEvent.DESELECTED) {
                 nightStatisticMultiplier.setEnabled(false);
             }
         });

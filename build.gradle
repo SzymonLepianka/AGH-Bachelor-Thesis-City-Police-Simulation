@@ -27,6 +27,7 @@ dependencies {
     implementation 'com.io7m.jgrapht:jgrapht-ext:1.2.1-MODULARIZED'
     implementation 'com.io7m.jgrapht:jgrapht:1.2.1-MODULARIZED'
 
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
     implementation group: 'math.geom2d', name: 'javaGeom', version: '0.11.1'
     implementation group: 'com.opencsv', name: 'opencsv', version: '3.7'

@@ -84,7 +84,6 @@ public class Patrol extends Entity implements IAgent, IDrawable {
         String currentStateToLog = "PATROLLING";
         if (isShiftOver()) {
             setState(State.RETURNING_TO_HQ);
-//            logChangingState(currentStateToLog);
             var hq = World.getInstance().getAllEntities().stream().filter(Headquarters.class::isInstance).findFirst().orElse(null);
             setAction(new Transfer(World.getInstance().getSimulationTimeLong(), hq, this.state));
         } else if (action == null) {
@@ -104,7 +103,6 @@ public class Patrol extends Entity implements IAgent, IDrawable {
         if (action instanceof Transfer) {
             if (((Transfer) action).pathNodeList.isEmpty()) {
                 setState(State.INTERVENTION);
-//                logChangingState("TRANSFER_TO_INTERVENTION");
                 action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
             }
         } else {
@@ -113,11 +111,8 @@ public class Patrol extends Entity implements IAgent, IDrawable {
     }
 
     private void updateStateIfIntervention() {
-        String currentStateToLog = "INTERVENTION";
         if (action.target instanceof Firing) {
             setState(State.FIRING);
-//            logChangingState(currentStateToLog);
-//            ((Firing) action.target).addSolvingPatrol(this);
             action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
         }
         // if the duration of the intervention is over, patrol changes state to PATROLLING
@@ -140,7 +135,6 @@ public class Patrol extends Entity implements IAgent, IDrawable {
         if (action instanceof Transfer) {
             if (((Transfer) action).pathNodeList != null && ((Transfer) action).pathNodeList.isEmpty()) {
                 setState(State.FIRING);
-//                logChangingState("TRANSFER_TO_FIRING");
                 ((Firing) action.target).removeReachingPatrol(this);
                 ((Firing) action.target).addSolvingPatrol(this);
                 action = new IncidentParticipation(World.getInstance().getSimulationTimeLong(), (Incident) action.target);
@@ -151,8 +145,6 @@ public class Patrol extends Entity implements IAgent, IDrawable {
     }
 
     private void updateStateIfFiring() {
-        String currentStateToLog = "FIRING";
-
         // when the firing strength drops to zero, patrol changes state to PATROLLING
         if (action instanceof IncidentParticipation) {
             if (action.target == null || !((Firing) action.target).isActive() || !(action.target instanceof Firing)) {
@@ -162,7 +154,6 @@ public class Patrol extends Entity implements IAgent, IDrawable {
                 if (ThreadLocalRandom.current().nextDouble() < 0.01) {
                     ((Firing) this.action.target).removeSolvingPatrol(this);
                     setState(State.NEUTRALIZED);
-//                    logChangingState(currentStateToLog);
                 }
                 timeOfLastDrawNeutralization = World.getInstance().getSimulationTime();
             }
@@ -296,9 +287,9 @@ public class Patrol extends Entity implements IAgent, IDrawable {
     }
 
     public void setState(State state) {
-        var previousState = this.state;
+        var previousStateToLog = this.state;
         this.state = state;
-        logChangingState(previousState != null ? previousState.toString() : " ", this.state.toString());
+        logChangingState(previousStateToLog != null ? previousStateToLog.toString() : " ", this.state.toString());
     }
 
     public Action getAction() {

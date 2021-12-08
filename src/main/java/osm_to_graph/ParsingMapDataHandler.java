@@ -81,12 +81,9 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
         boolean oneway = false;
 
         // uncomment if you want one-way roads to be treated as one-way
-//        //  check if road is oneway:
-//        if (way.getTags().containsKey("oneway")) {
-//            if (way.getTags().get("oneway").equals("yes")) {
-//                oneway = true;
-//            }
-//        }
+
+        //  check if road is oneway:
+//        if (way.getTags().containsKey("oneway")) {if (way.getTags().get("oneway").equals("yes")) { oneway = true;} }
 
         // loop creating all edges in a given path:
         for (long nodeID : way.getNodeIds()) {
@@ -153,7 +150,7 @@ public class ParsingMapDataHandler extends DefaultMapDataHandler implements MapD
                 graph.setEdgeWeight(edge, dist);
             } else {
                 if (!graph.containsEdge(nodeS, nodeT)) {
-                    System.out.println("edge has not been added to the graph " + nodeS.getId() + " " + nodeT.getId());
+                    throw new IllegalStateException("edge has not been added to the graph " + nodeS.getId() + " " + nodeT.getId());
                 }
             }
         }

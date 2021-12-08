@@ -7,11 +7,8 @@ import world.World;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 
-public class ExportRevokingPatrolsDetails {
+public class ExportRevokingPatrolsDetails extends ExportData {
 
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] firingDetailsHeader = new String[]{
@@ -25,25 +22,9 @@ public class ExportRevokingPatrolsDetails {
     private static ExportRevokingPatrolsDetails instance;
     private final World world = World.getInstance();
     private final File firingsDetailsCsvFile;
-    private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
 
     private ExportRevokingPatrolsDetails() {
-        File csvDirectory = new File(CSV_DIRECTORY_PATH);
-        if (!(csvDirectory.exists() && csvDirectory.isDirectory())) {
-            csvDirectory.mkdir();
-        }
-
-        firingsDetailsCsvFile = new File(CSV_DIRECTORY_PATH, dateFormat.format(LocalDateTime.now()) + "--Revoking Patrols Details.csv");
-        try {
-            if (!firingsDetailsCsvFile.createNewFile()) {
-                throw new IOException("Unable to create file");
-            }
-            var csvWriter1 = new CSVWriter(new FileWriter(firingsDetailsCsvFile));
-            csvWriter1.writeNext(firingDetailsHeader);
-            csvWriter1.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        firingsDetailsCsvFile = createExportFile(CSV_DIRECTORY_PATH, firingDetailsHeader, "--Revoking Patrols Details.csv");
     }
 
     public static ExportRevokingPatrolsDetails getInstance() {
