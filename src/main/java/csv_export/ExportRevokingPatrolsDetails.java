@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ExportRevokingPatrolsDetails extends ExportData {
+public class ExportRevokingPatrolsDetails extends AbstractExportData {
 
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] firingDetailsHeader = new String[]{
