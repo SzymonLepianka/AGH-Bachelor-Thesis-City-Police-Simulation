@@ -51,8 +51,6 @@ public class Map {
     }
 
     public void assignNodesToDistricts() {
-        //TODO improve this - not all nodes are assign to districts
-        // the algorithm for sorting nodes in districts is to be improved
         for (java.util.Map.Entry<Long, Node> me : myNodes.entrySet()) {
             for (var d : districts) {
                 if (d.contains(me.getValue().getPosition())) {

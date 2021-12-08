@@ -55,8 +55,6 @@ public class PathCalculator extends Thread {
                 nearTargetNode1 = findNearestNode(new OsmLatLon(targetLatitude, targetLongitude), forbiddenNodes);
 
                 // calculation of the route between two points in the case where initially there is no route between them, the simulation stops working smoothly
-                System.out.println(nearSourceNode + " -to- " + nearTargetNode1 + " route calculation");
-
                 while (nearSourceNode.equals(nearTargetNode1)) {
                     forbiddenNodes.add(nearSourceNode);
                     forbiddenNodes.add(nearTargetNode1);

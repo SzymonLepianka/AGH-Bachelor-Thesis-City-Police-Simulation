@@ -91,7 +91,6 @@ public class Logger {
         messageBuilder.append(" ");
         messageBuilder.append(message);
         messageBuilder.append("\n");
-        // TODO Change to FileWriter in the future
         try {
             Files.write(logFile.toPath(), messageBuilder.toString().getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
