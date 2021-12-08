@@ -11,7 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class ExportFiringDetails extends ExportData {
+public class ExportFiringDetails extends AbstractExportData {
 
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] firingDetailsHeader = new String[]{

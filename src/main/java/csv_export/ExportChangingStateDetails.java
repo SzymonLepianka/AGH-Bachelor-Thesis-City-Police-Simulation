@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ExportChangingStateDetails extends ExportData {
+public class ExportChangingStateDetails extends AbstractExportData {
 
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] firingDetailsHeader = new String[]{

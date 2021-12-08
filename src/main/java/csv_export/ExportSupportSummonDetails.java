@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ExportSupportSummonDetails extends ExportData {
+public class ExportSupportSummonDetails extends AbstractExportData {
 
     private static final String CSV_DIRECTORY_PATH = "results";
     private static final String[] firingDetailsHeader = new String[]{
