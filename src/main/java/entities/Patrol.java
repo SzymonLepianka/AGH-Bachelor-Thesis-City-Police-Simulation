@@ -151,7 +151,7 @@ public class Patrol extends Entity implements IAgent, IDrawable {
                 setState(State.PATROLLING);
                 drawNewTarget(null);
             } else if (World.getInstance().getSimulationTime() > timeOfLastDrawNeutralization + timeBetweenDrawNeutralization) {
-                if (ThreadLocalRandom.current().nextDouble() < 0.01) {
+                if (ThreadLocalRandom.current().nextDouble() < 0.001) {
                     ((Firing) this.action.target).removeSolvingPatrol(this);
                     setState(State.NEUTRALIZED);
                 }

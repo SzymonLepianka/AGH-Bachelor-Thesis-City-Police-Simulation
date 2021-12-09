@@ -30,6 +30,7 @@ public class WorldConfiguration {
     private int basePrivilegedSpeed = 80;
     private double nightStatisticMultiplier = 1.3;
     private boolean considerTimeOfDay = false;
+    private double periodOfTimeToExportDetails = 10;
 
     WorldConfiguration() {
         threatLevelToMaxIncidentsPerHour.put(District.ThreatLevelEnum.SAFE, 2);
@@ -260,5 +261,13 @@ public class WorldConfiguration {
 
     public void setConsiderTimeOfDay(boolean considerTimeOfDay) {
         this.considerTimeOfDay = considerTimeOfDay;
+    }
+
+    public double getPeriodOfTimeToExportDetails() {
+        return periodOfTimeToExportDetails;
+    }
+
+    public void setPeriodOfTimeToExportDetails(double periodOfTimeToExportDetails) {
+        this.periodOfTimeToExportDetails = periodOfTimeToExportDetails;
     }
 }

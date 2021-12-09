@@ -54,6 +54,7 @@ public class ExportSimulationAndDistrictDetails extends Thread {
     };
 
     private final DateTimeFormatter dateFormat = new DateTimeFormatterBuilder().appendPattern("dd-MM-yyyy_HH-mm-ss").toFormatter();
+    private final int periodOfTimeToExportDetailsInSeconds = (int) (world.getConfig().getPeriodOfTimeToExportDetails() * 60);
     private int exportCounter = 1;
 
     public ExportSimulationAndDistrictDetails() {
@@ -86,7 +87,7 @@ public class ExportSimulationAndDistrictDetails extends Thread {
     @Override
     public void run() {
         while (!world.hasSimulationDurationElapsed()) {
-            if (!world.isSimulationPaused() && exportCounter <= (world.getSimulationTimeLong() / 600)) {
+            if (!world.isSimulationPaused() && exportCounter <= (world.getSimulationTimeLong() / periodOfTimeToExportDetailsInSeconds)) {
                 exportCounter++;
                 var allEntities = world.getAllEntities();
                 var allPatrols = allEntities.stream()
@@ -106,8 +107,8 @@ public class ExportSimulationAndDistrictDetails extends Thread {
                     e.printStackTrace();
                 }
 
-                // sleep for next 10 minutes in simulation time
-                var sleepTime = ((600 - (world.getSimulationTime() % 600)) * 1000) / world.getConfig().getTimeRate();
+                // sleep for next 'periodOfTimeToExportDetails' minutes in simulation time
+                var sleepTime = ((periodOfTimeToExportDetailsInSeconds - (world.getSimulationTime() % periodOfTimeToExportDetailsInSeconds)) * 1000) / world.getConfig().getTimeRate();
                 try {
                     sleep((long) sleepTime, (int) ((sleepTime - (long) sleepTime) * 1000000));
                 } catch (InterruptedException e) {

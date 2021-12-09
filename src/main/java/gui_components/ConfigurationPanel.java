@@ -57,6 +57,7 @@ public class ConfigurationPanel {
     private final JTextField basePrivilegedSpeed = new JTextField();
     private final JCheckBox considerTimeOfDayCheckBox = new JCheckBox();
     private final JTextField nightStatisticMultiplier = new JTextField();
+    private final JTextField periodOfTimeToExportDetails = new JTextField();
     private final JFrame mainFrame = new JFrame("City Police Simulation");
     private JPanel districtConfigurationPanel;
     private JPanel simulationConfigurationPanel;
@@ -125,6 +126,7 @@ public class ConfigurationPanel {
         var worldConfig = World.getInstance().getConfig();
         numberOfCityPatrolsTextField.setText(Integer.toString(worldConfig.getNumberOfPolicePatrols()));
         basicSearchDistanceTextField.setText(Double.toString(worldConfig.getBasicSearchDistance()));
+        periodOfTimeToExportDetails.setText(Double.toString(worldConfig.getPeriodOfTimeToExportDetails()));
         timeRateTextField.setText(Integer.toString(worldConfig.getTimeRate()));
         setDurationInputs(worldConfig.getSimulationDuration());
     }
@@ -490,6 +492,19 @@ public class ConfigurationPanel {
 
 //----------------------------------------------------
 
+        var periodOfTimeToExportDetailsPanel = new JPanel();
+        periodOfTimeToExportDetailsPanel.setLayout(new BoxLayout(periodOfTimeToExportDetailsPanel, BoxLayout.Y_AXIS));
+        periodOfTimeToExportDetailsPanel.setBorder(new LineBorder(Color.BLACK, 1));
+        periodOfTimeToExportDetailsPanel.add(new JLabel("Set the period of time to export simulation"));
+        periodOfTimeToExportDetailsPanel.add(new JLabel(" and districts details [simulated minutes]"));
+        addRestrictionOfEnteringOnlyFloats(periodOfTimeToExportDetails);
+        periodOfTimeToExportDetails.setInputVerifier(new FloatInputVerifier());
+//        periodOfTimeToExportDetails.setColumns(TEXT_INPUT_COLUMNS);
+        periodOfTimeToExportDetailsPanel.add(periodOfTimeToExportDetails);
+        buttonsPanel.add(periodOfTimeToExportDetailsPanel);
+
+//----------------------------------------------------
+
         // line separating the components
         jSeparator = new JSeparator();
         jSeparator.setOrientation(SwingConstants.HORIZONTAL);
@@ -574,6 +589,7 @@ public class ConfigurationPanel {
     private void setDataFromConfigurationPanel(WorldConfiguration config) {
         config.setNumberOfPolicePatrols(numberOfCityPatrolsTextField.getText().equals("") ? 1 : convertInputToInteger(numberOfCityPatrolsTextField, 1));
         config.setBasicSearchDistance(basicSearchDistanceTextField.getText().equals("") ? 1.0 : convertInputToDouble(basicSearchDistanceTextField, 1.0));
+        config.setPeriodOfTimeToExportDetails(periodOfTimeToExportDetails.getText().equals("") ? 1.0 : convertInputToDouble(periodOfTimeToExportDetails, 1.0));
         config.setTimeRate(timeRateTextField.getText().equals("") ? 1 : convertInputToInteger(timeRateTextField, 1));
         config.setSimulationDuration(getDurationFromInputs());
         config.setDrawDistrictsBorders(drawDistrictsBoundariesCheckBox.isSelected());
