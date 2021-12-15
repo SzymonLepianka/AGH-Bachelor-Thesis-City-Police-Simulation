@@ -71,6 +71,7 @@ build
 .gradle
 *.jar
 !AGH-City-Police-Simulation.jar
+!gradle/wrapper/gradle-wrapper.jar
 
 logs
 OsmRawData
