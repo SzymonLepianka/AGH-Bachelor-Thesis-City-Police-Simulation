@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id "org.sonarqube" version "3.3"
+    id 'application'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -11,6 +12,7 @@ tasks.withType(JavaCompile) {
 
 group 'org.'
 version '1.0-SNAPSHOT'
+mainClassName = 'main.Main'
 
 repositories {
     mavenCentral()

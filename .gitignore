@@ -70,6 +70,7 @@ fabric.properties
 build
 .gradle
 *.jar
+!AGH-City-Police-Simulation.jar
 
 logs
 OsmRawData
