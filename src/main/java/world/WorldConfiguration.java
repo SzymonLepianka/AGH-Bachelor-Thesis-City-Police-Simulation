@@ -17,10 +17,10 @@ public class WorldConfiguration {
     private long simulationDuration = 259200;
     private int numberOfPolicePatrols = 40;
     private double basicSearchDistance = 1200.0;
-    private boolean drawDistrictsBorders = false;
-    private boolean drawFiringDetails = false;
-    private boolean drawLegend = false;
-    private boolean drawInterventionDetails = false;
+    private boolean drawDistrictsBorders = true;
+    private boolean drawFiringDetails = true;
+    private boolean drawLegend = true;
+    private boolean drawInterventionDetails = true;
     private int minimumInterventionDuration = 10; // minutes
     private int maximumInterventionDuration = 30; // minutes
     private int minimumFiringStrength = 30;
@@ -29,7 +29,7 @@ public class WorldConfiguration {
     private int baseTransferSpeed = 60;
     private int basePrivilegedSpeed = 80;
     private double nightStatisticMultiplier = 1.3;
-    private boolean considerTimeOfDay = false;
+    private boolean considerTimeOfDay = true;
     private double periodOfTimeToExportDetails = 10;
 
     WorldConfiguration() {
@@ -257,6 +257,10 @@ public class WorldConfiguration {
 
     public void setNightStatisticMultiplier(double nightStatisticMultiplier) {
         this.nightStatisticMultiplier = nightStatisticMultiplier;
+    }
+
+    public boolean getConsiderTimeOfDay(){
+        return considerTimeOfDay;
     }
 
     public void setConsiderTimeOfDay(boolean considerTimeOfDay) {

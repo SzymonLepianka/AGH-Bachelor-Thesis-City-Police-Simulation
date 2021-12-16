@@ -4,12 +4,9 @@ import world.World;
 
 public class DelayedActionWithTargetSimulationTime extends Thread {
 
-    public interface Thunk { void apply(); }
-
-    private long targetSimulationTime;
-    private World world = World.getInstance();
-    private Thunk function;
-
+    private final long targetSimulationTime;
+    private final World world = World.getInstance();
+    private final Thunk function;
     public DelayedActionWithTargetSimulationTime(long targetSimulationTime, Thunk function) {
         this.targetSimulationTime = targetSimulationTime;
         this.function = function;
@@ -32,5 +29,9 @@ public class DelayedActionWithTargetSimulationTime extends Thread {
             Thread.currentThread().interrupt();
         }
         function.apply();
+    }
+
+    public interface Thunk {
+        void apply();
     }
 }

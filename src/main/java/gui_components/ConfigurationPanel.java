@@ -124,10 +124,15 @@ public class ConfigurationPanel {
 
     private void setDefaultValues() {
         var worldConfig = World.getInstance().getConfig();
+        timeRateTextField.setText(Integer.toString(worldConfig.getTimeRate()));
         numberOfCityPatrolsTextField.setText(Integer.toString(worldConfig.getNumberOfPolicePatrols()));
         basicSearchDistanceTextField.setText(Double.toString(worldConfig.getBasicSearchDistance()));
+        drawDistrictsBoundariesCheckBox.setSelected(worldConfig.isDrawDistrictsBorders());
+        drawFiringDetailsCheckBox.setSelected(worldConfig.isDrawFiringDetails());
+        drawLegendCheckBox.setSelected(worldConfig.isDrawLegend());
+        drawInterventionDetailsCheckBox.setSelected(worldConfig.isDrawInterventionDetails());
+        considerTimeOfDayCheckBox.setSelected(worldConfig.getConsiderTimeOfDay());
         periodOfTimeToExportDetails.setText(Double.toString(worldConfig.getPeriodOfTimeToExportDetails()));
-        timeRateTextField.setText(Integer.toString(worldConfig.getTimeRate()));
         setDurationInputs(worldConfig.getSimulationDuration());
     }
 
