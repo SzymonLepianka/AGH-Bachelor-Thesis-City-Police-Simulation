@@ -13,7 +13,7 @@ public class WorldConfiguration {
     private final EnumMap<District.ThreatLevelEnum, Integer> threatLevelToMaxIncidentsPerHour = new EnumMap<>(District.ThreatLevelEnum.class);
     private final EnumMap<District.ThreatLevelEnum, Double> threatLevelToFiringChanceMap = new EnumMap<>(District.ThreatLevelEnum.class);
     private String cityName;
-    private int timeRate = 650;
+    private int timeRate = 250;
     private long simulationDuration = 259200;
     private int numberOfPolicePatrols = 40;
     private double basicSearchDistance = 1200.0;
