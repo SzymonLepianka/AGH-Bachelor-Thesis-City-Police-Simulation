@@ -14,5 +14,21 @@
       "cities": [
         "Berlin"
       ]
+    },
+	{
+      "name": "Romania",
+      "cityAdminLevel": 8,
+      "districtAdminLevel": 8,
+      "cities": [
+        "Cluj-Napoca"
+      ]
+    },
+	{
+      "name": "USA",
+      "cityAdminLevel": 8,
+      "districtAdminLevel": 10,
+      "cities": [
+        "Chicago"
+      ]
     }
  ]
